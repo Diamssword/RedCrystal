@@ -1,0 +1,15 @@
+{
+  "Interactions": [
+    {
+      "Type": "RedCrystal_Wand_Interact",
+      "Effects": {
+        "WaitForAnimationToFinish": false,
+        "ItemAnimationId": "Mine"
+      },
+      "Next": {
+        "Type": "ModifyInventory",
+        "AdjustHeldItemQuantity": -1
+      }
+    }
+  ]
+}

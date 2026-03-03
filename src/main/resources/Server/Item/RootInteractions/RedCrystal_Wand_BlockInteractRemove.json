@@ -1,0 +1,13 @@
+{
+  "Interactions": [
+    {
+      "Type": "RedCrystal_Wand_Interact",
+      "RunTime": 0,
+      "Effects": {
+        "WaitForAnimationToFinish": false,
+        "ItemAnimationId": "Mine"
+      },
+      "RemoveMode": true
+    }
+  ]
+}

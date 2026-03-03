@@ -1,0 +1,14 @@
+{
+  "Interactions": [
+    {
+      "Type": "RedCrystal_Wand_Interact",
+      "Effects": {
+        "WaitForAnimationToFinish": false,
+        "ItemAnimationId": "Mine"
+      },
+      "Failed": {
+        "Type": "RedCrystal_Wand_Link"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+    "Group": "Diamssword",
+    "Name": "RedCrystal",
+    "Version": "0.0.1",
+    "Description": "A powerful way to automatically interact with the world",
+    "Authors": [
+        {
+            "Name": "Diamssword"
+        }
+    ],
+    "Website": "https://your-plugin-website.com",
+    "DisabledByDefault": false,
+    "IncludesAssetPack": false,
+    "Dependencies": {
+        "Hytale:BlockStateModule": "*"
+    },
+    "OptionalDependencies": {},
+    "ServerVersion": "*",
+    "Main": "com.diamssword.redCrystal.RedCrystalPlugin"
+}

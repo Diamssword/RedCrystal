@@ -1,0 +1,9 @@
+{
+  "Interactions": [
+    {
+      "Type": "RedCrystal_Wand_Reveal",
+      "RunTime": 999999,
+      "CancelOnItemChange": true
+    }
+  ]
+}
