@@ -46,5 +46,6 @@
   "ItemSoundSetId": "ISS_Weapons_Wood",
   "ClipsGeometry": false,
   "RenderDeployablePreview": false,
-  "MaxStack": 1
+  "MaxStack": 1,
+  "MaxDurability": 100
 }

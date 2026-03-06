@@ -2,17 +2,18 @@
 <div class="page-overlay" style="layout-mode: center ">
     <div class="container" data-hyui-title="RedGlyph selector" style="anchor-width: 580; anchor-height: 500">
         <div class="container-contents" id="MainPanel">
-            <div style="layout-mode: TopScrolling; data-hyui-scrollbar-style: DefaultScrollbarStyle">
+            <div id="GlyphContainer"
+                 style="layout-mode: TopScrolling; data-hyui-scrollbar-style: DefaultScrollbarStyle">
                 {{#each lines}}
-                <div id="Line"
-                     style="layout-mode: left; anchor-left: 0; anchor-right: 0; anchor-top: 0; anchor-bottom: 0; anchor-width: 540; anchor-height: 130">
+                <div
+                        style="layout-mode: left; anchor-left: 0; anchor-right: 0; anchor-top: 0; anchor-bottom: 0; anchor-width: 540; anchor-height: 130">
                     {{#each glyphs}}
                     <div style="anchor-width: 130; anchor-height: 130; ">
-                        <button id="RunePanel{{$name}}" class="custom-button"
+                        <button id="RunePanel{{$id}}" class="custom-button"
                                 style="anchor-width: 120; anchor-height: 120;"
                         ></button>
                         <div style="layout-mode: top; anchor-width: 120; anchor-height: 120">
-                            <img src="Pages/RedCrystal/Glyphs/{{$name}}.png"
+                            <img src="Pages/RedCrystal/Glyphs/{{$id}}.png"
                                  style="anchor-width: 90; anchor-height: 90"/>
                             <p style="text-align:Center; color: #ffffff">{{$name}}</p>
                         </div>
@@ -28,23 +29,20 @@
         <div class="container" data-hyui-title="Glyph Settings" id="InfoPanel"
              style="padding-left:15; anchor-width: 300; anchor-height: 500">
             <div class="container-contents" style="layout-mode: top;">
-                <label>Slt</label>
+                <p id="selected.title" style="text-align:Center; color: #ffffff"></p>
+                <div style="layout-mode: TopScrolling; data-hyui-scrollbar-style: DefaultScrollbarStyle; anchor-width: 280; anchor-height:400;">
+                    <img id="selected.image"
+                         style="anchor-width: 150; anchor-height: 150;padding-left:25;padding-top:10; padding-bottom:10;"/>
+                    <p id="selected.desc" style="text-align:Center; white-space:wrap; padding-left:10;">A long ass
+                        description of what
+                        the rune might do in
+                        the close future
+                    </p>
+
+                </div>
+
             </div>
         </div>
     </div>
 </div>
-<style>
-    @PrimaryLabel {
-        color: #ffffff;
-        font-weight: bold;
-        font-size: 18;
-    }
 
-    @PrimaryBackground {
-       background-image: Pages/RedCrystal/Glyphs/{{$name}}.png;
-    }
-
-    @HoverBackground {
-        background-color: #1a1a1a;
-    }
-</style>

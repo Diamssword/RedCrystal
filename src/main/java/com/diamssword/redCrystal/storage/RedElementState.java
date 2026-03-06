@@ -82,7 +82,7 @@ public class RedElementState implements Component<ChunkStore> {
 		return elements.get(face.toString());
 	}
 
-	public RedElement getOrCreateElement(BlockFace face, String behaviorId) {
+	public boolean createElement(BlockFace face, String behaviorId) {
 		var res = this.elements.get(face.toString());
 		if(res == null) {
 			res = new RedElement(this, face);
@@ -90,10 +90,11 @@ public class RedElementState implements Component<ChunkStore> {
 			if(beh != null) {
 				res.setBehavior(beh);
 				this.elements.put(face.toString(), res);
+				return true;
 			} else
-				return null;
+				return false;
 		}
-		return res;
+		return false;
 	}
 
 	public Map<BlockFace, RedElement> getAllElements() {

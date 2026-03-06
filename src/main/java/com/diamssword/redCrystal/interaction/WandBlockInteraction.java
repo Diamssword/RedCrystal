@@ -9,6 +9,7 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
@@ -35,7 +36,7 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 					interaction -> interaction.removeMode,
 					(interaction, parent) -> interaction.removeMode = parent.removeMode
 			)
-			.documentation("Determines whether to removed the interacted component or add one")
+			.documentation("Determines whether to remove the interacted component or add one")
 			.add()
 			.build();
 
@@ -47,36 +48,48 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 		assert client != null;
 		if(removeMode) {
 			var comp = getBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
-			if(comp != null) {
-				var removed = comp.removeElement(client.blockFace);
-
-				if(comp.getAllElements().isEmpty()) {
-					removeBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
+			tryRemoveRune(world, comp, client.blockFace, stack, context);
+		} else if(stack != null) {
+			var toolSettings = stack.getFromMetadataOrDefault("RedCrystalToolSettings", RedWandStorage.CODEC);
+			var glyph = toolSettings.getSelectedGlyph();
+			if(glyph != null && (stack.getMaxDurability() == 0 || stack.getDurability() > 0)) {
+				if(context.getHeldItemContainer() != null) {
+					var slot = context.getHeldItemSlot();
+					context.getHeldItemContainer().replaceItemStackInSlot(slot, stack, stack.withIncreasedDurability(-1));
 				}
-			} else
-				context.getState().state = InteractionState.Failed;
-		} else {
-			var state = getOrCreateBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
-			if(state != null && state.getElement(client.blockFace) == null) {
-				var toolSettings = stack.getFromMetadataOrDefault("RedCrystalToolSettings", RedWandStorage.CODEC);
-				var glyph = toolSettings.getSelectedGlyph();
-				if(stack != null) {
-					var tags = stack.getItem().getData().getRawTags();
-					var gl = tags.get("RedCrystalGlyph");
-					if(gl != null && gl.length > 0)
-						glyph = gl[gl.length - 1];
-				}
-				if(glyph != null)
-					context.getState().state = state.getOrCreateElement(client.blockFace, glyph) != null ? InteractionState.Finished : InteractionState.Failed;
-				else
+				var state = getOrCreateBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
+				if(state != null && state.getElement(client.blockFace) == null) {
+					context.getState().state = state.createElement(client.blockFace, glyph) ? InteractionState.Finished : InteractionState.Failed;
+				} else
 					context.getState().state = InteractionState.Failed;
 			} else
 				context.getState().state = InteractionState.Failed;
-		}
+		} else
+			context.getState().state = InteractionState.Failed;
 
 	}
 
-	private void removeBlockState(World world, int x, int y, int z) {
+	public static void tryRemoveRune(World world, RedElementState comp, BlockFace face, ItemStack stack, InteractionContext context) {
+		if(comp != null) {
+			var removed = comp.removeElement(face);
+			if(comp.getAllElements().isEmpty()) {
+				var targetBlock = comp.getPosition();
+				removeBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
+			}
+			if(removed != null && stack != null && context.getHeldItemContainer() != null) {
+				var slot = context.getHeldItemSlot();
+				if(stack.getDurability() < stack.getMaxDurability())
+					context.getHeldItemContainer().replaceItemStackInSlot(slot, stack, stack.withIncreasedDurability(1));
+				else {
+					//TODO drop dust
+				}
+			}
+			context.getState().state = removed != null ? InteractionState.Finished : InteractionState.Failed;
+		} else
+			context.getState().state = InteractionState.Failed;
+	}
+
+	private static void removeBlockState(World world, int x, int y, int z) {
 		Ref<ChunkStore> chunkRef = world.getChunkStore().getChunkReference(ChunkUtil.indexChunkFromBlock(x, z));
 		if(chunkRef != null) {
 

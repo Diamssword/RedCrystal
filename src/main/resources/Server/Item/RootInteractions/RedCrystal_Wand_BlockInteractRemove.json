@@ -7,7 +7,11 @@
         "WaitForAnimationToFinish": false,
         "ItemAnimationId": "Mine"
       },
-      "RemoveMode": true
+      "RemoveMode": true,
+      "Failed": {
+        "Type": "RedCrystal_Wand_Interact_Entity",
+        "RemoveMode": true
+      }
     }
   ]
 }

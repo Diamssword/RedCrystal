@@ -7,7 +7,7 @@
         "ItemAnimationId": "Mine"
       },
       "Failed": {
-        "Type": "RedCrystal_Wand_Link"
+        "Type": "RedCrystal_Wand_Interact_Entity"
       }
     }
   ]

@@ -2,6 +2,8 @@ package com.diamssword.redCrystal.redComponent;
 
 import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.registry.Registry;
+import com.hypixel.hytale.server.core.asset.type.item.config.Item;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 
 import javax.annotation.Nullable;
 import java.util.LinkedHashMap;

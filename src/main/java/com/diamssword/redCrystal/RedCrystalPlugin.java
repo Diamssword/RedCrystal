@@ -51,8 +51,8 @@ public class RedCrystalPlugin extends JavaPlugin {
 		this.getEntityRegistry().registerEntity("RedCrystalFakeEntity", FakeLivingEntity.class, FakeLivingEntity::new, FakeLivingEntity.CODEC);
 
 		Interaction.CODEC.register("RedCrystal_Wand_Interact", WandBlockInteraction.class, WandBlockInteraction.CODEC);
+		Interaction.CODEC.register("RedCrystal_Wand_Interact_Entity", WandEntityInteraction.class, WandEntityInteraction.CODEC);
 		Interaction.CODEC.register("RedCrystal_Wand_Reveal", WandRevealInteraction.class, WandRevealInteraction.CODEC);
-		Interaction.CODEC.register("RedCrystal_Wand_Link", WandLinkInteraction.class, WandLinkInteraction.CODEC);
 		Interaction.CODEC.register("RedCrystal_UseRedCrystalEntity", UseRedEntityInteraction.class, UseRedEntityInteraction.CODEC);
 		Interaction.getAssetStore().loadAssets("Diamssword:RedCrystal", List.of(new UseRedEntityInteraction("*UseRedCrystalEntity")));
 		RootInteraction.getAssetStore().loadAssets("Diamssword:RedCrystal", List.of(UseRedEntityInteraction.DEFAULT_ROOT));

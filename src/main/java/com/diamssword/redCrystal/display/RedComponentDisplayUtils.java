@@ -149,6 +149,7 @@ public class RedComponentDisplayUtils {
 			//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
 			holder.ensureComponent(Intangible.getComponentType());
 			holder.addComponent(RedEntityHiddenComponent.getComponentType(), new RedEntityHiddenComponent(element, 0.5f));
+			holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("main", (short) 0, element));
 			holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(0.00001f));
 			holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
 			res.setMain(holder);
