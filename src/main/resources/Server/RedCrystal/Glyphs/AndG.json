@@ -1,0 +1,13 @@
+{
+  "BehaviorId": {
+    "Type": "AND"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/AndG.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/AndG@2x.png",
+  "Outputs": 1,
+  "Inputs": 5,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.AndG.name",
+    "Description": "server.RedCrystal.glyph.AndG.desc"
+  }
+}

@@ -5,6 +5,7 @@ import com.diamssword.redCrystal.redComponent.RedComponentRegister;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.map.MapCodec;
+import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
@@ -57,14 +58,13 @@ public class RedElementState implements Component<ChunkStore> {
 		this.chunkRef = chunkRef;
 
 		for(var entry : this.getAllElements().entrySet()) {
-			if(entry.getValue().getBehavior() == null)
+			if(entry.getValue().getAsset() == null)
 				this.elements.remove(entry.getKey().toString());
 			else
 				entry.getValue().init(this, entry.getKey());
 		}
 
 	}
-
 
 	@Nullable
 	public Vector3i getPosition() {
@@ -82,13 +82,13 @@ public class RedElementState implements Component<ChunkStore> {
 		return elements.get(face.toString());
 	}
 
-	public boolean createElement(BlockFace face, String behaviorId) {
+	public boolean createElement(BlockFace face, String assetID) {
 		var res = this.elements.get(face.toString());
 		if(res == null) {
 			res = new RedElement(this, face);
-			var beh = RedComponentRegister.get(behaviorId, res);
-			if(beh != null) {
-				res.setBehavior(beh);
+			var asset = RedCrystalPlugin.GlyphAssets.getAssetMap().getAsset(assetID);
+			if(asset != null) {
+				res.setAsset(asset);
 				this.elements.put(face.toString(), res);
 				return true;
 			} else
@@ -116,5 +116,14 @@ public class RedElementState implements Component<ChunkStore> {
 		if(el != null)
 			el.invalidate();
 		return el;
+	}
+
+	public void onRemove(CommandBuffer<ChunkStore> buffer) {
+		getAllElements().forEach((s, e) -> {
+			var lost = removeElement(s);
+			if(lost != null) {
+				lost.onBreak(s, buffer);
+			}
+		});
 	}
 }

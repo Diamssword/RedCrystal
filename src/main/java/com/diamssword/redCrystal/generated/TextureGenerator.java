@@ -14,23 +14,8 @@ import java.util.Map;
 
 public class TextureGenerator {
 
-	public static void main() throws IOException {
-		var common = "src/main/resources/Common/";
-		var runes = getImages("glyphs");
-		System.out.println("starting texture generation...");
-		System.out.println("Common is at: " + Paths.get(common).toAbsolutePath());
-		runes.forEach((k, v) -> {
-			try {
-				System.out.println("generating glyph " + k);
-				ImageIO.write(v, "png", Paths.get(common, "UI/Custom/Pages/RedCrystal/Glyphs/" + k + "@2x.png").toFile());
-				ImageIO.write(stichGlyph(v), "png", Paths.get(common, "Items/RedCrystal/Glyphs/" + k + ".png").toFile());
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
 
-	private static BufferedImage stichGlyph(BufferedImage base) {
+	public static BufferedImage stichGlyph(BufferedImage base) {
 		BufferedImage texture = new BufferedImage(
 				base.getWidth() * 2,
 				base.getHeight() * 2,
@@ -78,9 +63,9 @@ public class TextureGenerator {
 		return target;
 	}
 
-	private static Map<String, BufferedImage> getImages(String subfolder) throws IOException {
+	public static Map<String, BufferedImage> getImages(String subfolder) throws IOException {
 
-		Path path = Paths.get("src/devAssets/" + subfolder);
+		Path path = GlyphGenerator.getDevAsset(subfolder);
 		var imgs = Files.list(path).filter(p -> !Files.isDirectory(p) && p.getFileName().toString().endsWith(".png"));
 		Map<String, BufferedImage> res = new HashMap<>();
 		for(Path o : imgs.toList()) {

@@ -1,0 +1,12 @@
+{
+  "BehaviorId": {
+    "Type": "Button"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Button.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Button@2x.png",
+  "Outputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.Button.name",
+    "Description": "server.RedCrystal.glyph.Button.desc"
+  }
+}

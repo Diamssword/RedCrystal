@@ -38,7 +38,7 @@ public class DisplayEntitySystem extends EntityTickingSystem<EntityStore> {
 							var linked = output.getBehavior(hidden.parent.getParent());
 							if(linked != null) {
 								var vec2 = RedComponentDisplayUtils.getIOPosition(output.getInputIndex(), linked, false);
-								RedComponentDisplayUtils.drawLaserFor(vec1, vec2, 0.1f, 0x5050BB, player.getReference());
+								RedComponentDisplayUtils.drawLaserFor(vec1, vec2, 0.1f, 0x6DDCFF, player.getReference());
 							}
 						}
 					}
@@ -61,10 +61,10 @@ public class DisplayEntitySystem extends EntityTickingSystem<EntityStore> {
 		var modelComponent = store.getComponent(rune, ModelComponent.getComponentType());
 		if(modelComponent != null) {
 			try {
-				Model model = RedComponentDisplayUtils.withModel(modelComponent.getModel(), "Items/RedCrystal/Glyphs/Flat_Glow.blockymodel", modelComponent.getModel().getTexture());
+				Model model = ModelUtils.withModel(modelComponent.getModel(), "Items/RedCrystal/Glyphs/Flat_Glow.blockymodel", modelComponent.getModel().getTexture());
 				ModelUpdate update = new ModelUpdate();
 				update.model = model.toPacket();
-				update.entityScale = comp.baseScale;
+				update.entityScale = comp.getVisibleScale();
 				NetworkUtil.getPlayersInView(rune).forEach(e -> {
 					NetworkUtil.sendEntityComponentUpdateToPlayer(e.getReference(), rune, null, new ComponentUpdate[]{update});
 				});
@@ -78,10 +78,10 @@ public class DisplayEntitySystem extends EntityTickingSystem<EntityStore> {
 		var modelComponent = store.getComponent(rune, ModelComponent.getComponentType());
 		if(modelComponent != null) {
 			try {
-				Model model = RedComponentDisplayUtils.withModel(modelComponent.getModel(), "Items/RedCrystal/Glyphs/Flat.blockymodel", modelComponent.getModel().getTexture());
+				Model model = ModelUtils.withModel(modelComponent.getModel(), "Items/RedCrystal/Glyphs/Flat.blockymodel", modelComponent.getModel().getTexture());
 				ModelUpdate update = new ModelUpdate();
 				update.model = model.toPacket();
-				update.entityScale = 0.00001f;
+				update.entityScale = comp.getHiddenScale();
 				NetworkUtil.getPlayersInView(rune).forEach(e -> {
 					NetworkUtil.sendEntityComponentUpdateToPlayer(e.getReference(), rune, null, new ComponentUpdate[]{update});
 				});

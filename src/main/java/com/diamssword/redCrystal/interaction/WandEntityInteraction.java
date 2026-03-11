@@ -1,34 +1,25 @@
 package com.diamssword.redCrystal.interaction;
 
 
-import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
-import com.diamssword.redCrystal.storage.RedElementState;
-import com.diamssword.redCrystal.storage.RedWandStorage;
+import com.diamssword.redCrystal.redComponent.RedCompBehavior;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.chunk.BlockComponentChunk;
-import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class WandEntityInteraction extends SimpleInteraction {
 	@Nonnull
@@ -62,16 +53,12 @@ public class WandEntityInteraction extends SimpleInteraction {
 	protected void interactWithEntity(@NonNullDecl World world, @NonNullDecl InteractionContext context, @NullableDecl ItemStack stack, @NonNullDecl Ref<EntityStore> target, @NonNullDecl RedEntityLinkComponent link) {
 		var client = context.getClientState();
 		assert client != null;
-		if(removeMode) {
-			if(link.getLinked().isValid()) {
-				var comp = link.getLinked().getParent();
-				WandBlockInteraction.tryRemoveRune(world, comp, link.getLinked().getFace(), stack, context);
-			} else
-				context.getState().state = InteractionState.Failed;
-		} else if(stack != null) {
-			//TODO settings
+		if(link.getLinked().isValid()) {
+			link.getLinked().getBehavior().onEntityInteract(link.getPart(), link.getPartIndex(), context.getOwningEntity(), target, context, removeMode ? RedCompBehavior.InteractType.Remove : RedCompBehavior.InteractType.Use);
+
 		} else
 			context.getState().state = InteractionState.Failed;
+
 
 	}
 }

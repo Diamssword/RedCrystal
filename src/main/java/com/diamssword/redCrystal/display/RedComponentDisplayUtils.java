@@ -53,7 +53,7 @@ public class RedComponentDisplayUtils {
 				case None, North, South -> curr.clone();
 				case East, West -> new Box(curr.min.z, curr.min.y, curr.min.x, curr.max.z, curr.max.y, curr.max.x);
 			});
-			return withBB(model, modified);
+			return ModelUtils.withBB(model, modified);
 		}
 		return model;
 	}
@@ -102,55 +102,64 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static Vector3d getInputPosition(short index, RedCompBehavior behavior) {
-		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d(index / (double) behavior.maxInputs(), -0.35));
+		var spacing = behavior.maxInputs() < 6 ? 0.2f : 0.1f;
+		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.maxInputs() - 1) / 2f) * spacing, -0.35));
 	}
 
 	public static Vector3d getOutputPosition(short index, RedCompBehavior behavior) {
-		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d(index / (double) behavior.maxOutputs(), 0.35));
+
+		var spacing = behavior.maxOutputs() < 6 ? 0.2f : 0.1f;
+		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.maxOutputs() - 1) / 2f) * spacing, 0.35));
 	}
 
 	public static DisplayEntityGroupHolder createEditEntities(EntityStore entityStore, Vector3i position, BlockFace face, RedElement element) {
 
+		var visibility = element.getSettings().getVisibility();
 		if(element.getBehavior() != null) {
 			var maxO = element.getBehavior().maxOutputs();
 			var maxI = element.getBehavior().maxInputs();
 			var res = new DisplayEntityGroupHolder(maxI, maxO);
 			for(short i = 0; i < maxO; i++) {
-				var holder = createMinimalDisplayEntity(entityStore, position, face, new Vector2d(i / (double) maxO, 0.35));
-				holder.addComponent(RedEntityHiddenComponent.getComponentType(), new RedEntityHiddenComponent(element, 0.1f));
-				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(withTexture(getFlatModel(face), "Items/RedCrystal/Glyphs/Output.png")));
+				var spacing = maxO < 6 ? 0.2f : 0.1f;
+				var holder = createMinimalDisplayEntity(entityStore, position, face, new Vector2d((i - (maxO - 1) / 2f) * spacing, 0.35));
+				var disp = new RedEntityHiddenComponent(element, 0.1f, visibility);
+				holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
+				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(getFlatModel(face), "Items/RedCrystal/Glyphs/Output.png")));
 				holder.ensureComponent(Interactable.getComponentType());
 				holder.ensureComponent(Intangible.getComponentType());
-				holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(0.00001f));
+				holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(disp.getHiddenScale()));
 				holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("output", i, element));
 				Interactions interactions = new Interactions();
-				interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");  // e.g., "*UseNPC" or custom RootInteraction asset ID
-				//interactions.setInteractionHint("your.hint.key");  // Optional client hint text
+				//interactions.setInteractionId(InteractionType.Secondary, "*UseRedCrystalEntity");
+				//interactions
+				interactions.setInteractionHint("server.RedCrystal.interactionHints.output");
 				holder.addComponent(Interactions.getComponentType(), interactions);
 				res.setOutput(i, holder);
 			}
 			for(short i = 0; i < maxI; i++) {
-				var holder = createMinimalDisplayEntity(entityStore, position, face, new Vector2d(i / (double) maxI, -0.35));
-				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(withTexture(getFlatModel(face), "Items/RedCrystal/Glyphs/Input.png")));
+				var spacing = maxI < 6 ? 0.2f : 0.1f;
+				var holder = createMinimalDisplayEntity(entityStore, position, face, new Vector2d((i - (maxI - 1) / 2f) * spacing, -0.35));
+				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(getFlatModel(face), "Items/RedCrystal/Glyphs/Input.png")));
 				holder.ensureComponent(Interactable.getComponentType());
 				holder.ensureComponent(Intangible.getComponentType());
 				holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("input", i, element));
-				holder.addComponent(RedEntityHiddenComponent.getComponentType(), new RedEntityHiddenComponent(element, 0.1f));
-				holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(0.00001f));
+				var disp = new RedEntityHiddenComponent(element, 0.1f, visibility);
+				holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
+				holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(disp.getHiddenScale()));
 				Interactions interactions = new Interactions();
-				interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");  // e.g., "*UseNPC" or custom RootInteraction asset ID
-				//interactions.setInteractionHint("your.hint.key");  // Optional client hint text
+				interactions.setInteractionHint("server.RedCrystal.interactionHints.input");
 				holder.addComponent(Interactions.getComponentType(), interactions);
 				res.setInput(i, holder);
 			}
 			var holder = createMinimalDisplayEntity(entityStore, position, face);
-			var model = withTexture(getFlatModel(face), "Items/RedCrystal/Glyphs/" + element.getBehavior().id + ".png");
+			var model = ModelUtils.withTexture(getFlatModel(face), element.getAsset().getTexture());
 
 			//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
 			holder.ensureComponent(Intangible.getComponentType());
-			holder.addComponent(RedEntityHiddenComponent.getComponentType(), new RedEntityHiddenComponent(element, 0.5f));
+			var disp = new RedEntityHiddenComponent(element, 0.5f, visibility);
+			holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
 			holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("main", (short) 0, element));
-			holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(0.00001f));
+			holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(disp.getHiddenScale()));
 			holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
 			res.setMain(holder);
 			return res;
@@ -158,89 +167,9 @@ public class RedComponentDisplayUtils {
 		return null;
 	}
 
-	public static Model withBB(Model base, Box box) {
-		return new Model(
-				base.getModelAssetId(),
-				base.getScale(),
-				base.getRandomAttachmentIds(),
-				base.getAttachments(),
-				box,
-				base.getModel(),
-				base.getTexture(),
-				base.getGradientSet(),
-				base.getGradientId(),
-				base.getEyeHeight(),
-				base.getCrouchOffset(),
-				base.getSittingOffset(),
-				base.getSleepingOffset(),
-				base.getAnimationSetMap(),
-				base.getCamera(),
-				base.getLight(),
-				base.getParticles(),
-				base.getTrails(),
-				base.getPhysicsValues(),
-				base.getDetailBoxes(),
-				base.getPhobia(),
-				base.getPhobiaModelAssetId()
-		);
-	}
-
-	public static Model withTexture(Model base, String texture) {
-		return new Model(
-				base.getModelAssetId(),
-				base.getScale(),
-				base.getRandomAttachmentIds(),
-				base.getAttachments(),
-				base.getBoundingBox(),
-				base.getModel(),
-				texture,
-				base.getGradientSet(),
-				base.getGradientId(),
-				base.getEyeHeight(),
-				base.getCrouchOffset(),
-				base.getSittingOffset(),
-				base.getSleepingOffset(),
-				base.getAnimationSetMap(),
-				base.getCamera(),
-				base.getLight(),
-				base.getParticles(),
-				base.getTrails(),
-				base.getPhysicsValues(),
-				base.getDetailBoxes(),
-				base.getPhobia(),
-				base.getPhobiaModelAssetId()
-		);
-	}
-
-	public static Model withModel(Model base, String newModel, String texture) {
-		return new Model(
-				base.getModelAssetId(),
-				base.getScale(),
-				base.getRandomAttachmentIds(),
-				base.getAttachments(),
-				base.getBoundingBox(),
-				newModel,
-				texture,
-				base.getGradientSet(),
-				base.getGradientId(),
-				base.getEyeHeight(),
-				base.getCrouchOffset(),
-				base.getSittingOffset(),
-				base.getSleepingOffset(),
-				base.getAnimationSetMap(),
-				base.getCamera(),
-				base.getLight(),
-				base.getParticles(),
-				base.getTrails(),
-				base.getPhysicsValues(),
-				base.getDetailBoxes(),
-				base.getPhobia(),
-				base.getPhobiaModelAssetId()
-		);
-	}
 
 	public static void drawLaser(Store<EntityStore> store, Vector3d from, Vector3d to, float time, short power) {
-		PlayerUtil.broadcastPacketToPlayers(store, getBeamPacket(from, to, time, redFromShort(power), 0.1f, false));
+		PlayerUtil.broadcastPacketToPlayers(store, getBeamPacket(from, to, time, redFromShort(power), 0.03f, false));
 	}
 
 	public static int redFromShort(short value) {
@@ -277,7 +206,7 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static void drawLaserFor(Vector3d from, Vector3d to, float time, int color, Ref<EntityStore> player) {
-		player.getStore().getComponent(player, PlayerRef.getComponentType()).getPacketHandler().write(getBeamPacket(from, to, time, color, 0.05f, true));
+		player.getStore().getComponent(player, PlayerRef.getComponentType()).getPacketHandler().write(getBeamPacket(from, to, time, color, 0.03f, true));
 	}
 
 	public static void drawBeam(Store<EntityStore> store, Vector3d from, Vector3d to, Ref<EntityStore> player) {

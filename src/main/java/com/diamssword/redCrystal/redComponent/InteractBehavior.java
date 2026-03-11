@@ -1,5 +1,6 @@
 package com.diamssword.redCrystal.redComponent;
 
+import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.storage.RedElement;
@@ -16,7 +17,6 @@ import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.Intangible;
 import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.modules.interaction.InteractionSimulationHandler;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -24,21 +24,10 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;
 
-public class InteractBehavior extends RedCompBehavior {
-	CooldownHandler cooldown = new CooldownHandler();
+public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 
-	public InteractBehavior(String id, RedElement parent) {
-		super(id, parent);
-	}
-
-	@Override
-	public short maxInputs() {
-		return 1;
-	}
-
-	@Override
-	public short maxOutputs() {
-		return 0;
+	public InteractBehavior(String id, RedElement parent, BehaviorAsset asset) {
+		super(id, parent, asset);
 	}
 
 	@NullableDecl

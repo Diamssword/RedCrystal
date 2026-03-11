@@ -1,23 +1,15 @@
 package com.diamssword.redCrystal.storage;
 
-import com.hypixel.hytale.builtin.buildertools.tooloperations.LaserPointerOperation;
 import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.component.dependency.Dependency;
-import com.hypixel.hytale.component.dependency.Order;
-import com.hypixel.hytale.component.dependency.SystemDependency;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;
 import com.hypixel.hytale.component.system.tick.DelayedEntitySystem;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
-import com.hypixel.hytale.server.core.modules.entitystats.EntityStatsSystems;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-
-import java.util.Set;
 
 public class RedElementSystems {
 	public static class RedElementAddedSystem extends RefSystem<ChunkStore> {
@@ -47,8 +39,10 @@ public class RedElementSystems {
 
 
 		@Override
-		public void onEntityRemove(@NonNullDecl Ref<ChunkStore> var1, @NonNullDecl RemoveReason var2, @NonNullDecl Store<ChunkStore> var3, @NonNullDecl CommandBuffer<ChunkStore> var4) {
-
+		public void onEntityRemove(@NonNullDecl Ref<ChunkStore> ref, @NonNullDecl RemoveReason reason, @NonNullDecl Store<ChunkStore> store, @NonNullDecl CommandBuffer<ChunkStore> buffer) {
+			RedElementState redComponent = buffer.getComponent(ref, RedElementState.getComponent());
+			assert redComponent != null;
+			redComponent.onRemove(buffer);
 		}
 	}
 
@@ -67,6 +61,7 @@ public class RedElementSystems {
 			redComponent.getAllElements().forEach((f, e) -> {
 				if(e.isValid())
 					e.getBehavior().displayTick();
+
 			});
 		}
 

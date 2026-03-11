@@ -1,1 +1,17 @@
 RedCrystal.glyph.Button.name=Button
+RedCrystal.glyph.Button.desc=Button
+
+
+# === InteractionHints ===
+RedCrystal.interactionHints.input=Input\nRight Click to create link\nLeft Click to break link
+RedCrystal.interactionHints.output=Output\nRight Click to create link\nLeft Click to break link
+RedCrystal.glyph.Interact.name=[TMP]Interact
+RedCrystal.glyph.Interact.desc=[TMP]Interact's description
+RedCrystal.glyph.OrG.name=[TMP]OrG
+RedCrystal.glyph.OrG.desc=[TMP]OrG's description
+RedCrystal.glyph.XOrG.name=[TMP]XOrG
+RedCrystal.glyph.XOrG.desc=[TMP]XOrG's description
+RedCrystal.glyph.AndG.name=[TMP]AndG
+RedCrystal.glyph.AndG.desc=[TMP]AndG's description
+RedCrystal.glyph.NotG.name=[TMP]NotG
+RedCrystal.glyph.NotG.desc=[TMP]NotG's description

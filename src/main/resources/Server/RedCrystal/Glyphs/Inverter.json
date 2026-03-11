@@ -1,0 +1,14 @@
+{
+  "BehaviorId": {
+    "Type": "NOT",
+    "IsBinary": false
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/NotG.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/NotG@2x.png",
+  "Outputs": 1,
+  "Inputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.Inverter.name",
+    "Description": "server.RedCrystal.glyph.Inverter.desc"
+  }
+}

@@ -1,48 +1,54 @@
 package com.diamssword.redCrystal.redComponent;
 
+import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
+import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
+import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.storage.RedElement;
-import com.hypixel.hytale.registry.Registry;
-import com.hypixel.hytale.server.core.asset.type.item.config.Item;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
+import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.function.function.TriFunction;
 
 import javax.annotation.Nullable;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class RedComponentRegister {
-	private static Map<String, BiFunction<String, RedElement, RedCompBehavior>> registry = new LinkedHashMap<>();
+	private static final Map<String, TriFunction<String, RedElement, ? extends AbstractBehaviorAsset<?>, ? extends RedCompBehavior<? extends AbstractBehaviorAsset<?>>>> registry = new ConcurrentHashMap<>();
+
 
 	public static void init() {
 		registry.clear();
-		registry.put("Button", ButtonBehavior::new);
-		registry.put("Interact", InteractBehavior::new);
-		registry.put("Toggle", ToggleBehavior::new);
-		registry.put("Toggle1", ToggleBehavior::new);
-		registry.put("Toggle2", ToggleBehavior::new);
-		registry.put("Toggle3", ToggleBehavior::new);
-		registry.put("Toggle4", ToggleBehavior::new);
-		registry.put("Toggle5", ToggleBehavior::new);
-		registry.put("Toggle6", ToggleBehavior::new);
-		registry.put("Toggle7", ToggleBehavior::new);
-		registry.put("Toggle8", ToggleBehavior::new);
-		registry.put("Toggle9", ToggleBehavior::new);
-		registry.put("Toggle91", ToggleBehavior::new);
-		registry.put("Toggle92", ToggleBehavior::new);
-		registry.put("Toggle93", ToggleBehavior::new);
+		register("Button", ButtonBehavior::new);
+		register("Interact", InteractBehavior::new);
+		register("Toggle", ToggleBehavior::new);
+		register("AND", AndBehavior::new);
+		register("OR", OrBehavior::new, BehaviorAssetWithSettings::AbsoluteCodec);
+		register("NOT", NotBehavior::new, BehaviorAssetWithSettings::BinaryCodec);
+
+
+	}
+
+	public static void register(String id, TriFunction<String, RedElement, BehaviorAsset, RedCompBehavior<BehaviorAsset>> factory) {
+		var beh = new BehaviorAsset(id);
+		register(id, factory, BehaviorAsset.class, BuilderCodec.builder(BehaviorAsset.class, () -> beh).build());
+	}
+
+	public static <T extends AbstractBehaviorAsset<?>> void register(String id, TriFunction<String, RedElement, T, RedCompBehavior<T>> factory, Class<T> clazz, BuilderCodec<T> codec) {
+		registry.put(id, factory);
+		AbstractBehaviorAsset.BEHAVIOR_CODEC.register(id, clazz, codec);
+	}
+
+	public static <T extends AbstractBehaviorAsset<?>> void register(String id, TriFunction<String, RedElement, T, RedCompBehavior<T>> factory, Function<String, BuilderCodec<T>> codecBuilder) {
+		registry.put(id, factory);
+		var codec = codecBuilder.apply(id);
+		AbstractBehaviorAsset.BEHAVIOR_CODEC.register(id, codec.getInnerClass(), codec);
 	}
 
 	@Nullable
-	public static RedCompBehavior get(String id, RedElement parent) {
+	public static <T extends AbstractBehaviorAsset<?>> RedCompBehavior<T> get(String id, RedElement parent, T asset) {
 		var g = registry.get(id);
 		if(g != null)
-			return g.apply(id, parent);
+			return ((TriFunction<String, RedElement, T, RedCompBehavior<T>>) g).apply(id, parent, asset);
 		return null;
-	}
-
-	public static List<String> getAllIds() {
-		return registry.keySet().stream().toList();
 	}
 }

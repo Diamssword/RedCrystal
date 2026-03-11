@@ -1,8 +1,9 @@
 package com.diamssword.redCrystal.interaction;
 
 
+import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
 import com.diamssword.redCrystal.storage.RedElementState;
-import com.diamssword.redCrystal.storage.RedWandStorage;
+import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -17,6 +18,7 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockComponentChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
@@ -48,18 +50,31 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 		assert client != null;
 		if(removeMode) {
 			var comp = getBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
-			tryRemoveRune(world, comp, client.blockFace, stack, context);
+			tryRemoveRune(world, comp, client.blockFace, context);
 		} else if(stack != null) {
-			var toolSettings = stack.getFromMetadataOrDefault("RedCrystalToolSettings", RedWandStorage.CODEC);
+			var toolSettings = RedWandTool.getForStack(stack);
 			var glyph = toolSettings.getSelectedGlyph();
 			if(glyph != null && (stack.getMaxDurability() == 0 || stack.getDurability() > 0)) {
-				if(context.getHeldItemContainer() != null) {
-					var slot = context.getHeldItemSlot();
-					context.getHeldItemContainer().replaceItemStackInSlot(slot, stack, stack.withIncreasedDurability(-1));
-				}
+
+
 				var state = getOrCreateBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
-				if(state != null && state.getElement(client.blockFace) == null) {
-					context.getState().state = state.createElement(client.blockFace, glyph) ? InteractionState.Finished : InteractionState.Failed;
+				if(state != null) {
+					var element = state.getElement(client.blockFace);
+					if(element == null) {
+						context.getState().state = state.createElement(client.blockFace, glyph) ? InteractionState.Finished : InteractionState.Failed;
+						if(context.getHeldItemContainer() != null) {
+							var slot = context.getHeldItemSlot();
+							context.getHeldItemContainer().replaceItemStackInSlot(slot, stack, stack.withIncreasedDurability(-1));
+						}
+					} else {
+						var player = context.getEntity().getStore().getComponent(context.getEntity(), PlayerRef.getComponentType());
+						if(player != null) {
+
+							new GlyphSettingsMenu(player, element).openMenu();
+							context.getState().state = InteractionState.Finished;
+						} else
+							context.getState().state = InteractionState.Failed;
+					}
 				} else
 					context.getState().state = InteractionState.Failed;
 			} else
@@ -69,17 +84,17 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 
 	}
 
-	public static void tryRemoveRune(World world, RedElementState comp, BlockFace face, ItemStack stack, InteractionContext context) {
+	public static void tryRemoveRune(World world, RedElementState comp, BlockFace face, InteractionContext context) {
 		if(comp != null) {
 			var removed = comp.removeElement(face);
 			if(comp.getAllElements().isEmpty()) {
 				var targetBlock = comp.getPosition();
 				removeBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
 			}
-			if(removed != null && stack != null && context.getHeldItemContainer() != null) {
+			if(removed != null && context.getHeldItem() != null && context.getHeldItemContainer() != null) {
 				var slot = context.getHeldItemSlot();
-				if(stack.getDurability() < stack.getMaxDurability())
-					context.getHeldItemContainer().replaceItemStackInSlot(slot, stack, stack.withIncreasedDurability(1));
+				if(context.getHeldItem().getDurability() < context.getHeldItem().getMaxDurability())
+					context.getHeldItemContainer().replaceItemStackInSlot(slot, context.getHeldItem(), context.getHeldItem().withIncreasedDurability(1));
 				else {
 					//TODO drop dust
 				}
@@ -130,6 +145,7 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 		}
 	}
 
+
 	private RedElementState getOrCreateBlockState(World world, int x, int y, int z) {
 		Ref<ChunkStore> chunkRef = world.getChunkStore().getChunkReference(ChunkUtil.indexChunkFromBlock(x, z));
 		if(chunkRef == null)
@@ -150,8 +166,11 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 				redState.setPosition(new Vector3i(x, y, z), chunkRef);
 				return redState;
 			} else {
-				var red = world.getChunkStore().getStore().ensureAndGetComponent(blockRef, RedElementState.getComponent());
-				red.setPosition(new Vector3i(x, y, z), chunkRef);
+				var red = world.getChunkStore().getStore().getComponent(blockRef, RedElementState.getComponent());
+				if(red == null) {
+					red = world.getChunkStore().getStore().ensureAndGetComponent(blockRef, RedElementState.getComponent());
+					red.setPosition(new Vector3i(x, y, z), chunkRef);
+				}
 				return red;
 			}
 		}

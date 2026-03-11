@@ -1,6 +1,7 @@
 package com.diamssword.redCrystal.interaction;
 
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
+import com.diamssword.redCrystal.redComponent.RedCompBehavior;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -53,7 +54,7 @@ public class UseRedEntityInteraction extends SimpleInstantInteraction {
 				} else if(redLinkComp.getLinked() == null) {
 					context.getState().state = InteractionState.Failed;
 				} else {
-					redLinkComp.getLinked().getBehavior().onEntityInteract(redLinkComp.getPart(), redLinkComp.getPartIndex(), ref, targetRef);
+					redLinkComp.getLinked().getBehavior().onEntityInteract(redLinkComp.getPart(), redLinkComp.getPartIndex(), ref, targetRef, context, RedCompBehavior.InteractType.Interact);
 					context.getState().state = InteractionState.Finished;
 
 				}

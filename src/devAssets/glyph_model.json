@@ -1,0 +1,13 @@
+{
+  "BehaviorId": {
+    "Type": "{$Id}"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/{$Id}.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/{$Id}@2x.png",
+  "Outputs": 1,
+  "Inputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.{$Id}.name",
+    "Description": "server.RedCrystal.glyph.{$Id}.desc"
+  }
+}

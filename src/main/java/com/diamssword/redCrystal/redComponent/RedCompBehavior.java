@@ -2,47 +2,85 @@ package com.diamssword.redCrystal.redComponent;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
-import com.diamssword.redCrystal.interaction.ToolSettings;
+import com.diamssword.redCrystal.wand.LinkingState;
+import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.redComponent.utils.RedTimers;
+import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.storage.RedElement;
-import com.hypixel.hytale.builtin.buildertools.tooloperations.LaserPointerOperation;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
-import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
+import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public abstract class RedCompBehavior {
+public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	public final short MAX = 255;
 	public final short MIN = 0;
 	public final RedElement parent;
-	public final String id;
-	public final short[] state;
-	public final short[] stateOutput;
+	private final String id;
+	private final short[] state;
+	private final short[] stateOutput;
 	public final RedTimers timers = new RedTimers();
+	public final T asset;
 
-	public RedCompBehavior(String id, RedElement parent) {
+	public String getId() {
+		return id;
+	}
+
+	public RedCompBehavior(String id, RedElement parent, T asset) {
 		this.parent = parent;
 		this.id = id;
+		this.asset = asset;
 		state = new short[maxInputs()];
 		stateOutput = new short[maxOutputs()];
 	}
 
-	public abstract short maxInputs();
+	public short defaultOutputValue(short index) {
+		return MIN;
+	}
 
-	public abstract short maxOutputs();
+	public short getState(int index) {
+		if(index < state.length && index >= 0)
+			return state[index];
+		return 0;
+	}
+
+	public void setState(int index, short value) {
+		if(index < state.length && index >= 0)
+			state[index] = value;
+	}
+
+	public short getStateOutput(int index) {
+		if(index < stateOutput.length && index >= 0)
+			return stateOutput[index];
+		return 0;
+	}
+
+	public void setStateOutput(int index, short value) {
+		if(index < stateOutput.length && index >= 0)
+			stateOutput[index] = value;
+	}
+
+	public short maxInputs() {
+		return parent.getAsset().getInputs();
+	}
+
+	public short maxOutputs() {
+		return parent.getAsset().getOutputs();
+	}
 
 	protected void setInput(short input, short value) {
 		if(input < maxInputs()) {
-			if(state[input] != value) {
-				var old = state[input];
-				state[input] = value;
-				onSignalChange(input, old, state[input]);
+			if(getState(input) != value) {
+				var old = getState(input);
+				setState(input, value);
+				onSignalChange(input, old, getState(input));
 				lightUpForInput(input, value > 0);
 			}
 		}
@@ -50,14 +88,26 @@ public abstract class RedCompBehavior {
 
 	abstract void onSignalChange(short input, short oldValue, short value);
 
-	void setOutput(short output, short value) {
+	public void setAllOutput(short value) {
+		for(int i = 0; i < maxOutputs(); i++) {
+			setOutput((short) i, value);
+		}
+	}
+
+	public void pulseAllOutput(short value, int ticks) {
+		for(int i = 0; i < maxOutputs(); i++) {
+			setPulse((short) i, value, ticks);
+		}
+	}
+
+	public void setOutput(short output, short value) {
 		var chan = parent.getOuput(output);
 		if(chan != null) {
-			stateOutput[output] = value;
+			setStateOutput(output, value);
 			var behavior = chan.getBehavior(parent.getParent());
 			if(behavior != null && behavior.parent.isValid()) {
 				behavior.setInput(chan.getInputIndex(), value);
-				if(value > 0)
+				if(value > 0 && parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Invisible)
 					RedComponentDisplayUtils.drawLaser(getWorld().getEntityStore().getStore(), RedComponentDisplayUtils.getInputPosition(chan.getInputIndex(), behavior), RedComponentDisplayUtils.getOutputPosition(output, this), 0.5f, value);
 
 				lightUpRune(this.parent.getEntities().getOutput(output), value > 0);
@@ -85,45 +135,64 @@ public abstract class RedCompBehavior {
 		}
 	}
 
-	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity) {
-		if(type.equals("input")) {
+	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity, InteractionContext context, InteractType action) {
+		if(type.equals("input") || type.equals("output")) {
+
 			getWorld().execute(() -> {
-				var comp = player.getStore().ensureAndGetComponent(player, ToolSettings.getComponentType());
-				comp.tryToLink(player, this.parent, index, false);
+				var comp = player.getStore().ensureAndGetComponent(player, LinkingState.getComponentType());
+				var isOutput = type.equals("output");
+				if(action == InteractType.Remove) {
+					comp.tryCancelLink(this.parent, index, isOutput);
+					if(isOutput) {
+						this.parent.breakOutputNode(index);
+					} else {
+						var other = this.parent.getInput(index);
+						if(other != null && other.isValid()) {
+							for(int i = 0; i < other.getAsset().getOutputs(); i++) {
+								if(other.getOuput(i).getInputIndex() == index) {
+									other.breakOutputNode(i);
+									break;
+								}
+							}
+						}
+					}
+				} else {
+					comp.tryToLink(player, this.parent, index, isOutput);
+				}
 			});
 
-		} else if(type.equals("output")) {
-			getWorld().execute(() -> {
-				var comp = player.getStore().ensureAndGetComponent(player, ToolSettings.getComponentType());
-				comp.tryToLink(player, this.parent, index, true);
-			});
+		} else if(action == InteractType.Remove) {
+			WandBlockInteraction.tryRemoveRune(getWorld(), parent.getParent(), parent.getFace(), context);
 		}
 	}
 
+	public enum InteractType {
+		Interact,
+		Use,
+		Remove
+	}
 
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		return new HashMap<>();
 	}
 
-	//TODO might be nice to have a constant time unit between firings
 	void runNextTick(Runnable runnable) {
 		timers.add(runnable, 1);
-		/*World w = getWorld();
-		assert w != null;
-		w.execute(runnable);*/
 	}
 
 	public void displayTick() {
-		for(short i = 0; i < stateOutput.length; i++) {
-			if(stateOutput[i] > 0) {
+		if(parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Invisible) {
+			for(short i = 0; i < stateOutput.length; i++) {
+				if(stateOutput[i] > 0) {
 
-				var chan = this.parent.getOuput(i);
-				if(chan != null) {
-					var bh = chan.getBehavior(this.parent.getParent());
-					if(bh != null)
-						RedComponentDisplayUtils.drawLaser(getWorld().getEntityStore().getStore(), RedComponentDisplayUtils.getOutputPosition(i, this), RedComponentDisplayUtils.getInputPosition(chan.getInputIndex(), bh), 0.6f, stateOutput[i]);
+					var chan = this.parent.getOuput(i);
+					if(chan != null) {
+						var bh = chan.getBehavior(this.parent.getParent());
+						if(bh != null)
+							RedComponentDisplayUtils.drawLaser(getWorld().getEntityStore().getStore(), RedComponentDisplayUtils.getOutputPosition(i, this), RedComponentDisplayUtils.getInputPosition(chan.getInputIndex(), bh), 0.6f, stateOutput[i]);
+					}
+
 				}
-
 			}
 		}
 	}
@@ -135,5 +204,15 @@ public abstract class RedCompBehavior {
 	public World getWorld() {
 		assert parent.getParent() != null;
 		return parent.getParent().getChunkRef().getStore().getExternalData().getWorld();
+	}
+
+	public List<Short> getConnectedInputs() {
+		List<Short> res = new ArrayList<>();
+		for(short i = 0; i < this.maxInputs(); i++) {
+			var in = this.parent.getInput(i);
+			if(in != null && in.isValid())
+				res.add(i);
+		}
+		return res;
 	}
 }

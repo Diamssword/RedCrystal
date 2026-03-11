@@ -1,0 +1,13 @@
+{
+  "BehaviorId": {
+    "Type": "Toggle"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Output.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Interact@2x.png",
+  "Outputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.Toggle.name",
+    "Description": "server.RedCrystal.glyph.Toggle.desc"
+  },
+  "Inputs": 1
+}

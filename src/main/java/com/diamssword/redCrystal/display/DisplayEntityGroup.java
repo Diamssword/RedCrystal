@@ -96,24 +96,24 @@ public class DisplayEntityGroup {
 	public void remove(Store<EntityStore> store) {
 		for(short i = 0; i < this.inputs.length; i++) {
 			var ho = inputs[i];
-			if(ho != null) {
+			if(ho != null && ho.isValid()) {
 				this.setInput(i, null);
 				store.removeEntity(ho, RemoveReason.REMOVE);
 			}
 		}
 		for(short i = 0; i < this.outputs.length; i++) {
 			var ho = outputs[i];
-			if(ho != null) {
+			if(ho != null && ho.isValid()) {
 				this.setOutput(i, null);
 				store.removeEntity(ho, RemoveReason.REMOVE);
 			}
 		}
-		if(this.main != null) {
+		if(this.main != null && main.isValid()) {
 			store.removeEntity(this.main, RemoveReason.REMOVE);
 			this.setMain(null);
 
 		}
-		others.forEach((_, v) -> store.removeEntity(v, RemoveReason.REMOVE));
+		others.forEach((_, v) -> {if(v != null && v.isValid()) {store.removeEntity(v, RemoveReason.REMOVE);}});
 		others.clear();
 	}
 }

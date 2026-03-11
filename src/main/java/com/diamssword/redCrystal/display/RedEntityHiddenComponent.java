@@ -16,18 +16,20 @@ import java.util.List;
 import java.util.Set;
 
 public class RedEntityHiddenComponent implements Component<EntityStore> {
-	public final float baseScale;
+	private final float baseScale;
+	private final Visibility visibility;
 	public final RedElement parent;
 	private int lightUpState = 0;
-	private Set<PlayerRef> seeingPlayers = new HashSet<>();
+	private final Set<PlayerRef> seeingPlayers = new HashSet<>();
 
 	public static ComponentType<EntityStore, RedEntityHiddenComponent> getComponentType() {
 		return RedCrystalPlugin.RedEntityHiddenComponent;
 	}
 
-	public RedEntityHiddenComponent(RedElement parent, float baseScale) {
+	public RedEntityHiddenComponent(RedElement parent, float baseScale, Visibility visibility) {
 		this.baseScale = baseScale;
 		this.parent = parent;
+		this.visibility = visibility;
 	}
 
 	public void addSeeingPlayer(Ref<EntityStore> player) {
@@ -57,10 +59,15 @@ public class RedEntityHiddenComponent implements Component<EntityStore> {
 	}
 
 	public void setLightUp(boolean light) {
-		if(light && lightUpState != 2) {
-			lightUpState = lightUpState == 3 ? 2 : 1;
-		} else if(!light && lightUpState != 0) {
-			lightUpState = lightUpState == 1 ? 0 : 3;
+		if(visibility == Visibility.Invisible) {
+			if(lightUpState != 0)
+				lightUpState = lightUpState == 1 ? 0 : 3;
+		} else {
+			if(light && lightUpState != 2) {
+				lightUpState = lightUpState == 3 ? 2 : 1;
+			} else if(!light && lightUpState != 0) {
+				lightUpState = lightUpState == 1 ? 0 : 3;
+			}
 		}
 	}
 
@@ -71,6 +78,24 @@ public class RedEntityHiddenComponent implements Component<EntityStore> {
 	@NullableDecl
 	@Override
 	public Component<EntityStore> clone() {
-		return new RedEntityHiddenComponent(this.parent, this.baseScale);
+		return new RedEntityHiddenComponent(this.parent, this.baseScale, this.visibility);
+	}
+
+	public Visibility getVisibility() {
+		return visibility;
+	}
+
+	public float getHiddenScale() {
+		return visibility == Visibility.Visible ? baseScale : 0.00001f;
+	}
+
+	public float getVisibleScale() {
+		return baseScale;
+	}
+
+	public static enum Visibility {
+		Hidden,
+		Visible,
+		Invisible
 	}
 }

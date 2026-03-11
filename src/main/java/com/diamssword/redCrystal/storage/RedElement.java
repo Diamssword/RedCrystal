@@ -1,15 +1,16 @@
 package com.diamssword.redCrystal.storage;
 
+import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.display.DisplayEntityGroup;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.redComponent.RedCompBehavior;
-import com.diamssword.redCrystal.redComponent.RedComponentRegister;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
-import com.hypixel.hytale.component.RemoveReason;
+import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +21,9 @@ public class RedElement {
 	public static BuilderCodec<RedElement> CODEC = BuilderCodec.builder(RedElement.class, RedElement::new)
 			.append(new KeyedCodec<>("Nodes", new ArrayCodec<>(RedNode.CODEC, RedNode[]::new)), (a, b) -> a.outputs = b, (a) -> a.outputs)
 			.add()
-			.append(new KeyedCodec<>("Behavior", Codec.STRING), (a, b) -> a.behavior = RedComponentRegister.get(b, a), (a) -> a.behavior == null ? "" : a.behavior.id)
+			.append(new KeyedCodec<>("Behavior", Codec.STRING), (a, b) -> a.asset = RedCrystalPlugin.GlyphAssets.getAssetMap().getAsset(b), (a) -> a.asset == null ? null : a.asset.getId())
+			.add()
+			.append(new KeyedCodec<>("Settings", GlobalGlyphSettings.CODEC), (a, b) -> a.settings = b, a -> a.settings)
 			.add()
 			.build();
 	private RedElementState parent;
@@ -28,7 +31,9 @@ public class RedElement {
 	private BlockFace face;
 	private RedNode[] outputs = new RedNode[0];
 	private RedElement[] inputs = new RedElement[0];
+	private Glyph asset;
 	private RedCompBehavior behavior;
+	private GlobalGlyphSettings settings = new GlobalGlyphSettings();
 	private DisplayEntityGroup linkedEntity;
 
 	public RedElement(RedElementState parent, BlockFace face) {
@@ -37,21 +42,35 @@ public class RedElement {
 
 	protected RedElement() {}
 
-	public RedElement setBehavior(RedCompBehavior behavior) {
+
+	public RedElement setAsset(Glyph asset) {
 		if(this.linkedEntity != null) {
 			var linked = this.linkedEntity;
 			var store = parent.getChunkRef().getStore().getExternalData().getWorld().getEntityStore();
 			store.getWorld().execute(() -> linked.remove(store.getStore()));
 			this.linkedEntity = null;
 		}
-		this.behavior = behavior;
+		this.asset = asset;
+		this.behavior = null;
 		setupBehavior();
 		return this;
 	}
 
+	public GlobalGlyphSettings getSettings() {
+		return settings;
+	}
+
+	public void updateSettings(GlobalGlyphSettings settings) {
+		var old = this.settings;
+		this.settings = settings;
+		old.updateFrom(settings, this);
+
+	}
+
 	@Nullable
 	public DisplayEntityGroup getEntities() {
-		return linkedEntity;
+
+		return linkedEntity == null ? new DisplayEntityGroup(asset.getInputs(), asset.getOutputs()) : linkedEntity;
 	}
 
 	public void invalidate() {
@@ -63,14 +82,22 @@ public class RedElement {
 	}
 
 	public boolean isValid() {
-		return parent != null && isValid;
+		return parent != null && isValid && behavior != null && asset != null;
 	}
 
+	@Nullable
 	public RedCompBehavior getBehavior() {
 		return behavior;
 	}
 
+	@Nullable
+	public Glyph getAsset() {
+		return asset;
+	}
+
 	private void setupBehavior() {
+		if(asset != null && behavior == null)
+			this.behavior = asset.getBehavior().createBehavior(this);
 		if(this.behavior != null) {
 			var store = parent.getChunkRef().getStore().getExternalData().getWorld().getEntityStore();
 			if(linkedEntity == null || !linkedEntity.isValid()) {
@@ -84,6 +111,13 @@ public class RedElement {
 					holders.getOthers().putAll(holdersEx);
 				store.getWorld().execute(() -> this.linkedEntity = holders.spawnEntities(store.getStore()));
 			}
+			store.getWorld().execute(() -> {
+				for(short i = 0; i < outputs.length; i++) {
+					if(outputs[i] != null)
+						behavior.setOutput(i, getBehavior().defaultOutputValue(i));
+				}
+
+			});
 		}
 	}
 
@@ -112,7 +146,7 @@ public class RedElement {
 	}
 
 	public void breakOutputNode(int index) {
-		if(outputs[index] != null) {
+		if(index < outputs.length && outputs[index] != null) {
 			var el = outputs[index].getElement(this.parent);
 			if(el != null && el.isValid()) {
 				el.breakInputInternal(outputs[index].inputIndex);
@@ -121,7 +155,7 @@ public class RedElement {
 		breakOutputNodeInternal(index);
 	}
 
-	public boolean setOutputNode(int index, RedNode node) {
+	public boolean setOutputNode(short index, RedNode node) {
 		if(behavior != null && index < behavior.maxOutputs()) {
 			if(index >= outputs.length) {
 				outputs = Arrays.copyOf(outputs, index + 1);
@@ -134,6 +168,8 @@ public class RedElement {
 				return false;
 
 			outputs[index] = node;
+			getBehavior().setOutput(index, getBehavior().defaultOutputValue(index));
+
 			return true;
 		}
 		return false;
@@ -148,8 +184,9 @@ public class RedElement {
 			if(node != null) {
 				RedElement el = node.getElement(this.parent);
 				if(el != null && el.isValid()) {
-					if(!el.setInput(node.inputIndex, this))
+					if(!el.setInput(node.inputIndex, this)) {
 						breakOutputNodeInternal(i);
+					}
 				}
 			}
 		}
@@ -161,6 +198,13 @@ public class RedElement {
 	}
 
 	@Nullable
+	public RedElement getInput(int index) {
+		if(index < inputs.length)
+			return inputs[index];
+		return null;
+	}
+
+	@Nullable
 	public RedNode getOuput(int index) {
 		if(index < outputs.length)
 			return outputs[index];
@@ -169,5 +213,9 @@ public class RedElement {
 
 	public BlockFace getFace() {
 		return face;
+	}
+
+	public void onBreak(BlockFace s, CommandBuffer<ChunkStore> buffer) {
+		//TODO drop dust
 	}
 }

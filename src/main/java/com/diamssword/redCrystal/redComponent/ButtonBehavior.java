@@ -1,6 +1,7 @@
 package com.diamssword.redCrystal.redComponent;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
+import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.hypixel.hytale.component.Holder;
@@ -11,6 +12,7 @@ import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
 import com.hypixel.hytale.server.core.entity.AnimationUtils;
+import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.modules.entity.component.Interactable;
 import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.interaction.Interactions;
@@ -19,19 +21,9 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;
 
-public class ButtonBehavior extends RedCompBehavior {
-	public ButtonBehavior(String id, RedElement parent) {
-		super(id, parent);
-	}
-
-	@Override
-	public short maxInputs() {
-		return 0;
-	}
-
-	@Override
-	public short maxOutputs() {
-		return 1;
+public class ButtonBehavior extends RedCompBehavior<BehaviorAsset> {
+	public ButtonBehavior(String id, RedElement parent, BehaviorAsset asset) {
+		super(id, parent, asset);
 	}
 
 	@Override
@@ -40,10 +32,10 @@ public class ButtonBehavior extends RedCompBehavior {
 	}
 
 	@Override
-	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity) {
-		super.onEntityInteract(type, index, player, entity);
-		if(type.equals("button")) {
-			setPulse((short) 0, MAX, 10);
+	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity, InteractionContext context, InteractType action) {
+		super.onEntityInteract(type, index, player, entity, context, action);
+		if(type.equals("button") && action == InteractType.Interact) {
+			pulseAllOutput(MAX, 10);
 			lightUpRune(this.parent.getEntities().getMain(), true);
 			timers.add(() -> lightUpRune(this.parent.getEntities().getMain(), false), 10);
 			var model = entity.getStore().getComponent(entity, ModelComponent.getComponentType());
