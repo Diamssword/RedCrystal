@@ -4,10 +4,12 @@ import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.display.DisplayEntityGroup;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.redComponent.RedCompBehavior;
+import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
+import com.hypixel.hytale.component.AddReason;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
@@ -32,11 +34,12 @@ public class RedElement {
 	private RedNode[] outputs = new RedNode[0];
 	private RedElement[] inputs = new RedElement[0];
 	private Glyph asset;
-	private RedCompBehavior behavior;
-	private GlobalGlyphSettings settings = new GlobalGlyphSettings();
+	private RedCompBehavior<?> behavior;
+	private GlobalGlyphSettings settings;
 	private DisplayEntityGroup linkedEntity;
 
-	public RedElement(RedElementState parent, BlockFace face) {
+	public RedElement(RedElementState parent, BlockFace face, @Nullable GlobalGlyphSettings settings) {
+		this.settings = settings == null ? new GlobalGlyphSettings() : settings;
 		init(parent, face);
 	}
 
@@ -86,7 +89,7 @@ public class RedElement {
 	}
 
 	@Nullable
-	public RedCompBehavior getBehavior() {
+	public RedCompBehavior<?> getBehavior() {
 		return behavior;
 	}
 
@@ -216,6 +219,9 @@ public class RedElement {
 	}
 
 	public void onBreak(BlockFace s, CommandBuffer<ChunkStore> buffer) {
-		//TODO drop dust
+		var world = parent.getChunkRef().getStore().getExternalData().getWorld();
+		if(world != null)
+			world.execute(() -> world.getEntityStore().getStore().addEntity(RedWandTool.dropDust(world.getEntityStore().getStore(), 1, parent.getPosition(), face), AddReason.SPAWN));
+		
 	}
 }

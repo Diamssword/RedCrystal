@@ -47,8 +47,7 @@
         },
         "unwrapMode": "custom",
         "visible": true,
-        "doubleSided": false,
-        "shadingMode": "fullbright"
+        "doubleSided": false
       }
     }
   ],

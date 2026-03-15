@@ -9,18 +9,15 @@ import org.jetbrains.annotations.NotNull;
 
 public class GlobalGlyphSettings {
 	public static final BuilderCodec<GlobalGlyphSettings> CODEC = BuilderCodec.builder(GlobalGlyphSettings.class, GlobalGlyphSettings::new)
-			.append(new KeyedCodec<>("Visibility", new TypedEnumCodec<>(RedEntityHiddenComponent.Visibility.class)
-							.documentKey(RedEntityHiddenComponent.Visibility.Hidden, "Shown only when powered")
-							.documentKey(RedEntityHiddenComponent.Visibility.Visible, "Always shown")
-							.documentKey(RedEntityHiddenComponent.Visibility.Invisible, "Never shown")),
+			.append(new KeyedCodec<>("Visibility", new TypedEnumCodec<>(RedEntityHiddenComponent.Visibility.class)),
 					(item, b) -> item.glyphVisibility = b,
 					item -> item.glyphVisibility)
-			.documentation("Set Glyph's visiblity:\n -Hidden:Shown only when powered\n -Visible:Always shown\n -Invisible:Never shown")
+			.documentation("Set Glyph's visiblity:\n -Hidden:Shown only when powered\n -Visible:Always shown\n -Pulse:Only Show signal changing\n -Invisible:Never shown")
 			.add()
 			.build();
 	private RedEntityHiddenComponent.Visibility glyphVisibility = RedEntityHiddenComponent.Visibility.Hidden;
 
-	protected GlobalGlyphSettings() {}
+	public GlobalGlyphSettings() {}
 
 	public void updateFrom(GlobalGlyphSettings settings, RedElement element) {
 

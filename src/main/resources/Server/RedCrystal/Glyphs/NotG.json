@@ -10,5 +10,10 @@
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.NotG.name",
     "Description": "server.RedCrystal.glyph.NotG.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Transform"
+    ]
   }
 }

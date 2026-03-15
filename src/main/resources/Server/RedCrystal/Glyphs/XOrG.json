@@ -6,7 +6,7 @@
   "GlyphTexture": "Items/RedCrystal/Glyphs/XOrG.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/XOrG@2x.png",
   "Outputs": 1,
-  "Inputs": 1,
+  "Inputs": 5,
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.XOrG.name",
     "Description": "server.RedCrystal.glyph.XOrG.desc"

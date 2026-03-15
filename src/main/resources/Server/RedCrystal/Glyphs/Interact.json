@@ -9,5 +9,10 @@
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.Interact.name",
     "Description": "server.RedCrystal.glyph.Interact.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Sigil"
+    ]
   }
 }

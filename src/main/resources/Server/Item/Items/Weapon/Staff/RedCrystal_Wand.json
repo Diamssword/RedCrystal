@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.Weapon_Staff_Cane.name"
+    "Name": "server.items.RedCrystal.staff.name",
+    "Description": "server.items.RedCrystal.staff.desc"
   },
   "Quality": "Common",
   "ItemLevel": 40,
@@ -9,8 +10,8 @@
     "Held": {
       "Parent": "RedCrystal_Wand_Reveal"
     },
-    "Secondary": "RedCrystal_Wand_BlockInteract",
-    "Primary": "RedCrystal_Wand_BlockInteractRemove",
+    "Secondary": "RedCrystal_Wand_BlockInteractRemove",
+    "Primary": "RedCrystal_Wand_BlockInteract",
     "Ability1": {
       "Interactions": [
         {

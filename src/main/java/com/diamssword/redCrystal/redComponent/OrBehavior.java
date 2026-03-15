@@ -30,7 +30,6 @@ public class OrBehavior extends RedCompBehavior<BehaviorAssetWithSettings> {
 					}
 				}
 			}
-			System.out.println(maxV);
 			if(on < 2) {
 				short finalMaxV = maxV;
 				runNextTick(() -> setAllOutput(finalMaxV));

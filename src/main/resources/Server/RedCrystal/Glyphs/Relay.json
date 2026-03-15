@@ -1,0 +1,18 @@
+{
+  "BehaviorId": {
+    "Type": "Toggle"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Relay.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Relay@2x.png",
+  "Outputs": 1,
+  "Inputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.Relay.name",
+    "Description": "server.RedCrystal.glyph.Relay.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Transform"
+    ]
+  }
+}

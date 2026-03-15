@@ -9,5 +9,10 @@
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.{$Id}.name",
     "Description": "server.RedCrystal.glyph.{$Id}.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Transform"
+    ]
   }
 }

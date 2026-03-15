@@ -1,8 +1,10 @@
 package com.diamssword.redCrystal.interaction;
 
+import com.diamssword.redCrystal.display.AttachmentsHelper;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.network.NetworkUtil;
+import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.wand.LinkingState;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
@@ -10,9 +12,11 @@ import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.protocol.packets.entities.EntityUpdates;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAttachment;
+import com.hypixel.hytale.server.core.cosmetics.CosmeticsModule;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.modules.collision.EntityRefCollisionProvider;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
+import com.hypixel.hytale.server.core.modules.entity.player.PlayerSkinComponent;
 import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
@@ -33,44 +37,44 @@ public class WandRevealInteraction extends SimpleInteraction {
 			.build();
 
 
-	Set<Ref<EntityStore>> processedEntities = new HashSet<>();
 	Ref<EntityStore> targetedEntity;
 	float last = 0;
 
-	void sendUpdateForNewEntities(Ref<EntityStore> playerRef) {
-
-		var visibleEntities = NetworkUtil.getVisibleEntities(playerRef).stream().filter(e -> !processedEntities.contains(e)).collect(Collectors.toSet());
+	void sendUpdateForNewEntities(Ref<EntityStore> playerRef, PlayerDatas playerDatas) {
+		var visibleEntities = NetworkUtil.getVisibleEntities(playerRef).stream().filter(e -> !playerDatas.viewedEntities.contains(e)).collect(Collectors.toSet());
 
 		for(Ref<EntityStore> entityRef : visibleEntities) {
-			var hidd = entityRef.getStore().getComponent(entityRef, RedEntityHiddenComponent.getComponentType());
-			if(hidd != null) {
-				hidd.addSeeingPlayer(playerRef);
-				this.processedEntities.add(entityRef);
-				try {
-					ModelComponent modelComponent = entityRef.getStore().getComponent(entityRef, ModelComponent.getComponentType());
-					if(modelComponent == null)
-						continue;
-					var hasInteract = entityRef.getStore().getComponent(entityRef, Interactable.getComponentType()) != null;
-					Model model;
-					if(hasInteract)
-						model = ModelUtils.withAttachment(modelComponent.getModel(), new ModelAttachment("Items/RedCrystal/Glyphs/HitboxHighlight.blockymodel", "Items/RedCrystal/Glyphs/HitboxHighlight.png", null, null, 1));
-					else
-						model = new Model(modelComponent.getModel());
+			if(entityRef.isValid()) {
+				var hidd = entityRef.getStore().getComponent(entityRef, RedEntityHiddenComponent.getComponentType());
+				if(hidd != null) {
+					hidd.addSeeingPlayer(playerRef);
+					playerDatas.viewedEntities.add(entityRef);
+					try {
+						ModelComponent modelComponent = entityRef.getStore().getComponent(entityRef, ModelComponent.getComponentType());
+						if(modelComponent == null)
+							continue;
+						var hasInteract = entityRef.getStore().getComponent(entityRef, Interactable.getComponentType()) != null;
+						Model model;
+						if(hasInteract)
+							model = ModelUtils.withAttachment(modelComponent.getModel(), new ModelAttachment("Items/RedCrystal/Glyphs/HitboxHighlight.blockymodel", "Items/RedCrystal/Glyphs/HitboxHighlight.png", null, null, 1));
+						else
+							model = new Model(modelComponent.getModel());
 
-					ModelUpdate update = new ModelUpdate();
-					update.model = model.toPacket();
-					update.entityScale = hidd.getVisibleScale();
-					NetworkUtil.sendEntityComponentUpdateToPlayer(playerRef, entityRef, new ComponentUpdateType[]{ComponentUpdateType.Intangible}, new ComponentUpdate[]{update});
-				} catch(Exception exception) {}
+						ModelUpdate update = new ModelUpdate();
+						update.model = model.toPacket();
+						update.entityScale = hidd.getVisibleScale();
+						NetworkUtil.sendEntityComponentUpdateToPlayer(playerRef, entityRef, new ComponentUpdateType[]{ComponentUpdateType.Intangible}, new ComponentUpdate[]{update});
+					} catch(Exception exception) {}
+				}
 			}
 		}
 	}
 
-	void sendUpdateToAllPreviousEntities(Ref<EntityStore> playerRef) {
-		for(Iterator<Ref<EntityStore>> it = this.processedEntities.iterator(); it.hasNext(); ) {
+	void sendUpdateToAllPreviousEntities(Ref<EntityStore> playerRef, PlayerDatas playerDatas) {
+		for(Iterator<Ref<EntityStore>> it = playerDatas.viewedEntities.iterator(); it.hasNext(); ) {
 			Ref<EntityStore> entityRef = it.next();
 			it.remove();
-			try {
+			if(entityRef.isValid() && entityRef.getStore().isInThread()) {
 				var hidd = entityRef.getStore().getComponent(entityRef, RedEntityHiddenComponent.getComponentType());
 				if(hidd != null)
 					hidd.removeSeeingPlayer(playerRef);
@@ -83,7 +87,7 @@ public class WandRevealInteraction extends SimpleInteraction {
 
 				update.entityScale = hidd.getHiddenScale();
 				NetworkUtil.sendEntityComponentUpdateToPlayer(playerRef, entityRef, null, new ComponentUpdate[]{update, new IntangibleUpdate()});
-			} catch(Exception exception) {}
+			}
 		}
 	}
 
@@ -111,10 +115,21 @@ public class WandRevealInteraction extends SimpleInteraction {
 	public void handle(@NonNullDecl Ref<EntityStore> ref, boolean firstRun, float time, @NonNullDecl InteractionType type, @NonNullDecl InteractionContext context) {
 		super.handle(ref, firstRun, time, type, context);
 		if(context.getState().state != InteractionState.NotFinished) {
-			sendUpdateToAllPreviousEntities(ref);
-			var li = context.getEntity().getStore().getComponent(context.getEntity(), LinkingState.getComponentType());
-			if(li != null)
-				li.setToolEquiped(false);
+			var ent = context.getEntity();
+			if(ent != null && ent.isValid() && context.getEntity().getStore().isInThread()) {
+				context.getCommandBuffer().run((s) -> {
+					var comp = s.ensureAndGetComponent(context.getEntity(), PlayerDatas.getComponentType());
+					comp.setToolEquiped(false);
+					sendUpdateToAllPreviousEntities(ref, comp);
+				/*	var skp = s.getComponent(context.getEntity(), PlayerSkinComponent.getComponentType());
+					if(skp != null)
+						skp.setNetworkOutdated();
+
+				 */
+				});
+
+
+			}
 		}
 	}
 
@@ -124,13 +139,33 @@ public class WandRevealInteraction extends SimpleInteraction {
 		if(((firstRun || time > last + 0.5) && (context.getState()).state == InteractionState.NotFinished)) {
 			last = time;
 			Ref<EntityStore> ref = context.getEntity();
-			if(ref.isValid())
-				sendUpdateForNewEntities(ref);
-			if(firstRun) {
-				var li = context.getEntity().getStore().getComponent(context.getEntity(), LinkingState.getComponentType());
-				if(li != null)
-					li.setToolEquiped(true);
+			if(ref.isValid()) {
+				context.getCommandBuffer().run((s) -> {
+					var comp = s.ensureAndGetComponent(context.getEntity(), PlayerDatas.getComponentType());
+					sendUpdateForNewEntities(ref, comp);
+					if(firstRun) {
+						comp.setToolEquiped(true);
+					/*	var mod = s.getComponent(context.getEntity(), ModelComponent.getComponentType());
+						if(mod != null) {
+							var skp = s.getComponent(context.getEntity(), PlayerSkinComponent.getComponentType());
+							var mod1 = CosmeticsModule.get().createModel(skp.getPlayerSkin());
+							var arr = Arrays.copyOf(mod1.getAttachments(), mod1.getAttachments().length + 1);
+							var attachments = AttachmentsHelper.parseSkin(skp.getPlayerSkin(), null, mod.getModel().getGradientId());
+							attachments.add(new ModelAttachment("Items/Iron_Offhand.blockymodel", "Items/Weapons/Dagger/Iron_Texture.png", null, null, 1));
+							var m1 = ModelUtils.withAttachment(mod1, attachments.toArray(new ModelAttachment[0]));
+							var co = new ModelComponent(m1);
+							s.putComponent(ref, ModelComponent.getComponentType(), co);
+
+
+							//s.putComponent(ref, PlayerSkinComponent.getComponentType(), new PlayerSkinComponent(skp.getPlayerSkin()));
+
+						}*/
+					}
+				});
+
 			}
+
+
 			//The server side entity still have an invisible hitbox: we can't check for it
 			/*EntityRefCollisionProvider collision = new EntityRefCollisionProvider();
 			TransformComponent transform = ref.getStore().getComponent(ref, TransformComponent.getComponentType());

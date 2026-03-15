@@ -1,0 +1,40 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.RedCrystal.sliver.name"
+  },
+  "Categories": [
+    "Items.Ingredients"
+  ],
+  "Model": "Items/Crystal_Sliver.blockymodel",
+  "Texture": "Resources/Crystals/Crystal_Fragment_Textures/Red.png",
+  "Quality": "Common",
+  "ItemLevel": 10,
+  "PlayerAnimationsId": "Item",
+  "IconProperties": {
+    "Scale": 1.5,
+    "Rotation": [
+      34.315,
+      29.815,
+      22.5
+    ],
+    "Translation": [
+      -4,
+      0
+    ]
+  },
+  "Scale": 1.2,
+  "Icon": "Icons/ItemsGenerated/RedCrystal_Red_Sliver.png",
+  "Tags": {
+    "Type": [
+      "Ingredient"
+    ],
+    "Family": [
+      "Crystal"
+    ]
+  },
+  "ItemEntity": {
+    "ParticleSystemId": null
+  },
+  "ItemSoundSetId": "ISS_Items_Gems",
+  "DropOnDeath": true
+}

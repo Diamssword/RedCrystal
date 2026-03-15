@@ -12,17 +12,12 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
-public class LinkingState implements Component<EntityStore> {
-
-	public static ComponentType<EntityStore, LinkingState> getComponentType() {
-		return RedCrystalPlugin.RedToolSettingsComponent;
-	}
+public class LinkingState {
 
 	public static int MAX_LENGTH = 32;
 	private static final int BASE_BEAM_COLOR = 0x71A44C;
 	private static final int ERROR_BEAM_COLOR = 0x90571D;
 	private static final int TOO_LONG_BEAM_COLOR = 0x782D22;
-	private boolean isToolEquiped;
 	private int blinkTime;
 	private int color = BASE_BEAM_COLOR;
 	public ConnectionInfo startedLink;
@@ -76,7 +71,6 @@ public class LinkingState implements Component<EntityStore> {
 		}
 		if(startedLink != null && startedLink.source.isValid()) {
 			var distance = startedLink.source.getParent().getPosition().toVector3d().distanceTo(playerPos);
-			System.out.println(distance);
 			if(distance > MAX_LENGTH) {
 				color = TOO_LONG_BEAM_COLOR;
 				blinkTime = 10;
@@ -85,23 +79,16 @@ public class LinkingState implements Component<EntityStore> {
 
 	}
 
-	public void tryCancelLink(RedElement element, short index, boolean output) {
+	public boolean tryCancelLink(RedElement element, short index, boolean output) {
 		if(startedLink != null && startedLink.source == element && startedLink.index == index && startedLink.output == output) {
 			startedLink = null;
+			return true;
 		}
+		return false;
 	}
 
-	public boolean isToolEquiped() {
-		return isToolEquiped;
-	}
 
-	public void setToolEquiped(boolean toolEquiped) {
-		isToolEquiped = toolEquiped;
-	}
-
-	@NullableDecl
-	@Override
-	public Component<EntityStore> clone() {
+	public LinkingState clone() {
 		var s = new LinkingState();
 		s.startedLink = this.startedLink;
 		return s;

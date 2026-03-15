@@ -2,7 +2,8 @@ package com.diamssword.redCrystal.redComponent;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
-import com.diamssword.redCrystal.wand.LinkingState;
+import com.diamssword.redCrystal.storage.PlayerDatas;
+import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.redComponent.utils.RedTimers;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
@@ -11,9 +12,11 @@ import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -109,8 +112,9 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 				behavior.setInput(chan.getInputIndex(), value);
 				if(value > 0 && parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Invisible)
 					RedComponentDisplayUtils.drawLaser(getWorld().getEntityStore().getStore(), RedComponentDisplayUtils.getInputPosition(chan.getInputIndex(), behavior), RedComponentDisplayUtils.getOutputPosition(output, this), 0.5f, value);
-
 				lightUpRune(this.parent.getEntities().getOutput(output), value > 0);
+				if(parent.getSettings().getVisibility() == RedEntityHiddenComponent.Visibility.Pulse)
+					timers.add(() -> lightUpRune(this.parent.getEntities().getOutput(output), false), 10);
 			}
 
 		}
@@ -137,33 +141,41 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity, InteractionContext context, InteractType action) {
 		if(type.equals("input") || type.equals("output")) {
-
 			getWorld().execute(() -> {
-				var comp = player.getStore().ensureAndGetComponent(player, LinkingState.getComponentType());
+				var comp = player.getStore().ensureAndGetComponent(player, PlayerDatas.getComponentType());
 				var isOutput = type.equals("output");
 				if(action == InteractType.Remove) {
-					comp.tryCancelLink(this.parent, index, isOutput);
-					if(isOutput) {
-						this.parent.breakOutputNode(index);
-					} else {
-						var other = this.parent.getInput(index);
-						if(other != null && other.isValid()) {
-							for(int i = 0; i < other.getAsset().getOutputs(); i++) {
-								if(other.getOuput(i).getInputIndex() == index) {
-									other.breakOutputNode(i);
-									break;
+					if(!comp.linkingState.tryCancelLink(this.parent, index, isOutput)) {
+						if(isOutput) {
+							this.parent.breakOutputNode(index);
+						} else {
+							var other = this.parent.getInput(index);
+							if(other != null && other.isValid()) {
+								for(int i = 0; i < other.getAsset().getOutputs(); i++) {
+									if(other.getOuput(i).getInputIndex() == index) {
+										other.breakOutputNode(i);
+										break;
+									}
 								}
 							}
 						}
 					}
 				} else {
-					comp.tryToLink(player, this.parent, index, isOutput);
+					comp.linkingState.tryToLink(player, this.parent, index, isOutput);
 				}
 			});
 
+		} else if(type.equals("main") && action != InteractType.Remove) {
+			onMainRuneInteract(player, entity, context, action);
 		} else if(action == InteractType.Remove) {
 			WandBlockInteraction.tryRemoveRune(getWorld(), parent.getParent(), parent.getFace(), context);
 		}
+	}
+
+	public void onMainRuneInteract(Ref<EntityStore> player, @Nullable Ref<EntityStore> entity, InteractionContext context, InteractType action) {
+		var pl = player.getStore().getComponent(player, PlayerRef.getComponentType());
+		if(pl != null)
+			new GlyphSettingsMenu(pl, this.parent::getSettings, this.parent::updateSettings).openMenu();
 	}
 
 	public enum InteractType {
@@ -181,7 +193,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	}
 
 	public void displayTick() {
-		if(parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Invisible) {
+		if(parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Invisible && parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Pulse) {
 			for(short i = 0; i < stateOutput.length; i++) {
 				if(stateOutput[i] > 0) {
 

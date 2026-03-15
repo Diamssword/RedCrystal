@@ -1,17 +1,26 @@
 RedCrystal.glyph.Button.name=Button
-RedCrystal.glyph.Button.desc=Button
-
-
+RedCrystal.glyph.Button.desc=A button that send a pulse signal when pressed
+items.RedCrystal.staff.name=Glyph Graver
+items.RedCrystal.staff.desc=A powerful tool used to carve red glyphs on walls \nUse [Ability 1] to select the glyph\nUse [Primary Action] to place glyph or edit settings\nUse [Secondary Action] to remove glyphs or links
+items.RedCrystal.sliver.name=Red Crystal Sliver
 # === InteractionHints ===
-RedCrystal.interactionHints.input=Input\nRight Click to create link\nLeft Click to break link
-RedCrystal.interactionHints.output=Output\nRight Click to create link\nLeft Click to break link
-RedCrystal.glyph.Interact.name=[TMP]Interact
-RedCrystal.glyph.Interact.desc=[TMP]Interact's description
-RedCrystal.glyph.OrG.name=[TMP]OrG
-RedCrystal.glyph.OrG.desc=[TMP]OrG's description
-RedCrystal.glyph.XOrG.name=[TMP]XOrG
-RedCrystal.glyph.XOrG.desc=[TMP]XOrG's description
-RedCrystal.glyph.AndG.name=[TMP]AndG
-RedCrystal.glyph.AndG.desc=[TMP]AndG's description
-RedCrystal.glyph.NotG.name=[TMP]NotG
-RedCrystal.glyph.NotG.desc=[TMP]NotG's description
+RedCrystal.interactionHints.input=Input\nLeft Click to create link\nRight Click to break link
+RedCrystal.interactionHints.output=Output\nLeft Click to create link\nRight Click to break link
+RedCrystal.glyph.Interact.name=Interactor
+RedCrystal.glyph.Interact.desc=An element that can interact with blocks the same way a player can, you can open doors, toggle lights, etc.
+RedCrystal.glyph.OrG.name=OR Gate
+RedCrystal.glyph.OrG.desc=A binary OR gate
+RedCrystal.glyph.XOrG.name=XOR Gate
+RedCrystal.glyph.XOrG.desc=An absolute binary OR gate
+RedCrystal.glyph.AndG.name=AND Gate
+RedCrystal.glyph.AndG.desc=A binary AND gate, inputs not properly connected are not taken into account
+RedCrystal.glyph.NotG.name=NOT Gate
+RedCrystal.glyph.NotG.desc=A binary NOT gate, inverting received signal
+RedCrystal.glyph.Inverter.name=Inverter
+RedCrystal.glyph.Inverter.desc=A gate that invert the incoming signal
+RedCrystal.glyph.Input.name=[TMP]Input
+RedCrystal.glyph.Input.desc=[TMP]Input's description
+RedCrystal.glyph.Output.name=[TMP]Output
+RedCrystal.glyph.Output.desc=[TMP]Output's description
+RedCrystal.glyph.Relay.name=[TMP]Relay
+RedCrystal.glyph.Relay.desc=[TMP]Relay's description

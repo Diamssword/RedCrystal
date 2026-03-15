@@ -5,9 +5,14 @@
   "GlyphTexture": "Items/RedCrystal/Glyphs/OrG.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/OrG@2x.png",
   "Outputs": 1,
-  "Inputs": 1,
+  "Inputs": 5,
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.OrG.name",
     "Description": "server.RedCrystal.glyph.OrG.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Transform"
+    ]
   }
 }

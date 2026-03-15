@@ -96,6 +96,7 @@ public class RedEntityHiddenComponent implements Component<EntityStore> {
 	public static enum Visibility {
 		Hidden,
 		Visible,
+		Pulse,
 		Invisible
 	}
 }

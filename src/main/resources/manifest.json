@@ -12,7 +12,8 @@
     "DisabledByDefault": false,
     "IncludesAssetPack": false,
     "Dependencies": {
-        "Hytale:BlockStateModule": "*"
+        "Hytale:BlockStateModule": "*",
+        "Ellie:HyUI": "*"
     },
     "OptionalDependencies": {},
     "ServerVersion": "*",

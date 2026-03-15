@@ -10,5 +10,10 @@
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.Inverter.name",
     "Description": "server.RedCrystal.glyph.Inverter.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Transform"
+    ]
   }
 }

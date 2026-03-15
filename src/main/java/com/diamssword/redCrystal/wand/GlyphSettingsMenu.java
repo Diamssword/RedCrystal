@@ -19,20 +19,21 @@ import org.bson.BsonDocument;
 import org.bson.BsonString;
 
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 
 public class GlyphSettingsMenu {
 
-	private final RedElement element;
 	private final PlayerRef ref;
-	private final Player player;
-	private BsonDocument baseState;
+	private final Consumer<GlobalGlyphSettings> setter;
+	private Supplier<GlobalGlyphSettings> getter;
 
-	public GlyphSettingsMenu(PlayerRef ref, RedElement element) {
-		this.element = element;
+	public GlyphSettingsMenu(PlayerRef ref, Supplier<GlobalGlyphSettings> settingsProvider, Consumer<GlobalGlyphSettings> settingsSetter) {
 		this.ref = ref;
-		this.player = ref.getReference().getStore().getComponent(ref.getReference(), Player.getComponentType());
-		this.baseState = GlobalGlyphSettings.CODEC.encode(element.getSettings(), new ExtraInfo());
+		this.setter = settingsSetter;
+		this.getter = settingsProvider;
 	}
 
 	public HyUIPage openMenu() {
@@ -40,17 +41,19 @@ public class GlyphSettingsMenu {
 
 		var prototype = PageBuilder.pageForPlayer(ref).loadHtml("Pages/RedCrystal/GlyphSettings.html", template)
 				.withLifetime(CustomPageLifetime.CanDismiss);
-		prototype.getById("main", GroupBuilder.class).ifPresent((div) -> {
-			GlobalGlyphSettings.CODEC.getEntries().forEach((k, v) -> {
-				for(BuilderField<GlobalGlyphSettings, ?> f : v) {
-					codecFieldConverter(f, div);
-				}
-			});
-		});
+		prototype.getById("main", GroupBuilder.class).ifPresent(this::appendSettings);
 		return prototype.open(ref.getReference().getStore());
 	}
 
-	private void codecFieldConverter(BuilderField<GlobalGlyphSettings, ?> field, GroupBuilder container) {
+	public void appendSettings(UIElementBuilder<?> container) {
+		GlobalGlyphSettings.CODEC.getEntries().forEach((k, v) -> {
+			for(BuilderField<GlobalGlyphSettings, ?> f : v) {
+				codecFieldConverter(f, container);
+			}
+		});
+	}
+
+	private void codecFieldConverter(BuilderField<GlobalGlyphSettings, ?> field, UIElementBuilder<?> container) {
 		var div = GroupBuilder.group().withLayoutMode(LayoutMode.Left);
 		div.addChild(LabelBuilder.label().withText(field.getCodec().getKey()).withPadding(new HyUIPadding().setRight(5)).withTooltipText(field.getDocumentation()));
 		if(field.getCodec().getChildCodec() instanceof BooleanCodec) {
@@ -70,6 +73,7 @@ public class GlyphSettingsMenu {
 			}
 			drop.addEventListener(CustomUIEventBindingType.ValueChanged, (v) -> {
 				setValueE((BuilderField<GlobalGlyphSettings, Enum<?>>) field, ec.decode(new BsonString(v), new ExtraInfo()));
+				drop.withValue(v);
 			});
 			div.addChild(drop);
 		}
@@ -77,21 +81,24 @@ public class GlyphSettingsMenu {
 	}
 
 	private <T> void setValue(BuilderField<GlobalGlyphSettings, ?> field, T value) {
-		var inst = GlobalGlyphSettings.CODEC.decode(baseState, new ExtraInfo());
+		var inst = getter.get();
 		((BuilderField<GlobalGlyphSettings, T>) field).setValue(inst, value, new ExtraInfo());
-		element.updateSettings(inst);
-		baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
+		setter.accept(inst);
+		//baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
 	}
 
 	private void setValueE(BuilderField<GlobalGlyphSettings, Enum<?>> field, Enum<?> value) {
-		var inst = GlobalGlyphSettings.CODEC.decode(baseState, new ExtraInfo());
+		var inst = getter.get();
 		field.setValue(inst, value, new ExtraInfo());
-		element.updateSettings(inst);
-		baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
+		setter.accept(inst);
+		//baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
 	}
 
+	public BsonDocument getBaseState() {
+		return GlobalGlyphSettings.CODEC.encode(getter.get(), new ExtraInfo());
+	}
 
 	private <T> Optional<T> getValue(BuilderField<GlobalGlyphSettings, ?> field, Class<T> type) {
-		return ((KeyedCodec<T>) field.getCodec()).get(baseState, new ExtraInfo());
+		return ((KeyedCodec<T>) field.getCodec()).get(getBaseState(), new ExtraInfo());
 	}
 }

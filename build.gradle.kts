@@ -9,5 +9,5 @@ repositories {
 }
 
 dependencies {
-    implementation("curse.maven:hyui-1431415:7693755")
+    implementation("curse.maven:hyui-1431415:7731691")
 }

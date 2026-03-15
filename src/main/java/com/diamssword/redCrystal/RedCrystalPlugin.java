@@ -1,13 +1,10 @@
 package com.diamssword.redCrystal;
 
 import au.ellie.hyui.builders.HyUIPage;
+import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.wand.GlyphMenu;
-import com.diamssword.redCrystal.storage.Glyph;
 import com.diamssword.redCrystal.redComponent.RedComponentRegister;
 import com.diamssword.redCrystal.display.DisplayEntitySystem;
-import com.diamssword.redCrystal.storage.PlayerSystems;
-import com.diamssword.redCrystal.storage.RedElementState;
-import com.diamssword.redCrystal.storage.RedElementSystems;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.interaction.*;
@@ -37,7 +34,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 	public static ComponentType<ChunkStore, RedElementState> RedElementComponent;
 	public static ComponentType<EntityStore, RedEntityLinkComponent> RedLinkComponent;
 	public static ComponentType<EntityStore, RedEntityHiddenComponent> RedEntityHiddenComponent;
-	public static ComponentType<EntityStore, LinkingState> RedToolSettingsComponent;
+	public static ComponentType<EntityStore, PlayerDatas> RedToolSettingsComponent;
 	public static HytaleAssetStore<String, Glyph, DefaultAssetMap<String, Glyph>> GlyphAssets;
 
 
@@ -55,7 +52,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementAddedSystem());
 		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementTickSystem());
 		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementDisplayTickSystem());
-		RedToolSettingsComponent = this.getEntityStoreRegistry().registerComponent(LinkingState.class, LinkingState::new);
+		RedToolSettingsComponent = this.getEntityStoreRegistry().registerComponent(PlayerDatas.class, PlayerDatas::new);
 		RedLinkComponent = this.getEntityStoreRegistry().registerComponent(RedEntityLinkComponent.class, () -> {throw new UnsupportedOperationException();});
 		RedEntityHiddenComponent = this.getEntityStoreRegistry().registerComponent(RedEntityHiddenComponent.class, () -> {throw new UnsupportedOperationException();});
 
@@ -71,7 +68,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 		Interaction.getAssetStore().loadAssets("Diamssword:RedCrystal", List.of(new UseRedEntityInteraction("*UseRedCrystalEntity")));
 		RootInteraction.getAssetStore().loadAssets("Diamssword:RedCrystal", List.of(UseRedEntityInteraction.DEFAULT_ROOT));
 
-		OpenCustomUIInteraction.registerCustomPageSupplier(this, HyUIPage.class, "RedCrystalGlyphMenu", (a, b, c, d) -> GlyphMenu.openMenu(c));
+		OpenCustomUIInteraction.registerCustomPageSupplier(this, HyUIPage.class, "RedCrystalGlyphMenu", (a, b, c, d) -> new GlyphMenu().openMenu(c));
 		this.getEventRegistry().register(LoadedAssetsEvent.class, Glyph.class, this::onGlyphAssetChange);
 
 	}
@@ -89,7 +86,6 @@ public class RedCrystalPlugin extends JavaPlugin {
 									comp.getAllElements().forEach((f, el) -> {
 										var asset = event.getLoadedAssets().get(el.getAsset().getId());
 										if(asset != null) {
-											System.out.println("reloaded " + el.getAsset().getId());
 											el.setAsset(asset);
 										}
 									});

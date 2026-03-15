@@ -82,10 +82,10 @@ public class RedElementState implements Component<ChunkStore> {
 		return elements.get(face.toString());
 	}
 
-	public boolean createElement(BlockFace face, String assetID) {
+	public boolean createElement(BlockFace face, String assetID, @Nullable GlobalGlyphSettings settings) {
 		var res = this.elements.get(face.toString());
 		if(res == null) {
-			res = new RedElement(this, face);
+			res = new RedElement(this, face, settings);
 			var asset = RedCrystalPlugin.GlyphAssets.getAssetMap().getAsset(assetID);
 			if(asset != null) {
 				res.setAsset(asset);

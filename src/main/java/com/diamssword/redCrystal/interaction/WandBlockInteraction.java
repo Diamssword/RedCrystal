@@ -1,6 +1,7 @@
 package com.diamssword.redCrystal.interaction;
 
 
+import com.diamssword.redCrystal.redComponent.RedCompBehavior;
 import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
 import com.diamssword.redCrystal.storage.RedElementState;
 import com.diamssword.redCrystal.wand.RedWandTool;
@@ -16,11 +17,13 @@ import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
+import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockComponentChunk;
+import com.hypixel.hytale.server.core.universe.world.meta.state.ItemContainerState;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -52,26 +55,24 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 			var comp = getBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
 			tryRemoveRune(world, comp, client.blockFace, context);
 		} else if(stack != null) {
-			var toolSettings = RedWandTool.getForStack(stack);
-			var glyph = toolSettings.getSelectedGlyph();
-			if(glyph != null && (stack.getMaxDurability() == 0 || stack.getDurability() > 0)) {
-
-
+			if((stack.getMaxDurability() == 0 || stack.getDurability() > 0)) {
 				var state = getOrCreateBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
 				if(state != null) {
-					var element = state.getElement(client.blockFace);
-					if(element == null) {
-						context.getState().state = state.createElement(client.blockFace, glyph) ? InteractionState.Finished : InteractionState.Failed;
+					if(RedWandTool.createRune(stack, state, client.blockFace)) {
 						if(context.getHeldItemContainer() != null) {
 							var slot = context.getHeldItemSlot();
 							context.getHeldItemContainer().replaceItemStackInSlot(slot, stack, stack.withIncreasedDurability(-1));
 						}
+						context.getState().state = InteractionState.Finished;
 					} else {
-						var player = context.getEntity().getStore().getComponent(context.getEntity(), PlayerRef.getComponentType());
-						if(player != null) {
-
-							new GlyphSettingsMenu(player, element).openMenu();
-							context.getState().state = InteractionState.Finished;
+						var element = state.getElement(client.blockFace);
+						if(element != null) {
+							var player = context.getEntity().getStore().getComponent(context.getEntity(), PlayerRef.getComponentType());
+							if(player != null) {
+								element.getBehavior().onMainRuneInteract(context.getEntity(), null, context, RedCompBehavior.InteractType.Use);
+								context.getState().state = InteractionState.Finished;
+							} else
+								context.getState().state = InteractionState.Failed;
 						} else
 							context.getState().state = InteractionState.Failed;
 					}
@@ -96,7 +97,7 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 				if(context.getHeldItem().getDurability() < context.getHeldItem().getMaxDurability())
 					context.getHeldItemContainer().replaceItemStackInSlot(slot, context.getHeldItem(), context.getHeldItem().withIncreasedDurability(1));
 				else {
-					//TODO drop dust
+					world.execute(() -> world.getEntityStore().getStore().addEntity(RedWandTool.dropDust(world.getEntityStore().getStore(), 1, comp.getPosition(), face), AddReason.SPAWN));
 				}
 			}
 			context.getState().state = removed != null ? InteractionState.Finished : InteractionState.Failed;
