@@ -24,3 +24,5 @@ RedCrystal.glyph.Output.name=[TMP]Output
 RedCrystal.glyph.Output.desc=[TMP]Output's description
 RedCrystal.glyph.Relay.name=[TMP]Relay
 RedCrystal.glyph.Relay.desc=[TMP]Relay's description
+RedCrystal.glyph.Toggle.name=[TMP]Toggle
+RedCrystal.glyph.Toggle.desc=[TMP]Toggle's description

@@ -210,6 +210,18 @@ public class GlyphMenu {
 		ctx.getById("hovered.image", ImageBuilder.class).ifPresent(im -> im.withImage(parseUrl(asset.getIcon())));
 		ctx.getById("hovered.title", LabelBuilder.class).ifPresent(im -> im.withText(translate(asset.getTranslationProperties().getName())));
 		ctx.getById("hovered.desc", LabelBuilder.class).ifPresent(im -> im.withText(translate(asset.getTranslationProperties().getDescription())));
+		ctx.getById("hovered.type", LabelBuilder.class).ifPresent(im -> im.withText(translate(asset.getTranslationProperties().getDescription())));
+
+		ctx.getById("hovered.io", LabelBuilder.class).ifPresent(im -> {
+			var ioS = "Input";
+			if(asset.getInputs() > 1)
+				ioS += "s";
+			ioS += ": " + asset.getInputs() + " | Output";
+			if(asset.getOutputs() > 1)
+				ioS += "s";
+			ioS += ": " + asset.getOutputs();
+			im.withText(ioS);
+		});
 		ctx.updatePage(false);
 	}
 
