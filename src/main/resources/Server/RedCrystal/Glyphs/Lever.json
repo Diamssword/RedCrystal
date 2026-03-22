@@ -1,0 +1,17 @@
+{
+  "BehaviorId": {
+    "Type": "Lever"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Button.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Button@2x.png",
+  "Outputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.Lever.name",
+    "Description": "server.RedCrystal.glyph.Lever.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Rune"
+    ]
+  }
+}

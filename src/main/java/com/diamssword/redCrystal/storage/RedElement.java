@@ -11,21 +11,25 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.component.AddReason;
 import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class RedElement {
 	@Nonnull
 	public static BuilderCodec<RedElement> CODEC = BuilderCodec.builder(RedElement.class, RedElement::new)
-			.append(new KeyedCodec<>("Nodes", new ArrayCodec<>(RedNode.CODEC, RedNode[]::new)), (a, b) -> a.outputs = b, (a) -> a.outputs)
+			.append(new KeyedCodec<>("RedElementNodes", new ArrayCodec<>(RedNode.CODEC, RedNode[]::new)), (a, b) -> a.outputs = b, (a) -> a.outputs)
 			.add()
-			.append(new KeyedCodec<>("Behavior", Codec.STRING), (a, b) -> a.asset = RedCrystalPlugin.GlyphAssets.getAssetMap().getAsset(b), (a) -> a.asset == null ? null : a.asset.getId())
+			.append(new KeyedCodec<>("RedElementBehavior", Codec.STRING), (a, b) -> a.asset = RedCrystalPlugin.GlyphAssets.getAssetMap().getAsset(b), (a) -> a.asset == null ? null : a.asset.getId())
 			.add()
-			.append(new KeyedCodec<>("Settings", GlobalGlyphSettings.CODEC), (a, b) -> a.settings = b, a -> a.settings)
+			.append(new KeyedCodec<>("RedElementSettings", GlobalGlyphSettings.CODEC), (a, b) -> a.settings = b, a -> a.settings)
+			.add()
+			.append(new KeyedCodec<>("RedElementState", StateLoader.CODEC), (a, b) -> a.storedState = b, a -> a.getStoredState())
 			.add()
 			.build();
 	private RedElementState parent;
@@ -37,6 +41,7 @@ public class RedElement {
 	private RedCompBehavior<?> behavior;
 	private GlobalGlyphSettings settings;
 	private DisplayEntityGroup linkedEntity;
+	private StateLoader storedState = new StateLoader();
 
 	public RedElement(RedElementState parent, BlockFace face, @Nullable GlobalGlyphSettings settings) {
 		this.settings = settings == null ? new GlobalGlyphSettings() : settings;
@@ -69,8 +74,7 @@ public class RedElement {
 		old.updateFrom(settings, this);
 
 	}
-
-	@Nullable
+	
 	public DisplayEntityGroup getEntities() {
 
 		return linkedEntity == null ? new DisplayEntityGroup(asset.getInputs(), asset.getOutputs()) : linkedEntity;
@@ -98,10 +102,17 @@ public class RedElement {
 		return asset;
 	}
 
+	private StateLoader getStoredState() {
+		if(this.behavior != null)
+			return this.behavior.getStoredState();
+		return storedState;
+	}
+
 	private void setupBehavior() {
 		if(asset != null && behavior == null)
 			this.behavior = asset.getBehavior().createBehavior(this);
 		if(this.behavior != null) {
+			this.behavior.loadState(this.storedState);
 			var store = parent.getChunkRef().getStore().getExternalData().getWorld().getEntityStore();
 			if(linkedEntity == null || !linkedEntity.isValid()) {
 				if(linkedEntity != null) {
@@ -117,14 +128,14 @@ public class RedElement {
 			store.getWorld().execute(() -> {
 				for(short i = 0; i < outputs.length; i++) {
 					if(outputs[i] != null)
-						behavior.setOutput(i, getBehavior().defaultOutputValue(i));
+						behavior.refreshOutputs(i);
 				}
 
 			});
 		}
 	}
 
-	public boolean setInput(int index, RedElement element) {
+	public boolean setInput(int index, RedElement element, int outIndex) {
 		if(behavior != null && index < behavior.maxInputs()) {
 			if(index >= inputs.length) {
 				inputs = Arrays.copyOf(inputs, index + 1);
@@ -133,19 +144,25 @@ public class RedElement {
 				inputs[index].breakOutputNodeInternal(index);
 			}
 			inputs[index] = element;
+			if(this.behavior != null)
+				this.behavior.setInput((short) index, element.getBehavior().getStateOutput(outIndex));
 			return true;
 		}
 		return false;
 	}
 
 	private void breakInputInternal(int index) {
-		if(index < inputs.length)
+		if(index < inputs.length) {
 			inputs[index] = null;
+			if(this.behavior != null)
+				behavior.setInput((short) index, RedCompBehavior.MIN);
+		}
 	}
 
 	private void breakOutputNodeInternal(int index) {
-		if(index < outputs.length)
+		if(index < outputs.length) {
 			outputs[index] = null;
+		}
 	}
 
 	public void breakOutputNode(int index) {
@@ -165,13 +182,13 @@ public class RedElement {
 			}
 			RedElement el = node.getElement(this.parent);
 			if(el != null && el.isValid()) {
-				if(!el.setInput(node.inputIndex, this))
+				if(!el.setInput(node.inputIndex, this, index))
 					return false;
 			} else
 				return false;
 
 			outputs[index] = node;
-			getBehavior().setOutput(index, getBehavior().defaultOutputValue(index));
+			getBehavior().refreshOutputs(index);
 
 			return true;
 		}
@@ -187,7 +204,7 @@ public class RedElement {
 			if(node != null) {
 				RedElement el = node.getElement(this.parent);
 				if(el != null && el.isValid()) {
-					if(!el.setInput(node.inputIndex, this)) {
+					if(!el.setInput(node.inputIndex, this, i)) {
 						breakOutputNodeInternal(i);
 					}
 				}
@@ -221,7 +238,7 @@ public class RedElement {
 	public void onBreak(BlockFace s, CommandBuffer<ChunkStore> buffer) {
 		var world = parent.getChunkRef().getStore().getExternalData().getWorld();
 		if(world != null)
-			world.execute(() -> world.getEntityStore().getStore().addEntity(RedWandTool.dropDust(world.getEntityStore().getStore(), 1, parent.getPosition(), face), AddReason.SPAWN));
-		
+			world.execute(() -> world.getEntityStore().getStore().addEntity(RedWandTool.dropDust(world.getEntityStore().getStore(), 1, parent.getPosition(), s), AddReason.SPAWN));
+
 	}
 }

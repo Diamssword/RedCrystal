@@ -2,6 +2,7 @@ package com.diamssword.redCrystal.interaction;
 
 
 import com.diamssword.redCrystal.redComponent.RedCompBehavior;
+import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
 import com.diamssword.redCrystal.storage.RedElementState;
 import com.diamssword.redCrystal.wand.RedWandTool;
@@ -12,8 +13,10 @@ import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.protocol.BlockSoundEvent;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.server.core.asset.type.blocksound.config.BlockSoundSet;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
@@ -21,6 +24,7 @@ import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockComponentChunk;
 import com.hypixel.hytale.server.core.universe.world.meta.state.ItemContainerState;
@@ -54,20 +58,25 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 		if(removeMode) {
 			var comp = getBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
 			tryRemoveRune(world, comp, client.blockFace, context);
+			if(context.getState().state == InteractionState.Finished) {
+				RedWandTool.playSound("Break", targetBlock, context.getEntity(), commandBuffer);
+
+			}
 		} else if(stack != null) {
 			if((stack.getMaxDurability() == 0 || stack.getDurability() > 0)) {
 				var state = getOrCreateBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
 				if(state != null) {
-					if(RedWandTool.createRune(stack, state, client.blockFace)) {
+					var player = context.getEntity().getStore().getComponent(context.getEntity(), PlayerRef.getComponentType());
+					if(RedWandTool.createRune(stack, state, client.blockFace, context.getEntity())) {
 						if(context.getHeldItemContainer() != null) {
 							var slot = context.getHeldItemSlot();
 							context.getHeldItemContainer().replaceItemStackInSlot(slot, stack, stack.withIncreasedDurability(-1));
 						}
 						context.getState().state = InteractionState.Finished;
+						RedWandTool.playSound("Place", targetBlock, player.getReference(), commandBuffer);
 					} else {
 						var element = state.getElement(client.blockFace);
 						if(element != null) {
-							var player = context.getEntity().getStore().getComponent(context.getEntity(), PlayerRef.getComponentType());
 							if(player != null) {
 								element.getBehavior().onMainRuneInteract(context.getEntity(), null, context, RedCompBehavior.InteractType.Use);
 								context.getState().state = InteractionState.Finished;
@@ -92,6 +101,9 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 				var targetBlock = comp.getPosition();
 				removeBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
 			}
+			var pcomp = context.getCommandBuffer().getComponent(context.getEntity(), PlayerDatas.getComponentType());
+			if(pcomp != null)
+				pcomp.invalidateHovered();
 			if(removed != null && context.getHeldItem() != null && context.getHeldItemContainer() != null) {
 				var slot = context.getHeldItemSlot();
 				if(context.getHeldItem().getDurability() < context.getHeldItem().getMaxDurability())
@@ -128,7 +140,7 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 		}
 	}
 
-	private RedElementState getBlockState(World world, int x, int y, int z) {
+	public static RedElementState getBlockState(World world, int x, int y, int z) {
 		Ref<ChunkStore> chunkRef = world.getChunkStore().getChunkReference(ChunkUtil.indexChunkFromBlock(x, z));
 		if(chunkRef == null)
 			return null;

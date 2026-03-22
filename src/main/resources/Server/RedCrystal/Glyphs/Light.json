@@ -1,0 +1,29 @@
+{
+  "BehaviorId": {
+    "Type": "Light",
+    "Particles": [
+      {
+        "SystemId": "Light_Orb",
+        "Color": "#981313",
+        "TargetNodeName": "Origin",
+        "PositionOffset": {
+          "Y": 0
+        },
+        "Scale": 0.7
+      }
+    ]
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Interact.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Interact@2x.png",
+  "Outputs": 0,
+  "Inputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.Light.name",
+    "Description": "server.RedCrystal.glyph.Light.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Sigil"
+    ]
+  }
+}

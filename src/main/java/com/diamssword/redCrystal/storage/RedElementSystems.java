@@ -42,7 +42,8 @@ public class RedElementSystems {
 		public void onEntityRemove(@NonNullDecl Ref<ChunkStore> ref, @NonNullDecl RemoveReason reason, @NonNullDecl Store<ChunkStore> store, @NonNullDecl CommandBuffer<ChunkStore> buffer) {
 			RedElementState redComponent = buffer.getComponent(ref, RedElementState.getComponent());
 			assert redComponent != null;
-			redComponent.onRemove(buffer);
+			if(reason == RemoveReason.REMOVE)
+				redComponent.onRemove(buffer);
 		}
 	}
 

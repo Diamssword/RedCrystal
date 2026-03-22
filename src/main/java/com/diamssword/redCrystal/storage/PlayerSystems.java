@@ -3,12 +3,19 @@ package com.diamssword.redCrystal.storage;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
+import com.hypixel.hytale.component.system.tick.DelayedEntitySystem;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.inventory.MaterialQuantity;
 import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.bson.BsonDocument;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class PlayerSystems {
 	public static class ToolTicking extends EntityTickingSystem<EntityStore> {
@@ -35,6 +42,54 @@ public class PlayerSystems {
 					RedComponentDisplayUtils.drawLaserFor(vec1, vec2, 0.1f, tool.linkingState.getColor(), archetypeChunk.getReferenceTo(index));
 				}
 			}
+		}
+	}
+
+	public static class InventoryTicking extends DelayedEntitySystem<EntityStore> {
+
+
+		public InventoryTicking() {
+			super(5);
+		}
+
+		@Override
+		public Query<EntityStore> getQuery() {
+			return Player.getComponentType();
+		}
+
+		@Override
+		public void tick(float dt, int index, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk, @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
+
+			var player = archetypeChunk.getComponent(index, Player.getComponentType());
+			if(player != null) {
+				var hotbar = player.getInventory().getHotbar();
+				for(short i = 0; i < hotbar.getCapacity(); i++) {
+					var stack = hotbar.getItemStack(i);
+					if(!ItemStack.isEmpty(stack)) {
+						if(stack.getMaxDurability() > 0 && stack.getDurability() < stack.getMaxDurability()) {
+							var tags = stack.getItem().getData().getRawTags().get("RedCrystal");
+							if(tags != null) {
+								for(String tag : tags) {
+									if(tag.equals("Replenishable")) {
+										consumeShard(i, player);
+										return;
+
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private void consumeShard(short slot, Player player) {
+			var result = player.getInventory().getCombinedEverything().removeItemStack(new ItemStack("RedCrystal_Red_Sliver", 1));
+			if(result.succeeded()) {
+				var st = player.getInventory().getHotbar().getItemStack(slot);
+				player.getInventory().getHotbar().replaceItemStackInSlot(slot, st, st.withIncreasedDurability(1));
+			}
+
 		}
 	}
 }

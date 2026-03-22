@@ -2,23 +2,25 @@ package com.diamssword.redCrystal.display;
 
 import com.diamssword.redCrystal.redComponent.RedCompBehavior;
 import com.diamssword.redCrystal.storage.RedElement;
-import com.hypixel.hytale.component.Holder;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.matrix.Matrix4d;
 import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.vector.*;
-import com.hypixel.hytale.protocol.BlockFace;
-import com.hypixel.hytale.protocol.DebugShape;
-import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3f;
+import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.protocol.packets.buildertools.BuilderToolLaserPointer;
 import com.hypixel.hytale.protocol.packets.player.DisplayDebug;
+import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
 import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.modules.interaction.Interactions;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.CycleBlockGroupInteraction;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.UseBlockInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.PlayerUtil;
@@ -28,6 +30,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class RedComponentDisplayUtils {
 	public static Vector3f rotationToVec(BlockFace face) {
@@ -38,6 +41,17 @@ public class RedComponentDisplayUtils {
 			case West -> new Vector3f(0, 90, 0);
 			case East -> new Vector3f(0, -90, 0);
 			case South -> new Vector3f(0, 180, 0);
+		});
+	}
+
+	public static Vector3f rotationWithTilt(BlockFace face, float tiltInDegree) {
+		return toRadians(switch(face) {
+			case None, North -> new Vector3f(0, 0, tiltInDegree);
+			case Up -> new Vector3f(90, -tiltInDegree, 0);
+			case Down -> new Vector3f(-90, -tiltInDegree, 0);
+			case West -> new Vector3f(0, 90, tiltInDegree);
+			case East -> new Vector3f(0, -90, tiltInDegree);
+			case South -> new Vector3f(0, 180, tiltInDegree);
 		});
 	}
 
@@ -112,6 +126,21 @@ public class RedComponentDisplayUtils {
 		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.maxOutputs() - 1) / 2f) * spacing, 0.35));
 	}
 
+	public static void createTempRune(EntityStore entityStore, Vector3i position, BlockFace face, RedElement element) {
+		var holder = createMinimalDisplayEntity(entityStore, position, face);
+		var model = ModelUtils.withTexture(getFlatModel(face), element.getAsset().getTexture());
+		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
+		holder.ensureComponent(Intangible.getComponentType());
+		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("main", (short) 0, element));
+		holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(0.5f));
+		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
+		var ref = entityStore.getStore().addEntity(holder, AddReason.SPAWN);
+		HytaleServer.SCHEDULED_EXECUTOR.schedule(() -> {
+			if(entityStore.getWorld().isAlive())
+				entityStore.getWorld().execute(() -> {entityStore.getStore().removeEntity(ref, RemoveReason.REMOVE);});
+		}, 1, TimeUnit.SECONDS);
+	}
+
 	public static DisplayEntityGroupHolder createEditEntities(EntityStore entityStore, Vector3i position, BlockFace face, RedElement element) {
 
 		var visibility = element.getSettings().getVisibility();
@@ -154,7 +183,6 @@ public class RedComponentDisplayUtils {
 			var holder = createMinimalDisplayEntity(entityStore, position, face);
 			var model = ModelUtils.withTexture(getFlatModel(face), element.getAsset().getTexture());
 
-			//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
 			holder.ensureComponent(Intangible.getComponentType());
 			var disp = new RedEntityHiddenComponent(element, 0.5f, visibility);
 			holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
@@ -172,11 +200,27 @@ public class RedComponentDisplayUtils {
 		PlayerUtil.broadcastPacketToPlayers(store, getBeamPacket(from, to, time, redFromShort(power), 0.03f, false));
 	}
 
+	public static Color redColorFromShort(short value) {
+		int v = Math.max(0, Math.min(RedCompBehavior.MAX, value & 0xFFFF));
+
+		double t = v / (double) RedCompBehavior.MAX;
+		double gamma = 1.8;
+
+		double corrected = Math.pow(t, gamma);
+		int baseGray = 60;
+
+		int r = (int) Math.round(baseGray + (255 - baseGray) * corrected);
+		int g = (int) Math.round(baseGray * (1 - corrected));
+		int b = (int) Math.round(baseGray * (1 - corrected));
+
+		return new Color((byte) r, (byte) g, (byte) b);
+	}
+
 	public static int redFromShort(short value) {
-		int v = Math.max(0, Math.min(255, value & 0xFFFF)); // clamp 0–255
+		int v = Math.max(0, Math.min(RedCompBehavior.MAX, value & 0xFFFF));
 		double gamma = 2.2;                                 // adjust for perceptual brightness
-		int r = (int) Math.round(255 * Math.pow(v / 255.0, gamma));
-		return 0xFF000000 | (r << 16); // ARGB: alpha=255, red=r, green=blue=0
+		int r = (int) Math.round(RedCompBehavior.MAX * Math.pow(v / (double) RedCompBehavior.MAX, gamma));
+		return 0xFF000000 | (r << 16);
 	}
 
 	public static DisplayDebug getBeamPacket(Vector3d from, Vector3d to, float time, int color, float scale, boolean fade) {

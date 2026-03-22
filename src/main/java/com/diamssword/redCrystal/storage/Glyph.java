@@ -13,10 +13,14 @@ import com.hypixel.hytale.codec.validation.Validator;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.server.core.asset.common.CommonAssetValidator;
 import com.hypixel.hytale.server.core.asset.type.item.config.ItemTranslationProperties;
+import org.jetbrains.annotations.NotNull;
 
-public class Glyph implements JsonAssetWithMap<String, DefaultAssetMap<String, Glyph>> {
+import java.util.Comparator;
+import java.util.Map;
+
+public class Glyph implements JsonAssetWithMap<String, DefaultAssetMap<String, Glyph>>, Comparable<Glyph> {
 	public static final CommonAssetValidator ICON_GLYPH_VALIDATOR = new CommonAssetValidator("png", "UI/Custom");
-
+	public static final Map<String, Integer> CategoryWheight = Map.of("Rune", 100, "Hex", 99, "Sigil", 98);
 	private static final AssetBuilderCodec.Builder<String, Glyph> CODEC_BUILDER = AssetBuilderCodec.builder(
 					Glyph.class,
 					Glyph::new,
@@ -147,5 +151,27 @@ public class Glyph implements JsonAssetWithMap<String, DefaultAssetMap<String, G
 	public Glyph setBehavior(AbstractBehaviorAsset behavior) {
 		this.behavior = behavior;
 		return this;
+	}
+
+	public String getCategorie() {
+		var tags = this.getData().getRawTags().get("Type");
+		if(tags != null && tags.length > 0)
+			return tags[tags.length - 1];
+		return "";
+	}
+
+	@Override
+	public int compareTo(@NotNull Glyph other) {
+		var cat = getCategorie();
+		var catO = other.getCategorie();
+		// 1. Compare weight (category priority)
+
+		int weightCompare = Integer.compare(CategoryWheight.getOrDefault(catO, 0), CategoryWheight.getOrDefault(cat, 0));
+		if(weightCompare != 0) {
+			return weightCompare;
+		}
+
+		// 2. Compare type (grouping)
+		return cat.compareTo(catO);
 	}
 }

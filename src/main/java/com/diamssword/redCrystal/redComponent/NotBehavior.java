@@ -3,20 +3,16 @@ package com.diamssword.redCrystal.redComponent;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.storage.RedElement;
 
-public class NotBehavior extends RedCompBehavior<BehaviorAssetWithSettings> {
+public class NotBehavior extends RedCompBehavior<BehaviorAssetWithSettings.BehaviorAssetBinary> {
 
 	public final boolean isBinary;
 
-	public NotBehavior(String id, RedElement parent, BehaviorAssetWithSettings asset) {
+	public NotBehavior(String id, RedElement parent, BehaviorAssetWithSettings.BehaviorAssetBinary asset) {
 		super(id, parent, asset);
-		this.isBinary = asset.getBoolean("IsBinary");
-		this.setAllOutput(MAX);
+		this.isBinary = asset.isBinary;
+		this.setDefaultOutput(MAX);
 	}
 
-	@Override
-	public short defaultOutputValue(short index) {
-		return MAX;
-	}
 
 	@Override
 	void onSignalChange(short input, short oldValue, short value) {

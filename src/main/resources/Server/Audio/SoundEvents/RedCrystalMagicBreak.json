@@ -1,0 +1,18 @@
+{
+  "Layers": [
+    {
+      "Files": [
+        "Sounds/Weapons/Unarmed/Player_Punch_Impact_01.ogg",
+        "Sounds/Weapons/Unarmed/Player_Punch_Impact_02.ogg",
+        "Sounds/Weapons/Unarmed/Player_Punch_Impact_03.ogg"
+      ]
+    },
+    {
+      "Files": [
+        "Sounds/Blocks/Crystal/Crystal_Break_01.ogg"
+      ]
+    }
+  ],
+  "Pitch": -2,
+  "Volume": -10
+}

@@ -1,0 +1,8 @@
+{
+  "SoundEvents": {
+    "Select": "RedCrystalSelect",
+    "Unselect": "RedCrystalUnselect",
+    "Place": "RedCrystalMagicPlace",
+    "Break": "RedCrystalMagicBreak"
+  }
+}

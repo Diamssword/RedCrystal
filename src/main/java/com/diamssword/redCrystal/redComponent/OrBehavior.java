@@ -3,13 +3,13 @@ package com.diamssword.redCrystal.redComponent;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.storage.RedElement;
 
-public class OrBehavior extends RedCompBehavior<BehaviorAssetWithSettings> {
+public class OrBehavior extends RedCompBehavior<BehaviorAssetWithSettings.BehaviorAssetAbsolute> {
 
 	public final boolean isAbsolute;
 
-	public OrBehavior(String id, RedElement parent, BehaviorAssetWithSettings asset) {
+	public OrBehavior(String id, RedElement parent, BehaviorAssetWithSettings.BehaviorAssetAbsolute asset) {
 		super(id, parent, asset);
-		isAbsolute = asset.getBoolean("IsAbsolute");
+		isAbsolute = asset.isAbsolute;
 	}
 
 

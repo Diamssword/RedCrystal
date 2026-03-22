@@ -10,5 +10,10 @@
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.XOrG.name",
     "Description": "server.RedCrystal.glyph.XOrG.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Hex"
+    ]
   }
 }

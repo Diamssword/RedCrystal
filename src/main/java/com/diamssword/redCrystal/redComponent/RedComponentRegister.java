@@ -24,6 +24,9 @@ public class RedComponentRegister {
 		register("AND", AndBehavior::new);
 		register("OR", OrBehavior::new, BehaviorAssetWithSettings::AbsoluteCodec);
 		register("NOT", NotBehavior::new, BehaviorAssetWithSettings::BinaryCodec);
+		register("Light", LightBehavior::new, BehaviorAssetWithSettings::ParticleCodec);
+		register("Lever", LeverBehavior::new);
+		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec);
 
 
 	}

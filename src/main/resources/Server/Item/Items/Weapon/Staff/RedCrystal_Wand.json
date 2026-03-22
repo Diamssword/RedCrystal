@@ -3,9 +3,9 @@
     "Name": "server.items.RedCrystal.staff.name",
     "Description": "server.items.RedCrystal.staff.desc"
   },
-  "Quality": "Common",
+  "Quality": "Rare",
   "ItemLevel": 40,
-  "PlayerAnimationsId": "Staff",
+  "PlayerAnimationsId": "Pickaxe",
   "Interactions": {
     "Held": {
       "Parent": "RedCrystal_Wand_Reveal"
@@ -24,29 +24,65 @@
     }
   },
   "IconProperties": {
-    "Scale": 0.46,
-    "Translation": [
-      1.29,
-      1.29
-    ],
+    "Scale": 0.6,
     "Rotation": [
-      45,
-      90,
-      0
+      53,
+      97,
+      16
+    ],
+    "Translation": [
+      -32,
+      -24
     ]
   },
-  "Model": "NPC/Intelligent/Klops/Models/Weapons/Staff/Cane.blockymodel",
-  "Texture": "NPC/Intelligent/Klops/Models/Weapons/Staff/Cane_Texture.png",
-  "Icon": "Icons/ItemsGenerated/Weapon_Staff_Cane_Klops.png",
+  "Model": "Items/RedCrystal/Graver.blockymodel",
+  "Texture": "Items/RedCrystal/Graver.png",
+  "Icon": "Icons/ItemsGenerated/RedCrystal_Wand.png",
   "DroppedItemAnimation": "Items/Animations/Dropped/Dropped_Diagonal_Left.blockyanim",
   "Tags": {
     "Type": [
       "Wrench"
+    ],
+    "RedCrystal": [
+      "Replenishable"
     ]
   },
   "ItemSoundSetId": "ISS_Weapons_Wood",
   "ClipsGeometry": false,
   "RenderDeployablePreview": false,
   "MaxStack": 1,
-  "MaxDurability": 100
+  "MaxDurability": 100,
+  "Recipe": {
+    "Input": [
+      {
+        "ItemId": "Ingredient_Crystal_Red",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Bar_Gold",
+        "Quantity": 5
+      },
+      {
+        "Quantity": 2,
+        "ResourceTypeId": "Wood_All"
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Id": "Arcanebench",
+        "Categories": [
+          "Arcane_Misc"
+        ]
+      }
+    ],
+    "TimeSeconds": 3
+  },
+  "Light": {
+    "Color": "#521",
+    "Radius": 0
+  },
+  "Utility": {
+    "Compatible": true
+  }
 }

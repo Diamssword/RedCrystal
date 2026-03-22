@@ -14,6 +14,7 @@ import com.hypixel.hytale.assetstore.AssetRegistry;
 import com.hypixel.hytale.assetstore.event.LoadedAssetsEvent;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
 import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.asset.HytaleAssetStore;
 import com.hypixel.hytale.server.core.asset.type.item.config.*;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
@@ -36,7 +37,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 	public static ComponentType<EntityStore, RedEntityHiddenComponent> RedEntityHiddenComponent;
 	public static ComponentType<EntityStore, PlayerDatas> RedToolSettingsComponent;
 	public static HytaleAssetStore<String, Glyph, DefaultAssetMap<String, Glyph>> GlyphAssets;
-
+	public static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
 	public RedCrystalPlugin(@Nonnull JavaPluginInit init) {
 		super(init);
@@ -57,6 +58,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 		RedEntityHiddenComponent = this.getEntityStoreRegistry().registerComponent(RedEntityHiddenComponent.class, () -> {throw new UnsupportedOperationException();});
 
 		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.ToolTicking());
+		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.InventoryTicking());
 		this.getEntityStoreRegistry().registerSystem(new DisplayEntitySystem());
 
 		this.getEntityRegistry().registerEntity("RedCrystalFakeEntity", FakeLivingEntity.class, FakeLivingEntity::new, FakeLivingEntity.CODEC);

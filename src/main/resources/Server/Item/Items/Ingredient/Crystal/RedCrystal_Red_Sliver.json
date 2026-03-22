@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.RedCrystal.sliver.name"
+    "Name": "server.items.RedCrystal.sliver.name",
+    "Description": "server.items.RedCrystal.sliver.desc"
   },
   "Categories": [
     "Items.Ingredients"
@@ -36,5 +37,25 @@
     "ParticleSystemId": null
   },
   "ItemSoundSetId": "ISS_Items_Gems",
-  "DropOnDeath": true
+  "DropOnDeath": true,
+  "Recipe": {
+    "Input": [
+      {
+        "ItemId": "Ingredient_Crystal_Red"
+      }
+    ],
+    "OutputQuantity": 20,
+    "BenchRequirement": [
+      {
+        "Id": "Arcanebench",
+        "Categories": [
+          "Arcane_Misc"
+        ]
+      }
+    ]
+  },
+  "Light": {
+    "Color": "#521",
+    "Radius": 0
+  }
 }

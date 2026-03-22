@@ -7,6 +7,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DisplayEntityGroup {
@@ -56,6 +57,14 @@ public class DisplayEntityGroup {
 
 	public Ref<EntityStore> getOther(String id) {
 		return others.get(id);
+	}
+
+	public List<Ref<EntityStore>> getAll() {
+		var ls = new java.util.ArrayList<>(List.of(inputs));
+		ls.addAll(List.of(outputs));
+		ls.add(main);
+		ls.addAll(others.values());
+		return ls;
 	}
 
 	public Map<String, Ref<EntityStore>> getOthers() {

@@ -3,17 +3,28 @@ package com.diamssword.redCrystal.interaction;
 import com.diamssword.redCrystal.display.AttachmentsHelper;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
+import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.network.NetworkUtil;
 import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.wand.LinkingState;
+import com.diamssword.redCrystal.wand.WandHud;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
+import com.hypixel.hytale.math.shape.Box;
+import com.hypixel.hytale.math.vector.Transform;
+import com.hypixel.hytale.math.vector.Vector2d;
+import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.protocol.packets.entities.EntityUpdates;
+import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAttachment;
 import com.hypixel.hytale.server.core.cosmetics.CosmeticsModule;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.collision.BlockCollisionProvider;
+import com.hypixel.hytale.server.core.modules.collision.CollisionMath;
 import com.hypixel.hytale.server.core.modules.collision.EntityRefCollisionProvider;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
 import com.hypixel.hytale.server.core.modules.entity.player.PlayerSkinComponent;
@@ -21,9 +32,14 @@ import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystem
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.selector.RaycastSelector;
 import com.hypixel.hytale.server.core.receiver.IPacketReceiver;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.PositionUtil;
+import com.hypixel.hytale.server.core.util.TargetUtil;
+import com.nimbusds.jose.util.Pair;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import java.util.*;
@@ -32,41 +48,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class WandRevealInteraction extends SimpleInteraction {
-	public static final BuilderCodec<WandRevealInteraction> CODEC = BuilderCodec.builder(WandRevealInteraction.class, WandRevealInteraction::new, SimpleInteraction.CODEC)
-
-			.build();
-
-
-	Ref<EntityStore> targetedEntity;
+	public static final BuilderCodec<WandRevealInteraction> CODEC = BuilderCodec.builder(WandRevealInteraction.class, WandRevealInteraction::new, SimpleInteraction.CODEC).build();
 	float last = 0;
 
 	void sendUpdateForNewEntities(Ref<EntityStore> playerRef, PlayerDatas playerDatas) {
 		var visibleEntities = NetworkUtil.getVisibleEntities(playerRef).stream().filter(e -> !playerDatas.viewedEntities.contains(e)).collect(Collectors.toSet());
-
 		for(Ref<EntityStore> entityRef : visibleEntities) {
-			if(entityRef.isValid()) {
-				var hidd = entityRef.getStore().getComponent(entityRef, RedEntityHiddenComponent.getComponentType());
-				if(hidd != null) {
-					hidd.addSeeingPlayer(playerRef);
-					playerDatas.viewedEntities.add(entityRef);
-					try {
-						ModelComponent modelComponent = entityRef.getStore().getComponent(entityRef, ModelComponent.getComponentType());
-						if(modelComponent == null)
-							continue;
-						var hasInteract = entityRef.getStore().getComponent(entityRef, Interactable.getComponentType()) != null;
-						Model model;
-						if(hasInteract)
-							model = ModelUtils.withAttachment(modelComponent.getModel(), new ModelAttachment("Items/RedCrystal/Glyphs/HitboxHighlight.blockymodel", "Items/RedCrystal/Glyphs/HitboxHighlight.png", null, null, 1));
-						else
-							model = new Model(modelComponent.getModel());
-
-						ModelUpdate update = new ModelUpdate();
-						update.model = model.toPacket();
-						update.entityScale = hidd.getVisibleScale();
-						NetworkUtil.sendEntityComponentUpdateToPlayer(playerRef, entityRef, new ComponentUpdateType[]{ComponentUpdateType.Intangible}, new ComponentUpdate[]{update});
-					} catch(Exception exception) {}
-				}
-			}
+			NetworkUtil.setRuneVisibility(entityRef, playerRef, true);
+			playerDatas.viewedEntities.add(entityRef);
 		}
 	}
 
@@ -74,40 +63,7 @@ public class WandRevealInteraction extends SimpleInteraction {
 		for(Iterator<Ref<EntityStore>> it = playerDatas.viewedEntities.iterator(); it.hasNext(); ) {
 			Ref<EntityStore> entityRef = it.next();
 			it.remove();
-			if(entityRef.isValid() && entityRef.getStore().isInThread()) {
-				var hidd = entityRef.getStore().getComponent(entityRef, RedEntityHiddenComponent.getComponentType());
-				if(hidd != null)
-					hidd.removeSeeingPlayer(playerRef);
-				ModelComponent modelComponent = entityRef.getStore().getComponent(entityRef, ModelComponent.getComponentType());
-				if(modelComponent == null)
-					continue;
-				Model model = ModelUtils.withAttachment(modelComponent.getModel());
-				ModelUpdate update = new ModelUpdate();
-				update.model = model.toPacket();
-
-				update.entityScale = hidd.getHiddenScale();
-				NetworkUtil.sendEntityComponentUpdateToPlayer(playerRef, entityRef, null, new ComponentUpdate[]{update, new IntangibleUpdate()});
-			}
-		}
-	}
-
-	void higlightEntity(Ref<EntityStore> playerRef, Ref<EntityStore> entityRef) {
-		if(targetedEntity != null && targetedEntity.isValid()) {
-			ModelComponent modelComponent = targetedEntity.getStore().getComponent(targetedEntity, ModelComponent.getComponentType());
-			if(modelComponent != null) {
-				Model model = ModelUtils.withAttachment(modelComponent.getModel());
-				ModelUpdate update = new ModelUpdate();
-				update.model = model.toPacket();
-				NetworkUtil.sendEntityComponentUpdateToPlayer(playerRef, targetedEntity, new ComponentUpdateType[]{ComponentUpdateType.Intangible}, new ComponentUpdate[]{update});
-			}
-		}
-		targetedEntity = entityRef;
-		ModelComponent modelComponent = entityRef.getStore().getComponent(entityRef, ModelComponent.getComponentType());
-		if(modelComponent != null) {
-			Model model = ModelUtils.withAttachment(modelComponent.getModel(), new ModelAttachment("Items/RedCrystal/Glyphs/HitboxHighlight.blockymodel", "Items/RedCrystal/Glyphs/HitboxHighlight.png", null, null, 1));
-			ModelUpdate update = new ModelUpdate();
-			update.model = model.toPacket();
-			NetworkUtil.sendEntityComponentUpdateToPlayer(playerRef, entityRef, new ComponentUpdateType[]{ComponentUpdateType.Intangible}, new ComponentUpdate[]{update});
+			NetworkUtil.setRuneVisibility(entityRef, playerRef, false);
 		}
 	}
 
@@ -120,12 +76,8 @@ public class WandRevealInteraction extends SimpleInteraction {
 				context.getCommandBuffer().run((s) -> {
 					var comp = s.ensureAndGetComponent(context.getEntity(), PlayerDatas.getComponentType());
 					comp.setToolEquiped(false);
+					comp.hideHud();
 					sendUpdateToAllPreviousEntities(ref, comp);
-				/*	var skp = s.getComponent(context.getEntity(), PlayerSkinComponent.getComponentType());
-					if(skp != null)
-						skp.setNetworkOutdated();
-
-				 */
 				});
 
 
@@ -145,45 +97,69 @@ public class WandRevealInteraction extends SimpleInteraction {
 					sendUpdateForNewEntities(ref, comp);
 					if(firstRun) {
 						comp.setToolEquiped(true);
-					/*	var mod = s.getComponent(context.getEntity(), ModelComponent.getComponentType());
-						if(mod != null) {
-							var skp = s.getComponent(context.getEntity(), PlayerSkinComponent.getComponentType());
-							var mod1 = CosmeticsModule.get().createModel(skp.getPlayerSkin());
-							var arr = Arrays.copyOf(mod1.getAttachments(), mod1.getAttachments().length + 1);
-							var attachments = AttachmentsHelper.parseSkin(skp.getPlayerSkin(), null, mod.getModel().getGradientId());
-							attachments.add(new ModelAttachment("Items/Iron_Offhand.blockymodel", "Items/Weapons/Dagger/Iron_Texture.png", null, null, 1));
-							var m1 = ModelUtils.withAttachment(mod1, attachments.toArray(new ModelAttachment[0]));
-							var co = new ModelComponent(m1);
-							s.putComponent(ref, ModelComponent.getComponentType(), co);
 
-
-							//s.putComponent(ref, PlayerSkinComponent.getComponentType(), new PlayerSkinComponent(skp.getPlayerSkin()));
-
-						}*/
+						var pref = s.getComponent(context.getEntity(), PlayerRef.getComponentType());
+						if(pref != null)
+							comp.showHud(pref);
 					}
 				});
 
 			}
 
+		} else if(!firstRun && context.getState().state != InteractionState.Finished) {
 
-			//The server side entity still have an invisible hitbox: we can't check for it
-			/*EntityRefCollisionProvider collision = new EntityRefCollisionProvider();
-			TransformComponent transform = ref.getStore().getComponent(ref, TransformComponent.getComponentType());
-			ModelComponent model = ref.getStore().getComponent(ref, ModelComponent.getComponentType());
-			HeadRotation headRot = ref.getStore().getComponent(ref, HeadRotation.getComponentType());
-			var eyePos = transform.getPosition().clone().add(0, model.getModel().getEyeHeight(), 0);
-			var lookDir = com.hypixel.hytale.math.vector.Transform.getDirection(headRot.getRotation().getPitch(), headRot.getRotation().getYaw()).normalize();
-			double hitDist = collision.computeNearest(context.getCommandBuffer(), model.getModel().getBoundingBox(), eyePos, lookDir.scale(10.0), ref, null);
-			if(collision.getCount() > 0) {
-				Ref<EntityStore> hitRef = collision.getContact(0).getEntityReference();
-				System.out.println(hitRef);
-				if(hitRef != targetedEntity) {
-					higlightEntity(ref, hitRef);
-				}
-				// hitRef = first entity looked at
-			}
-*/
+			var pos = TargetUtil.getTargetBlock(context.getEntity(), 5, context.getCommandBuffer());
+			var comp = context.getCommandBuffer().getComponent(context.getEntity(), PlayerDatas.getComponentType());
+			if(comp != null)
+				comp.updateHoveredElement(context.getCommandBuffer().getExternalData().getWorld(), pos, pos == null ? null : getHitFace(pos, TargetUtil.getLook(context.getEntity(), context.getCommandBuffer())));
+
 		}
 	}
 
+	public static BlockFace getHitFace(Vector3i blockPos, Transform transform) {
+		double tMinX, tMaxX, tMinY, tMaxY, tMinZ, tMaxZ;
+		var rayDir = transform.getDirection();
+		var rayOrigin = transform.getPosition();
+		if(rayDir.x != 0.0) {
+			double invX = 1.0 / rayDir.x;
+			tMinX = (blockPos.x - rayOrigin.x) * invX;
+			tMaxX = (blockPos.x + 1.0 - rayOrigin.x) * invX;
+			if(tMinX > tMaxX) {
+				tMinX = tMaxX;
+			}
+		} else {
+			tMinX = Double.NEGATIVE_INFINITY;
+		}
+		if(rayDir.y != 0.0) {
+			double invY = 1.0 / rayDir.y;
+			tMinY = (blockPos.y - rayOrigin.y) * invY;
+			tMaxY = (blockPos.y + 1.0 - rayOrigin.y) * invY;
+			if(tMinY > tMaxY) {
+				tMinY = tMaxY;
+			}
+		} else {
+			tMinY = Double.NEGATIVE_INFINITY;
+		}
+
+		if(rayDir.z != 0.0) {
+			double invZ = 1.0 / rayDir.z;
+			tMinZ = (blockPos.z - rayOrigin.z) * invZ;
+			tMaxZ = (blockPos.z + 1.0 - rayOrigin.z) * invZ;
+			if(tMinZ > tMaxZ) {
+				tMinZ = tMaxZ;
+			}
+		} else {
+			tMinZ = Double.NEGATIVE_INFINITY;
+		}
+		double tEnterX = tMinX, tEnterY = tMinY, tEnterZ = tMinZ;
+		double tEnter = Math.max(tEnterX, Math.max(tEnterY, tEnterZ));
+
+		if(tEnter == tEnterX) {
+			return (rayDir.x > 0) ? BlockFace.West : BlockFace.East;
+		} else if(tEnter == tEnterY) {
+			return (rayDir.y > 0) ? BlockFace.Down : BlockFace.Up;
+		} else {
+			return (rayDir.z > 0) ? BlockFace.North : BlockFace.South;
+		}
+	}
 }

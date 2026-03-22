@@ -2,17 +2,22 @@ package com.diamssword.redCrystal.redComponent;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
-import com.diamssword.redCrystal.storage.PlayerDatas;
+import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.redComponent.utils.RedTimers;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
-import com.diamssword.redCrystal.storage.RedElement;
+import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.protocol.BlockSoundEvent;
+import com.hypixel.hytale.protocol.InteractionState;
+import com.hypixel.hytale.server.core.asset.type.blocksound.config.BlockSoundSet;
+import com.hypixel.hytale.server.core.asset.type.soundset.config.SoundSet;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
@@ -23,12 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
-	public final short MAX = 255;
-	public final short MIN = 0;
+
+	public static final short MAX = 255;
+	public static final short MIN = 0;
 	public final RedElement parent;
 	private final String id;
 	private final short[] state;
 	private final short[] stateOutput;
+	private final Map<String, Short> stateInternal = new HashMap<>();
 	public final RedTimers timers = new RedTimers();
 	public final T asset;
 
@@ -44,10 +51,6 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		stateOutput = new short[maxOutputs()];
 	}
 
-	public short defaultOutputValue(short index) {
-		return MIN;
-	}
-
 	public short getState(int index) {
 		if(index < state.length && index >= 0)
 			return state[index];
@@ -57,6 +60,14 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	public void setState(int index, short value) {
 		if(index < state.length && index >= 0)
 			state[index] = value;
+	}
+
+	public void setInternalState(String id, short state) {
+		stateInternal.put(id, state);
+	}
+
+	public short getInternalState(String id) {
+		return stateInternal.getOrDefault(id, (short) 0);
 	}
 
 	public short getStateOutput(int index) {
@@ -78,7 +89,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		return parent.getAsset().getOutputs();
 	}
 
-	protected void setInput(short input, short value) {
+	public void setInput(short input, short value) {
 		if(input < maxInputs()) {
 			if(getState(input) != value) {
 				var old = getState(input);
@@ -100,6 +111,18 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	public void pulseAllOutput(short value, int ticks) {
 		for(int i = 0; i < maxOutputs(); i++) {
 			setPulse((short) i, value, ticks);
+		}
+	}
+
+	public void refreshOutputs(short index) {
+
+		setOutput(index, this.stateOutput[index]);
+	}
+
+	public void setDefaultOutput(short value) {
+		for(int i = 0; i < maxOutputs(); i++) {
+
+			stateOutput[i] = value;
 		}
 	}
 
@@ -153,6 +176,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 							if(other != null && other.isValid()) {
 								for(int i = 0; i < other.getAsset().getOutputs(); i++) {
 									if(other.getOuput(i).getInputIndex() == index) {
+										//TODO issues here
 										other.breakOutputNode(i);
 										break;
 									}
@@ -160,8 +184,10 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 							}
 						}
 					}
+					RedWandTool.playSound("Unselect", parent.getParent().getPosition(), context.getEntity(), getWorld().getEntityStore().getStore());
 				} else {
 					comp.linkingState.tryToLink(player, this.parent, index, isOutput);
+					RedWandTool.playSound("Select", parent.getParent().getPosition(), context.getEntity(), getWorld().getEntityStore().getStore());
 				}
 			});
 
@@ -169,6 +195,9 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 			onMainRuneInteract(player, entity, context, action);
 		} else if(action == InteractType.Remove) {
 			WandBlockInteraction.tryRemoveRune(getWorld(), parent.getParent(), parent.getFace(), context);
+			if(context.getState().state == InteractionState.Finished) {
+				RedWandTool.playSound("Break", parent.getParent().getPosition(), context.getEntity(), getWorld().getEntityStore().getStore());
+			}
 		}
 	}
 
@@ -176,6 +205,16 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		var pl = player.getStore().getComponent(player, PlayerRef.getComponentType());
 		if(pl != null)
 			new GlyphSettingsMenu(pl, this.parent::getSettings, this.parent::updateSettings).openMenu();
+	}
+
+	public StateLoader getStoredState() {
+		return new StateLoader(state, stateOutput, stateInternal);
+	}
+
+	public void loadState(StateLoader storedState) {
+		//storedState.copyInput(state);
+		storedState.copyOutput(stateOutput);
+		storedState.copyInternal(stateInternal);
 	}
 
 	public enum InteractType {
@@ -190,6 +229,12 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	void runNextTick(Runnable runnable) {
 		timers.add(runnable, 1);
+	}
+
+	void execute(Runnable runnable) {
+		World w = getWorld();
+		if(w != null)
+			w.execute(runnable);
 	}
 
 	public void displayTick() {
@@ -213,9 +258,33 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		timers.tick();
 	}
 
+	@Nullable
 	public World getWorld() {
-		assert parent.getParent() != null;
-		return parent.getParent().getChunkRef().getStore().getExternalData().getWorld();
+		if(parent.getParent() != null && parent.getParent().getChunkRef() != null)
+			return parent.getParent().getChunkRef().getStore().getExternalData().getWorld();
+		return null;
+	}
+
+	public List<Short> getOutputValues() {
+		List<Short> res = new ArrayList<>();
+		for(short i = 0; i < this.maxOutputs(); i++) {
+			if(i < stateOutput.length)
+				res.add(this.stateOutput[i]);
+			else
+				res.add((short) 0);
+		}
+		return res;
+	}
+
+	public List<Short> getInputValues() {
+		List<Short> res = new ArrayList<>();
+		for(short i = 0; i < this.maxInputs(); i++) {
+			if(i < state.length)
+				res.add(this.state[i]);
+			else
+				res.add((short) 0);
+		}
+		return res;
 	}
 
 	public List<Short> getConnectedInputs() {

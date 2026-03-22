@@ -4,7 +4,8 @@
       "Type": "RedCrystal_Wand_Interact",
       "Effects": {
         "WaitForAnimationToFinish": false,
-        "ItemAnimationId": "Mine"
+        "ItemAnimationId": "Mine",
+        "ClearAnimationOnFinish": false
       },
       "Failed": {
         "Type": "RedCrystal_Wand_Interact_Entity"

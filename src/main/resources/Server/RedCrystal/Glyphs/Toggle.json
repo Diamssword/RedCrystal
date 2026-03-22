@@ -9,5 +9,10 @@
     "Name": "server.RedCrystal.glyph.Toggle.name",
     "Description": "server.RedCrystal.glyph.Toggle.desc"
   },
-  "Inputs": 1
+  "Inputs": 1,
+  "Tags": {
+    "Type": [
+      "Hex"
+    ]
+  }
 }

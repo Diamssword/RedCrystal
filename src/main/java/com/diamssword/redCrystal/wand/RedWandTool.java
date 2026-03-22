@@ -1,21 +1,32 @@
 package com.diamssword.redCrystal.wand;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
+import com.diamssword.redCrystal.network.NetworkUtil;
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
+import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.storage.RedElementState;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Holder;
+import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.vector.Vector2d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.server.core.HytaleServer;
+import com.hypixel.hytale.server.core.asset.type.soundset.config.SoundSet;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+
+import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 
 public class RedWandTool {
 	public static final BuilderCodec<RedWandTool> CODEC = BuilderCodec.builder(RedWandTool.class, RedWandTool::new)
@@ -59,17 +70,35 @@ public class RedWandTool {
 		var item = player.getInventory().getHotbar().getItemStack((short) slot);
 		if(item != null) {
 			player.getInventory().getHotbar().replaceItemStackInSlot((short) slot, item, item.withMetadata("RedCrystalToolSettings", RedWandTool.CODEC, settings));
+			var dt = player.getReference().getStore().getComponent(player.getReference(), PlayerDatas.getComponentType());
+			if(dt != null) {
+				dt.onToolChange();
+			}
 		}
 
 	}
 
-	public static boolean createRune(ItemStack toolStack, RedElementState state, BlockFace face) {
+	public static boolean createRune(ItemStack toolStack, RedElementState state, BlockFace face, @Nullable Ref<EntityStore> player) {
 		var tool = getForStack(toolStack);
 		if(tool.getSelectedGlyph() != null) {
 			var element = state.getElement(face);
 			if(element == null) {
-				return state.createElement(face, tool.getSelectedGlyph(), tool.mainSettings);
+				boolean re = state.createElement(face, tool.getSelectedGlyph(), tool.mainSettings);
+				if(re) {
+					var el = state.getElement(face);
+					var world = el.getParent().getChunkRef().getStore().getExternalData().getWorld();
+					world.execute(() -> {
+						RedComponentDisplayUtils.createTempRune(world.getEntityStore(), el.getParent().getPosition(), face, el);
+						if(player != null && player.isValid()) {
+							var comp = player.getStore().getComponent(player, PlayerDatas.getComponentType());
+							if(comp != null)
+								comp.invalidateHovered();
+						}
+					});
 
+
+				}
+				return re;
 			}
 		}
 		return false;
@@ -79,5 +108,16 @@ public class RedWandTool {
 
 		var vec = RedComponentDisplayUtils.getCenteredPosition(blockPos, face, new Vector2d(0, 0));
 		return ItemComponent.generateItemDrop(accessor, new ItemStack("RedCrystal_Red_Sliver", count), vec, new Vector3f(), 0, 0, 0);
+	}
+
+	public static void playSound(String type, Vector3i at, Ref<EntityStore> source, ComponentAccessor<EntityStore> accessor) {
+		var soundSet = SoundSet.getAssetMap().getAsset("RedCrystalWandSet");
+
+		if(soundSet != null) {
+			int soundEventIndex = soundSet.getSoundEventIndices().getOrDefault(type, 0);
+			if(soundEventIndex != 0) {
+				SoundUtil.playSoundEvent3d(source, soundEventIndex, at.x + 0.5, at.y + 0.5, at.z + 0.5, accessor);
+			}
+		}
 	}
 }

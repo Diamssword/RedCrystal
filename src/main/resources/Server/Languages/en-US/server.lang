@@ -1,8 +1,9 @@
 RedCrystal.glyph.Button.name=Button
 RedCrystal.glyph.Button.desc=A button that send a pulse signal when pressed
-items.RedCrystal.staff.name=Glyph Graver
+items.RedCrystal.staff.name=Glyph Carver
 items.RedCrystal.staff.desc=A powerful tool used to carve red glyphs on walls \nUse [Ability 1] to select the glyph\nUse [Primary Action] to place glyph or edit settings\nUse [Secondary Action] to remove glyphs or links
 items.RedCrystal.sliver.name=Red Crystal Sliver
+items.RedCrystal.sliver.desc=Slowly Replenish Any Glyph Carver with missing durability in your hotbar and get consumed in the process
 # === InteractionHints ===
 RedCrystal.interactionHints.input=Input\nLeft Click to create link\nRight Click to break link
 RedCrystal.interactionHints.output=Output\nLeft Click to create link\nRight Click to break link

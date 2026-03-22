@@ -87,19 +87,38 @@ public class GlyphMenu {
 		}
 	}
 
-	private void refreshGlyphs(UIContext ctx) {
+	private Queue<Glyph> getSortedAssets() {
 
 		var map = RedCrystalPlugin.GlyphAssets.getAssetMap().getAssetMap();
-		Queue<Glyph> assets = new LinkedList<>();
+		Queue<Glyph> assets = new PriorityQueue<>((a, b) -> {
+			int cmp = a.compareTo(b);
+			if(cmp != 0) return cmp;
+			return translate(a.getTranslationProperties().getName()).compareTo(translate(b.getTranslationProperties().getName()));
+		});
 		var str = search.get();
 		for(String id : map.keySet()) {
 			var asset = map.get(id);
 			var name = translate(asset.getTranslationProperties().getName());
-
 			if(str.isBlank() || name.toLowerCase().contains(str)) {
 				assets.add(asset);
 			}
 		}
+		if(assets.isEmpty()) {
+			for(String id : map.keySet()) {
+				var asset = map.get(id);
+
+				if(asset.getCategorie().toLowerCase().contains(str)) {
+					assets.add(asset);
+				}
+			}
+		}
+		return assets;
+	}
+
+	private void refreshGlyphs(UIContext ctx) {
+
+		Queue<Glyph> assets = getSortedAssets();
+
 		for(int i = 0; i < linesSize; i++) {
 			List<Glyph> ls = new ArrayList<>();
 			for(int j = 0; j < contentSize; j++) {
@@ -142,10 +161,10 @@ public class GlyphMenu {
 					hovered.set(index);
 					setupInfoPanel(ctx1, asset);
 				});
-				b.addEventListenerWithContext(CustomUIEventBindingType.MouseExited, MouseEventData.class, (_, ctx1) -> {
+		/*		b.addEventListenerWithContext(CustomUIEventBindingType.MouseExited, MouseEventData.class, (_, ctx1) -> {
 					if(index == hovered.get())
 						setupInfoPanel(ctx1, selectedAsset.get());
-				});
+				});*/
 			});
 		}
 	}
@@ -210,7 +229,7 @@ public class GlyphMenu {
 		ctx.getById("hovered.image", ImageBuilder.class).ifPresent(im -> im.withImage(parseUrl(asset.getIcon())));
 		ctx.getById("hovered.title", LabelBuilder.class).ifPresent(im -> im.withText(translate(asset.getTranslationProperties().getName())));
 		ctx.getById("hovered.desc", LabelBuilder.class).ifPresent(im -> im.withText(translate(asset.getTranslationProperties().getDescription())));
-		ctx.getById("hovered.type", LabelBuilder.class).ifPresent(im -> im.withText(translate(asset.getTranslationProperties().getDescription())));
+		ctx.getById("hovered.type", LabelBuilder.class).ifPresent(im -> im.withText(translate(asset.getCategorie())));
 
 		ctx.getById("hovered.io", LabelBuilder.class).ifPresent(im -> {
 			var ioS = "Input";
