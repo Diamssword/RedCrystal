@@ -3,7 +3,7 @@ package com.diamssword.redCrystal.storage;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.display.DisplayEntityGroup;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
-import com.diamssword.redCrystal.redComponent.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.RedCompBehavior;
 import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -11,14 +11,12 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.component.AddReason;
 import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 public class RedElement {
 	@Nonnull
@@ -29,7 +27,7 @@ public class RedElement {
 			.add()
 			.append(new KeyedCodec<>("RedElementSettings", GlobalGlyphSettings.CODEC), (a, b) -> a.settings = b, a -> a.settings)
 			.add()
-			.append(new KeyedCodec<>("RedElementState", StateLoader.CODEC), (a, b) -> a.storedState = b, a -> a.getStoredState())
+			.append(new KeyedCodec<>("RedElementBehaviorState", StateLoader.CODEC), (a, b) -> a.storedState = b, a -> a.storedState)
 			.add()
 			.build();
 	private RedElementState parent;
@@ -41,7 +39,7 @@ public class RedElement {
 	private RedCompBehavior<?> behavior;
 	private GlobalGlyphSettings settings;
 	private DisplayEntityGroup linkedEntity;
-	private StateLoader storedState = new StateLoader();
+	private StateLoader storedState;
 
 	public RedElement(RedElementState parent, BlockFace face, @Nullable GlobalGlyphSettings settings) {
 		this.settings = settings == null ? new GlobalGlyphSettings() : settings;
@@ -74,7 +72,11 @@ public class RedElement {
 		old.updateFrom(settings, this);
 
 	}
-	
+
+	public StateLoader getStoredState() {
+		return storedState;
+	}
+
 	public DisplayEntityGroup getEntities() {
 
 		return linkedEntity == null ? new DisplayEntityGroup(asset.getInputs(), asset.getOutputs()) : linkedEntity;
@@ -102,17 +104,15 @@ public class RedElement {
 		return asset;
 	}
 
-	private StateLoader getStoredState() {
-		if(this.behavior != null)
-			return this.behavior.getStoredState();
-		return storedState;
-	}
-
 	private void setupBehavior() {
+		if(this.storedState == null)
+			this.storedState = new StateLoader(asset.getInputs(), asset.getOutputs());
+		else
+			this.storedState.updateSize(asset.getInputs(), asset.getOutputs());
 		if(asset != null && behavior == null)
 			this.behavior = asset.getBehavior().createBehavior(this);
 		if(this.behavior != null) {
-			this.behavior.loadState(this.storedState);
+			this.behavior.loadState();
 			var store = parent.getChunkRef().getStore().getExternalData().getWorld().getEntityStore();
 			if(linkedEntity == null || !linkedEntity.isValid()) {
 				if(linkedEntity != null) {
@@ -125,13 +125,6 @@ public class RedElement {
 					holders.getOthers().putAll(holdersEx);
 				store.getWorld().execute(() -> this.linkedEntity = holders.spawnEntities(store.getStore()));
 			}
-			store.getWorld().execute(() -> {
-				for(short i = 0; i < outputs.length; i++) {
-					if(outputs[i] != null)
-						behavior.refreshOutputs(i);
-				}
-
-			});
 		}
 	}
 

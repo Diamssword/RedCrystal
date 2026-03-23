@@ -3,12 +3,11 @@ package com.diamssword.redCrystal;
 import au.ellie.hyui.builders.HyUIPage;
 import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.wand.GlyphMenu;
-import com.diamssword.redCrystal.redComponent.RedComponentRegister;
+import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.display.DisplayEntitySystem;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.interaction.*;
-import com.diamssword.redCrystal.wand.LinkingState;
 import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.hypixel.hytale.assetstore.AssetRegistry;
 import com.hypixel.hytale.assetstore.event.LoadedAssetsEvent;
@@ -50,16 +49,10 @@ public class RedCrystalPlugin extends JavaPlugin {
 		GlyphAssets = AssetRegistry.register(builder.build());
 		RedComponentRegister.init();
 		RedElementComponent = this.getChunkStoreRegistry().registerComponent(RedElementState.class, "RedCrystal_RedElementState", RedElementState.CODEC);
-		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementAddedSystem());
-		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementTickSystem());
-		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementDisplayTickSystem());
 		RedToolSettingsComponent = this.getEntityStoreRegistry().registerComponent(PlayerDatas.class, PlayerDatas::new);
 		RedLinkComponent = this.getEntityStoreRegistry().registerComponent(RedEntityLinkComponent.class, () -> {throw new UnsupportedOperationException();});
 		RedEntityHiddenComponent = this.getEntityStoreRegistry().registerComponent(RedEntityHiddenComponent.class, () -> {throw new UnsupportedOperationException();});
 
-		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.ToolTicking());
-		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.InventoryTicking());
-		this.getEntityStoreRegistry().registerSystem(new DisplayEntitySystem());
 
 		this.getEntityRegistry().registerEntity("RedCrystalFakeEntity", FakeLivingEntity.class, FakeLivingEntity::new, FakeLivingEntity.CODEC);
 
@@ -73,6 +66,18 @@ public class RedCrystalPlugin extends JavaPlugin {
 		OpenCustomUIInteraction.registerCustomPageSupplier(this, HyUIPage.class, "RedCrystalGlyphMenu", (a, b, c, d) -> new GlyphMenu().openMenu(c));
 		this.getEventRegistry().register(LoadedAssetsEvent.class, Glyph.class, this::onGlyphAssetChange);
 
+	}
+
+	@Override
+	protected void start() {
+		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementAddedSystem());
+		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementTickSystem());
+		this.getChunkStoreRegistry().registerSystem(new RedElementSystems.RedElementDisplayTickSystem());
+
+
+		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.ToolTicking());
+		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.InventoryTicking());
+		this.getEntityStoreRegistry().registerSystem(new DisplayEntitySystem());
 	}
 
 	private void onGlyphAssetChange(@Nonnull LoadedAssetsEvent<String, Glyph, DefaultAssetMap<String, Glyph>> event) {

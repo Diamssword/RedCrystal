@@ -1,4 +1,4 @@
-package com.diamssword.redCrystal.redComponent;
+package com.diamssword.redCrystal.behavior;
 
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.storage.RedElement;

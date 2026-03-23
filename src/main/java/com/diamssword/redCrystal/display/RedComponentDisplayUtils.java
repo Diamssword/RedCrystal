@@ -1,6 +1,6 @@
 package com.diamssword.redCrystal.display;
 
-import com.diamssword.redCrystal.redComponent.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.RedCompBehavior;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.matrix.Matrix4d;
@@ -10,7 +10,6 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.*;
-import com.hypixel.hytale.protocol.packets.buildertools.BuilderToolLaserPointer;
 import com.hypixel.hytale.protocol.packets.player.DisplayDebug;
 import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
@@ -19,16 +18,12 @@ import com.hypixel.hytale.server.core.entity.UUIDComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.modules.interaction.Interactions;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.CycleBlockGroupInteraction;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.UseBlockInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.PlayerUtil;
-import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 

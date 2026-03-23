@@ -1,4 +1,4 @@
-package com.diamssword.redCrystal.redComponent.utils;
+package com.diamssword.redCrystal.behavior.utils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,8 @@
 package com.diamssword.redCrystal.interaction;
 
 
-import com.diamssword.redCrystal.redComponent.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.RedCompBehavior;
 import com.diamssword.redCrystal.storage.PlayerDatas;
-import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
 import com.diamssword.redCrystal.storage.RedElementState;
 import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.codec.Codec;
@@ -13,21 +12,16 @@ import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
-import com.hypixel.hytale.protocol.BlockSoundEvent;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
-import com.hypixel.hytale.server.core.asset.type.blocksound.config.BlockSoundSet;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
-import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockComponentChunk;
-import com.hypixel.hytale.server.core.universe.world.meta.state.ItemContainerState;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;

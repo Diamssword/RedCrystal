@@ -1,7 +1,6 @@
 package com.diamssword.redCrystal.storage;
 
 import com.diamssword.redCrystal.RedCrystalPlugin;
-import com.diamssword.redCrystal.redComponent.RedComponentRegister;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.map.MapCodec;
@@ -16,7 +15,6 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +22,7 @@ public class RedElementState implements Component<ChunkStore> {
 	@Nonnull
 	public static BuilderCodec<RedElementState> CODEC = BuilderCodec.builder(RedElementState.class, RedElementState::new/*, BlockState.BASE_CODEC*/)
 			.append(
-					new KeyedCodec<>("Elements", new MapCodec<>(RedElement.CODEC, HashMap::new, false)),
+					new KeyedCodec<>("RedElementStates", new MapCodec<>(RedElement.CODEC, HashMap::new, false)),
 					(block, map) -> block.elements = map,
 					block -> block.elements
 			)
@@ -32,7 +30,6 @@ public class RedElementState implements Component<ChunkStore> {
 			.build();
 
 	public RedElementState() {
-
 	}
 
 	public static ComponentType<ChunkStore, RedElementState> getComponent() {
@@ -56,7 +53,6 @@ public class RedElementState implements Component<ChunkStore> {
 	public void setPosition(Vector3i position, Ref<ChunkStore> chunkRef) {
 		this.position = position;
 		this.chunkRef = chunkRef;
-
 		for(var entry : this.getAllElements().entrySet()) {
 			if(entry.getValue().getAsset() == null)
 				this.elements.remove(entry.getKey().toString());

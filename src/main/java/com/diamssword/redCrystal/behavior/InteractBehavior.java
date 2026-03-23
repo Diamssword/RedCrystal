@@ -1,4 +1,4 @@
-package com.diamssword.redCrystal.redComponent;
+package com.diamssword.redCrystal.behavior;
 
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;

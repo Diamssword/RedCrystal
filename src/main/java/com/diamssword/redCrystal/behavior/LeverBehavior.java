@@ -1,19 +1,16 @@
-package com.diamssword.redCrystal.redComponent;
+package com.diamssword.redCrystal.behavior;
 
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
-import com.diamssword.redCrystal.storage.StateLoader;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.protocol.AnimationSlot;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
-import com.hypixel.hytale.server.core.entity.AnimationUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.Interactable;
@@ -41,6 +38,7 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 			short st = getInternalState("lever");
 			setAllOutput(st == 0 ? MAX : MIN);
 			setInternalState("lever", (short) (st == 0 ? 1 : 0));
+			System.out.println(getInternalState("lever"));
 			lightUpRune(this.parent.getEntities().getMain(), st == 0);
 			var model = entity.getStore().getComponent(entity, ModelComponent.getComponentType());
 

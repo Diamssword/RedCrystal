@@ -34,6 +34,7 @@ public class RedElementSystems {
 					ChunkUtil.yFromBlockInColumn(blockStateInfoComponent.getIndex()),
 					ChunkUtil.worldCoordFromLocalCoord(worldChunkComponent.getZ(), ChunkUtil.zFromBlockInColumn(blockStateInfoComponent.getIndex()))
 			);
+
 			commandBuffer.run((s) -> redComponent.setPosition(blockPosition, blockStateInfoComponent.getChunkRef()));
 		}
 

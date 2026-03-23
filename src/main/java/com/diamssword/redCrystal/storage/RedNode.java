@@ -1,6 +1,6 @@
 package com.diamssword.redCrystal.storage;
 
-import com.diamssword.redCrystal.redComponent.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.RedCompBehavior;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;

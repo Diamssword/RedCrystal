@@ -1,7 +1,7 @@
 package com.diamssword.redCrystal.interaction;
 
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
-import com.diamssword.redCrystal.redComponent.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.RedCompBehavior;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
