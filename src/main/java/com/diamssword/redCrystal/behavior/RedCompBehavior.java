@@ -8,7 +8,6 @@ import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.behavior.utils.RedTimers;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.wand.RedWandTool;
-import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
@@ -30,7 +29,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	public static final short MIN = 0;
 	public final RedElement parent;
 	private final String id;
-	public final RedTimers timers = new RedTimers();
+	public final RedTimers timers;
 	public final T asset;
 
 	public String getId() {
@@ -41,21 +40,33 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		this.parent = parent;
 		this.id = id;
 		this.asset = asset;
-		//	state = new short[maxInputs()];
-		//	stateOutput = new short[maxOutputs()];
+		this.timers = new RedTimers(outputsCount(), this::collectOutputsChanges);
 	}
 
-	private StateLoader getStateManager() {
+	private void collectOutputsChanges(short[] newOutputs) {
+		boolean flg = false;
+		for(int i = 0; i < newOutputs.length; i++) {
+			var old = getOutputState(i);
+			if(old != newOutputs[i]) {
+				setOutputNow((short) i, newOutputs[i]);
+				flg = true;
+			}
+		}
+		if(flg)
+			updateLightState();
+	}
+
+	protected StateLoader getStateManager() {
 		return parent.getStoredState();
 	}
 
-	public short getState(int index) {
+	public short getInputState(int index) {
 		if(index < getStateManager().getInput().length && index >= 0)
 			return getStateManager().getInput()[index];
 		return 0;
 	}
 
-	public void setState(int index, short value) {
+	public void setInputState(int index, short value) {
 		if(index < getStateManager().getInput().length && index >= 0)
 			getStateManager().getInput()[index] = value;
 	}
@@ -68,80 +79,72 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		return getStateManager().getInternalStates().getOrDefault(id, (short) 0);
 	}
 
-	public short getStateOutput(int index) {
+	public short getOutputState(int index) {
 		if(index < getStateManager().getOutput().length && index >= 0)
 			return getStateManager().getOutput()[index];
 		return 0;
 	}
 
-	public void setStateOutput(int index, short value) {
+	public void setOutputState(int index, short value) {
 		if(index < getStateManager().getOutput().length && index >= 0)
 			getStateManager().getOutput()[index] = value;
 	}
 
-	public short maxInputs() {
+	public short InputsCount() {
 		return parent.getAsset().getInputs();
 	}
 
-	public short maxOutputs() {
+	public short outputsCount() {
 		return parent.getAsset().getOutputs();
 	}
 
-	public void setInput(short input, short value) {
-		setInput(input, value, false);
-	}
 
-	public void setInput(short input, short value, boolean forceUpdate) {
-		if(input < maxInputs()) {
-			if(forceUpdate || getState(input) != value) {
-				var old = getState(input);
-				setState(input, value);
-				onSignalChange(input, old, getState(input));
-				lightUpForInput(input, value > 0);
+	public void setInput(short input, short value) {
+		if(input < InputsCount()) {
+			if(getInputState(input) != value) {
+				var old = getInputState(input);
+				setInputState(input, value);
+				onSignalChange(input, old, getInputState(input));
 			}
+			updateLightState();
 		}
 	}
 
 	abstract void onSignalChange(short input, short oldValue, short value);
 
 	public void setAllOutput(short value) {
-		for(int i = 0; i < maxOutputs(); i++) {
+		for(int i = 0; i < outputsCount(); i++) {
 			setOutput((short) i, value);
 		}
 	}
 
 	public void pulseAllOutput(short value, int ticks) {
-		for(int i = 0; i < maxOutputs(); i++) {
+		for(int i = 0; i < outputsCount(); i++) {
 			setPulse((short) i, value, ticks);
 		}
 	}
 
-	public void refreshOutputs(short index) {
-
-		setOutput(index, this.getStateManager().getOutput()[index]);
-	}
-
 	public void setDefaultOutput(short value) {
-		for(int i = 0; i < maxOutputs(); i++) {
+		for(int i = 0; i < outputsCount(); i++) {
 
 			getStateManager().getOutput()[i] = value;
 		}
 	}
 
 	public void setOutput(short output, short value) {
-		setOutput(output, value, false);
+		this.timers.setPlannedOutput(output, value);
 	}
 
-	public void setOutput(short output, short value, boolean forceUpdate) {
+	protected void setOutputNow(short output, short value) {
 		var chan = parent.getOuput(output);
 		if(chan != null) {
-			setStateOutput(output, value);
+			setOutputState(output, value);
 			var behavior = chan.getBehavior(parent.getParent());
 			if(behavior != null && behavior.parent.isValid()) {
-				behavior.setInput(chan.getInputIndex(), value, forceUpdate);
+				behavior.setInput(chan.getInputIndex(), value);
 				if(value > 0 && parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Invisible)
 					RedComponentDisplayUtils.drawLaser(getWorld().getEntityStore().getStore(), RedComponentDisplayUtils.getInputPosition(chan.getInputIndex(), behavior), RedComponentDisplayUtils.getOutputPosition(output, this), 0.5f, value);
-				lightUpRune(this.parent.getEntities().getOutput(output), value > 0);
+
 				if(parent.getSettings().getVisibility() == RedEntityHiddenComponent.Visibility.Pulse)
 					timers.add(() -> lightUpRune(this.parent.getEntities().getOutput(output), false), 10);
 			}
@@ -149,14 +152,43 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		}
 	}
 
+	public void updateLightState() {
+		var state = new DisplayState(InputsCount(), outputsCount());
+		var bl = false;
+		for(int i = 0; i < InputsCount(); i++) {
+			state.setInput((short) i, getInputState(i) > MIN);
+
+		}
+		for(int i = 0; i < outputsCount(); i++) {
+			var b1 = getOutputState(i) > MIN;
+			state.setOutput((short) i, b1);
+			if(!bl)
+				bl = b1;
+		}
+		state.setMain(bl);
+		setLightState(state);
+		var entities = this.parent.getEntities();
+		lightUpRune(entities.getMain(), state.getMain());
+		for(int i = 0; i < state.getInputs().length; i++) {
+			lightUpRune(entities.getInput((short) i), state.getInputs()[i]);
+		}
+		for(int i = 0; i < state.getOutputs().length; i++) {
+			lightUpRune(entities.getOutput((short) i), state.getOutputs()[i]);
+		}
+	}
+
+	/**
+	 * Override this if you want to change the way the display runes behave
+	 *
+	 * @param display a displaystate to modify
+	 */
+	void setLightState(DisplayState display) {
+
+	}
+
 	public void setPulse(short output, short onValue, int ticks) {
 		setOutput(output, onValue);
 		timers.add(() -> setOutput(output, MIN), ticks);
-	}
-
-	protected void lightUpForInput(short input, boolean on) {
-		lightUpRune(this.parent.getEntities().getInput(input), on);
-		lightUpRune(this.parent.getEntities().getMain(), on);
 	}
 
 
@@ -182,7 +214,6 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 							if(other != null && other.isValid()) {
 								for(int i = 0; i < other.getAsset().getOutputs(); i++) {
 									if(other.getOuput(i).getInputIndex() == index) {
-										//TODO issues here
 										other.breakOutputNode(i);
 										break;
 									}
@@ -211,22 +242,6 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		var pl = player.getStore().getComponent(player, PlayerRef.getComponentType());
 		if(pl != null)
 			new GlyphSettingsMenu(pl, this.parent::getSettings, this.parent::updateSettings).openMenu();
-	}
-
-	public void loadState() {
-		//storedState.copyInput(state);
-		System.out.println("--loading--");
-		getStateManager().getInternalStates().forEach((k, v) -> {
-			System.out.println(k + "=" + v);
-		});
-		runNextTick(() -> {
-			var vals = this.getOutputValues();
-			for(int i = 0; i < vals.size(); i++) {
-				setOutput((short) i, vals.get(i), true);
-			}
-		});
-
-
 	}
 
 	public enum InteractType {
@@ -279,7 +294,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	public List<Short> getOutputValues() {
 		List<Short> res = new ArrayList<>();
-		for(short i = 0; i < this.maxOutputs(); i++) {
+		for(short i = 0; i < this.outputsCount(); i++) {
 			if(i < getStateManager().getOutput().length)
 				res.add(this.getStateManager().getOutput()[i]);
 			else
@@ -290,7 +305,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	public List<Short> getInputValues() {
 		List<Short> res = new ArrayList<>();
-		for(short i = 0; i < this.maxInputs(); i++) {
+		for(short i = 0; i < this.InputsCount(); i++) {
 			if(i < getStateManager().getInput().length)
 				res.add(this.getStateManager().getInput()[i]);
 			else
@@ -301,7 +316,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	public List<Short> getConnectedInputs() {
 		List<Short> res = new ArrayList<>();
-		for(short i = 0; i < this.maxInputs(); i++) {
+		for(short i = 0; i < this.InputsCount(); i++) {
 			var in = this.parent.getInput(i);
 			if(in != null && in.isValid())
 				res.add(i);

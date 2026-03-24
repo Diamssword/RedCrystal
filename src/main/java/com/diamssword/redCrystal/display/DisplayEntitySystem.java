@@ -30,7 +30,7 @@ public class DisplayEntitySystem extends EntityTickingSystem<EntityStore> {
 			hidden.getSeeingPlayers().forEach(player -> {
 				if(player.getReference() != null) {
 
-					var MaxO = hidden.parent.getBehavior().maxOutputs();
+					var MaxO = hidden.parent.getBehavior().outputsCount();
 					for(short i = 0; i < MaxO; i++) {
 						var output = hidden.parent.getOuput(i);
 						if(output != null) {

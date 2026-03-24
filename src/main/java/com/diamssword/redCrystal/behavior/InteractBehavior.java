@@ -1,5 +1,6 @@
 package com.diamssword.redCrystal.behavior;
 
+import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
@@ -13,6 +14,7 @@ import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.InteractionManager;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.Intangible;
 import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
@@ -46,8 +48,15 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 	}
 
 	@Override
-	void onSignalChange(short input, short oldValue, short value) {
+	void setLightState(DisplayState display) {
+		System.out.println("light change");
+		display.setMain(display.isAnyInputOn());
+	}
 
+	@Override
+	void onSignalChange(short input, short oldValue, short value) {
+		if(oldValue == value)
+			return;
 		this.parent.getParent().getChunkRef().getStore().getExternalData().getWorld().sendMessage(Message.raw("Signal is " + value));
 
 		var block = getWorld().getBlockType(this.parent.getParent().getPosition());

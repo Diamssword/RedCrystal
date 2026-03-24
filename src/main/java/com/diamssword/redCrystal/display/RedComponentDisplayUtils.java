@@ -15,6 +15,7 @@ import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
 import com.hypixel.hytale.server.core.entity.UUIDComponent;
+import com.hypixel.hytale.server.core.modules.debug.DebugUtils;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.modules.interaction.Interactions;
@@ -111,14 +112,14 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static Vector3d getInputPosition(short index, RedCompBehavior behavior) {
-		var spacing = behavior.maxInputs() < 6 ? 0.2f : 0.1f;
-		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.maxInputs() - 1) / 2f) * spacing, -0.35));
+		var spacing = behavior.InputsCount() < 6 ? 0.2f : 0.1f;
+		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.InputsCount() - 1) / 2f) * spacing, -0.35));
 	}
 
 	public static Vector3d getOutputPosition(short index, RedCompBehavior behavior) {
 
-		var spacing = behavior.maxOutputs() < 6 ? 0.2f : 0.1f;
-		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.maxOutputs() - 1) / 2f) * spacing, 0.35));
+		var spacing = behavior.outputsCount() < 6 ? 0.2f : 0.1f;
+		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.outputsCount() - 1) / 2f) * spacing, 0.35));
 	}
 
 	public static void createTempRune(EntityStore entityStore, Vector3i position, BlockFace face, RedElement element) {
@@ -140,8 +141,8 @@ public class RedComponentDisplayUtils {
 
 		var visibility = element.getSettings().getVisibility();
 		if(element.getBehavior() != null) {
-			var maxO = element.getBehavior().maxOutputs();
-			var maxI = element.getBehavior().maxInputs();
+			var maxO = element.getBehavior().outputsCount();
+			var maxI = element.getBehavior().InputsCount();
 			var res = new DisplayEntityGroupHolder(maxI, maxO);
 			for(short i = 0; i < maxO; i++) {
 				var spacing = maxO < 6 ? 0.2f : 0.1f;
@@ -240,8 +241,18 @@ public class RedComponentDisplayUtils {
 		matrix.rotateAxis(angleX, 1.0, 0.0, 0.0, tmp);
 		matrix.translate(0.0, directionClone.length() * 0.5, 0.0);
 		matrix.scale(scale, directionClone.length(), scale);
-		return new DisplayDebug(DebugShape.Cylinder, matrix.asFloatData(), new com.hypixel.hytale.protocol.Vector3f(color.x, color.y, color.z), time, fade, null, 0.8f);
+		return new DisplayDebug(DebugShape.Cylinder, matrix.asFloatData(), new com.hypixel.hytale.protocol.Vector3f(color.x, color.y, color.z), time, buildFlags(fade), null, 0.8f);
 
+	}
+
+	static byte buildFlags(boolean fade) {
+		int flags = 0;
+		if(fade)
+			flags |= DebugUtils.FLAG_FADE;
+		flags |= DebugUtils.FLAG_NO_WIREFRAME;
+		//flags |= DebugUtils.FLAG_NO_SOLID;
+
+		return (byte) flags;
 	}
 
 	public static void drawLaserFor(Vector3d from, Vector3d to, float time, int color, Ref<EntityStore> player) {

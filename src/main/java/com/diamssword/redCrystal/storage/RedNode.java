@@ -14,11 +14,11 @@ public class RedNode {
 
 	@Nonnull
 	public static BuilderCodec<RedNode> CODEC = BuilderCodec.builder(RedNode.class, RedNode::new)
-			.append(new KeyedCodec<>("Position", Vector3i.CODEC), (a, b) -> a.position = b, (a) -> a.position)
+			.append(new KeyedCodec<>("RedCrystalNodePosition", Vector3i.CODEC), (a, b) -> a.position = b, (a) -> a.position)
 			.add()
-			.append(new KeyedCodec<>("Target", Codec.SHORT), (a, b) -> a.inputIndex = b, (a) -> a.inputIndex)
+			.append(new KeyedCodec<>("RedCrystalNodeTarget", Codec.SHORT), (a, b) -> a.inputIndex = b, (a) -> a.inputIndex)
 			.add()
-			.append(new KeyedCodec<>("Face", Codec.STRING), RedNode::setFace, (a) -> (a.getFace() == null ? BlockFace.North : a.getFace()).toString())
+			.append(new KeyedCodec<>("RedCrystalNodeFace", Codec.STRING), RedNode::setFace, (a) -> (a.getFace() == null ? BlockFace.North : a.getFace()).toString())
 			.add()
 			.build();
 	protected Vector3i position;

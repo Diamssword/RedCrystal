@@ -28,7 +28,6 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 
 	@Override
 	void onSignalChange(short input, short oldValue, short value) {
-
 	}
 
 	@Override
@@ -38,7 +37,6 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 			short st = getInternalState("lever");
 			setAllOutput(st == 0 ? MAX : MIN);
 			setInternalState("lever", (short) (st == 0 ? 1 : 0));
-			System.out.println(getInternalState("lever"));
 			lightUpRune(this.parent.getEntities().getMain(), st == 0);
 			var model = entity.getStore().getComponent(entity, ModelComponent.getComponentType());
 

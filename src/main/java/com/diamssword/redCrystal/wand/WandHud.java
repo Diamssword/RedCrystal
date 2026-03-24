@@ -133,12 +133,15 @@ public class WandHud {
 	}
 
 	private void onRefreshTool(HyUIHud hud) {
-		var tool = RedWandTool.getForStack(inventory.getActiveHotbarItem());
-		hud.getById("SelectedPanel", GroupBuilder.class).ifPresent(p -> {
-			p.withVisible(tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank());
-			hud.getById("Selected", LabelBuilder.class).ifPresent(l -> {
-				l.withText("Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
+		var stack = inventory.getActiveHotbarItem();
+		if(stack != null) {
+			var tool = RedWandTool.getForStack(stack);
+			hud.getById("SelectedPanel", GroupBuilder.class).ifPresent(p -> {
+				p.withVisible(tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank());
+				hud.getById("Selected", LabelBuilder.class).ifPresent(l -> {
+					l.withText("Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
+				});
 			});
-		});
+		}
 	}
 }

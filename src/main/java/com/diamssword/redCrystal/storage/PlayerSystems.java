@@ -67,13 +67,15 @@ public class PlayerSystems {
 					var stack = hotbar.getItemStack(i);
 					if(!ItemStack.isEmpty(stack)) {
 						if(stack.getMaxDurability() > 0 && stack.getDurability() < stack.getMaxDurability()) {
-							var tags = stack.getItem().getData().getRawTags().get("RedCrystal");
-							if(tags != null) {
-								for(String tag : tags) {
-									if(tag.equals("Replenishable")) {
-										consumeShard(i, player);
-										return;
+							if(stack.getItem() != null && stack.getItem().getData() != null) {
+								var tags = stack.getItem().getData().getRawTags().get("RedCrystal");
+								if(tags != null) {
+									for(String tag : tags) {
+										if(tag.equals("Replenishable")) {
+											consumeShard(i, player);
+											return;
 
+										}
 									}
 								}
 							}
@@ -84,7 +86,7 @@ public class PlayerSystems {
 		}
 
 		private void consumeShard(short slot, Player player) {
-			var result = player.getInventory().getCombinedEverything().removeItemStack(new ItemStack("RedCrystal_Red_Sliver", 1));
+			var result = player.getInventory().getCombinedBackpackStorageHotbar().removeItemStack(new ItemStack("RedCrystal_Red_Sliver", 1));
 			if(result.succeeded()) {
 				var st = player.getInventory().getHotbar().getItemStack(slot);
 				player.getInventory().getHotbar().replaceItemStackInSlot(slot, st, st.withIncreasedDurability(1));

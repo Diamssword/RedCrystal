@@ -1,6 +1,5 @@
 package com.diamssword.redCrystal.interaction;
 
-import com.diamssword.redCrystal.display.AttachmentsHelper;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;

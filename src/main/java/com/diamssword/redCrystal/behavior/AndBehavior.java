@@ -18,7 +18,7 @@ public class AndBehavior extends RedCompBehavior<BehaviorAsset> {
 		} else {
 			var val = MIN;
 			for(Short connectedInput : getConnectedInputs()) {
-				var st = getState(connectedInput);
+				var st = getInputState(connectedInput);
 				if(st == MIN) {
 					val = MIN;
 					break;

@@ -112,7 +112,6 @@ public class RedElement {
 		if(asset != null && behavior == null)
 			this.behavior = asset.getBehavior().createBehavior(this);
 		if(this.behavior != null) {
-			this.behavior.loadState();
 			var store = parent.getChunkRef().getStore().getExternalData().getWorld().getEntityStore();
 			if(linkedEntity == null || !linkedEntity.isValid()) {
 				if(linkedEntity != null) {
@@ -128,8 +127,8 @@ public class RedElement {
 		}
 	}
 
-	public boolean setInput(int index, RedElement element, int outIndex) {
-		if(behavior != null && index < behavior.maxInputs()) {
+	public boolean setInput(int index, RedElement element, int outIndex, boolean update) {
+		if(behavior != null && index < behavior.InputsCount()) {
 			if(index >= inputs.length) {
 				inputs = Arrays.copyOf(inputs, index + 1);
 			}
@@ -137,8 +136,8 @@ public class RedElement {
 				inputs[index].breakOutputNodeInternal(index);
 			}
 			inputs[index] = element;
-			if(this.behavior != null)
-				this.behavior.setInput((short) index, element.getBehavior().getStateOutput(outIndex));
+			if(this.behavior != null && update)
+				this.behavior.setInput((short) index, element.getBehavior().getOutputState(outIndex));
 			return true;
 		}
 		return false;
@@ -169,19 +168,19 @@ public class RedElement {
 	}
 
 	public boolean setOutputNode(short index, RedNode node) {
-		if(behavior != null && index < behavior.maxOutputs()) {
+		if(behavior != null && index < behavior.outputsCount()) {
 			if(index >= outputs.length) {
 				outputs = Arrays.copyOf(outputs, index + 1);
 			}
 			RedElement el = node.getElement(this.parent);
 			if(el != null && el.isValid()) {
-				if(!el.setInput(node.inputIndex, this, index))
+				if(!el.setInput(node.inputIndex, this, index, true))
 					return false;
 			} else
 				return false;
 
 			outputs[index] = node;
-			getBehavior().refreshOutputs(index);
+			getBehavior().setOutput(index, this.storedState.getOutput()[index]);
 
 			return true;
 		}
@@ -191,17 +190,24 @@ public class RedElement {
 	public RedElement init(RedElementState parent, BlockFace face) {
 		this.parent = parent;
 		this.face = face;
-		setupBehavior();
-		for(var i = 0; i < outputs.length; i++) {
-			var node = outputs[i];
-			if(node != null) {
-				RedElement el = node.getElement(this.parent);
-				if(el != null && el.isValid()) {
-					if(!el.setInput(node.inputIndex, this, i)) {
-						breakOutputNodeInternal(i);
+		if(asset != null) {
+			setupBehavior();
+			this.getBehavior().getWorld().execute(() -> {
+				for(var i = 0; i < outputs.length; i++) {
+					var node = outputs[i];
+					if(node != null) {
+						RedElement el = node.getElement(this.parent);
+						if(el != null && el.isValid()) {
+							if(!el.setInput(node.inputIndex, this, i, false)) {
+								breakOutputNodeInternal(i);
+							} else
+								this.behavior.setOutput((short) i, behavior.getOutputState(i));
+						}
 					}
 				}
-			}
+				this.behavior.timers.add(() -> this.behavior.updateLightState(), 2);
+			});
+
 		}
 		return this;
 	}
