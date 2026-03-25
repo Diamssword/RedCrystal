@@ -6,16 +6,15 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.DelayedEntitySystem;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.inventory.MaterialQuantity;
+import com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer;
 import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
+import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import org.bson.BsonDocument;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public class PlayerSystems {
 	public static class ToolTicking extends EntityTickingSystem<EntityStore> {
@@ -62,9 +61,9 @@ public class PlayerSystems {
 
 			var player = archetypeChunk.getComponent(index, Player.getComponentType());
 			if(player != null) {
-				var hotbar = player.getInventory().getHotbar();
-				for(short i = 0; i < hotbar.getCapacity(); i++) {
-					var stack = hotbar.getItemStack(i);
+				var hotbar = player.getReference().getStore().getComponent(player.getReference(), InventoryComponent.Hotbar.getComponentType());
+				for(short i = 0; i < hotbar.getInventory().getCapacity(); i++) {
+					var stack = hotbar.getInventory().getItemStack(i);
 					if(!ItemStack.isEmpty(stack)) {
 						if(stack.getMaxDurability() > 0 && stack.getDurability() < stack.getMaxDurability()) {
 							if(stack.getItem() != null && stack.getItem().getData() != null) {
@@ -86,10 +85,12 @@ public class PlayerSystems {
 		}
 
 		private void consumeShard(short slot, Player player) {
-			var result = player.getInventory().getCombinedBackpackStorageHotbar().removeItemStack(new ItemStack("RedCrystal_Red_Sliver", 1));
+			CombinedItemContainer combinedInventoryComponent = InventoryComponent.getCombined(player.getReference().getStore(), player.getReference(), InventoryComponent.EVERYTHING);
+			var result = combinedInventoryComponent.removeItemStack(new ItemStack("RedCrystal_Red_Sliver", 1));
+			var hotbar = player.getReference().getStore().getComponent(player.getReference(), InventoryComponent.Hotbar.getComponentType());
 			if(result.succeeded()) {
-				var st = player.getInventory().getHotbar().getItemStack(slot);
-				player.getInventory().getHotbar().replaceItemStackInSlot(slot, st, st.withIncreasedDurability(1));
+				var st = hotbar.getInventory().getItemStack(slot);
+				hotbar.getInventory().replaceItemStackInSlot(slot, st, st.withIncreasedDurability(1));
 			}
 
 		}

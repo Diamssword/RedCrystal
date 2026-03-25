@@ -5,15 +5,11 @@ import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.server.core.asset.type.model.config.Model;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class RedEntityHiddenComponent implements Component<EntityStore> {
@@ -102,7 +98,7 @@ public class RedEntityHiddenComponent implements Component<EntityStore> {
 		return baseScale;
 	}
 
-	public static enum Visibility {
+	public enum Visibility {
 		Hidden,
 		Visible,
 		Pulse,

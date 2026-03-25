@@ -2,12 +2,7 @@ package com.diamssword.redCrystal.storage.assets;
 
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelParticle;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class BehaviorAssetWithSettings {
 
@@ -18,10 +13,6 @@ public class BehaviorAssetWithSettings {
 				.build();
 	}
 
-	/*public static BuilderCodec<BehaviorAssetWithSettings> BinaryCodec(String id) {
-		return BaseCodec(id).append(new KeyedCodec<>("IsBinary", BuilderCodec.BOOLEAN), (a, b) -> a.params.put("IsBinary", b), a -> a.getBoolean("IsBinary"))
-				.documentation("Process the incoming signals as binary").add().build();
-	}*/
 	public static BuilderCodec<BehaviorAssetBinary> BinaryCodec(String id) {
 		return BuilderCodec.builder(BehaviorAssetBinary.class, () -> new BehaviorAssetBinary(id)).append(new KeyedCodec<>("IsBinary", BuilderCodec.BOOLEAN), (a, b) -> a.isBinary = b, a -> a.isBinary)
 				.documentation("Process the incoming signals as binary").add().build();
@@ -34,7 +25,7 @@ public class BehaviorAssetWithSettings {
 
 	public static BuilderCodec<BehaviorAssetParticle> ParticleCodec(String id) {
 		return BuilderCodec.builder(BehaviorAssetParticle.class, () -> new BehaviorAssetParticle(id))
-				.<ModelParticle[]>appendInherited(
+				.appendInherited(
 						new KeyedCodec<>("Particles", ModelParticle.ARRAY_CODEC),
 						(item, s) -> item.particles = s,
 						item -> item.particles,

@@ -3,7 +3,6 @@ package com.diamssword.redCrystal.behavior;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
-import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.hypixel.hytale.component.Holder;

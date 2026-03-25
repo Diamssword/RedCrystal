@@ -6,10 +6,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class GlyphGenerator {
-	public static void main() throws IOException {
+	static void main() throws IOException {
 		var runes = TextureGenerator.getImages("glyphs");
 		var common = getCommonResource();
 		System.out.println("starting glyph generation...");

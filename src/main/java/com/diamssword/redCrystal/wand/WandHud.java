@@ -3,8 +3,7 @@ package com.diamssword.redCrystal.wand;
 import au.ellie.hyui.builders.*;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.storage.PlayerDatas;
-import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
@@ -13,7 +12,6 @@ import java.util.Optional;
 
 public class WandHud {
 	private final PlayerRef playerRef;
-	private final Inventory inventory;
 	private final PlayerDatas playerDatas;
 	private HyUIHud toolHud;
 	private HyUIHud hoveredHud;
@@ -21,14 +19,13 @@ public class WandHud {
 	public WandHud(PlayerRef player, PlayerDatas datas) {
 		this.playerRef = player;
 		this.playerDatas = datas;
-		inventory = player.getReference().getStore().getComponent(player.getReference(), Player.getComponentType()).getInventory();
 		create();
 	}
 
 	public void create() {
 
 		var hud = HudBuilder.hudForPlayer(playerRef).loadHtml("Pages/RedCrystal/WandHudTool.html").onRefresh(this::onRefreshTool);
-		var tool = RedWandTool.getForStack(inventory.getActiveHotbarItem());
+		var tool = RedWandTool.getForStack(InventoryComponent.getItemInHand(playerRef.getReference().getStore(), playerRef.getReference()));
 		hud.getById("SelectedPanel", GroupBuilder.class).ifPresent(p -> {
 			p.withVisible(tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank());
 			hud.getById("Selected", LabelBuilder.class).ifPresent(l -> {
@@ -38,8 +35,8 @@ public class WandHud {
 		var hud1 = HudBuilder.hudForPlayer(playerRef).loadHtml("Pages/RedCrystal/WandHudHover.html").withRefreshRate(500).onRefresh(ui -> {updateHovered(ui::getById);});
 		updateHovered(hud1::getById);
 		playerRef.getReference().getStore().getExternalData().getWorld().execute(() -> {
-			toolHud = hud.show(playerRef.getReference().getStore());
-			hoveredHud = hud1.show(playerRef.getReference().getStore());
+			toolHud = hud.show(playerRef);
+			hoveredHud = hud1.show(playerRef);
 		});
 
 	}
@@ -133,7 +130,7 @@ public class WandHud {
 	}
 
 	private void onRefreshTool(HyUIHud hud) {
-		var stack = inventory.getActiveHotbarItem();
+		var stack = InventoryComponent.getItemInHand(playerRef.getReference().getStore(), playerRef.getReference());
 		if(stack != null) {
 			var tool = RedWandTool.getForStack(stack);
 			hud.getById("SelectedPanel", GroupBuilder.class).ifPresent(p -> {

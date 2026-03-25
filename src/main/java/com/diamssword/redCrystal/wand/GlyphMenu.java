@@ -10,12 +10,12 @@ import com.diamssword.redCrystal.storage.Glyph;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import javax.annotation.Nullable;
-import javax.naming.directory.Attribute;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,11 +38,13 @@ public class GlyphMenu {
 	public HyUIPage openMenu(PlayerRef ref) {
 		this.playerRef = ref;
 		var player = ref.getReference().getStore().getComponent(ref.getReference(), Player.getComponentType());
-		ItemStack stack = player.getInventory().getActiveHotbarItem();
+
+		ItemStack stack = InventoryComponent.getItemInHand(playerRef.getReference().getStore(), playerRef.getReference());
 		if(stack != null) {
 			toolSettings = RedWandTool.getForStack(stack);
 			setSelected(toolSettings.getSelectedGlyph());
-			slot = player.getInventory().getActiveHotbarSlot();
+			var hotbar = playerRef.getReference().getStore().getComponent(playerRef.getReference(), InventoryComponent.Hotbar.getComponentType());
+			slot = hotbar.getActiveSlot();
 			var prototype = PageBuilder.detachedPage().loadHtml("Pages/RedCrystal/GlyphMenu.html")
 					.withLifetime(CustomPageLifetime.CanDismiss);
 
@@ -75,7 +77,7 @@ public class GlyphMenu {
 
 	private void createGlyphs(GroupBuilder parent) {
 		var map = RedCrystalPlugin.GlyphAssets.getAssetMap().getAssetMap();
-		var count = map.keySet().size();
+		var count = map.size();
 		int lines = (int) Math.ceil(count / 4f);
 		linesSize = lines;
 		for(int i = 0; i < lines; i++) {
@@ -161,10 +163,6 @@ public class GlyphMenu {
 					hovered.set(index);
 					setupInfoPanel(ctx1, asset);
 				});
-		/*		b.addEventListenerWithContext(CustomUIEventBindingType.MouseExited, MouseEventData.class, (_, ctx1) -> {
-					if(index == hovered.get())
-						setupInfoPanel(ctx1, selectedAsset.get());
-				});*/
 			});
 		}
 	}
@@ -189,12 +187,6 @@ public class GlyphMenu {
 	private void selectButton(String id, UIContext ctx) {
 		if(!id.equals(selected.get())) {
 			toolSettings.setSelectedGlyph(id);
-		/*	styleButton(button, true);
-			ctx.getById("GlyphButton" + selectedID.get(), CustomButtonBuilder.class).ifPresent(b -> {
-				styleButton(b, false);
-			});
-			selectedID.set(index);
-*/
 			ctx.getById("search", TextFieldBuilder.class).ifPresent(f -> f.withValue(search.get()));
 			setSelected(id);
 			setupSelectedPanel(ctx);

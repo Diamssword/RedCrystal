@@ -78,7 +78,7 @@ public class DisplayEntitySystem extends EntityTickingSystem<EntityStore> {
 					}
 					NetworkUtil.sendEntityComponentUpdateToPlayer(e.getReference(), rune, null, new ComponentUpdate[]{update});
 				});
-			} catch(Exception exception) {}
+			} catch(Exception exception) {exception.printStackTrace();}
 		}
 	}
 }

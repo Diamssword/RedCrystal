@@ -1,8 +1,5 @@
 package com.diamssword.redCrystal.generated;
 
-import com.hypixel.hytale.server.core.util.io.FileUtil;
-
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;

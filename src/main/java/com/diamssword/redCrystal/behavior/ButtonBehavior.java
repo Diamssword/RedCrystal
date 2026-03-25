@@ -1,7 +1,6 @@
 package com.diamssword.redCrystal.behavior;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
-import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;

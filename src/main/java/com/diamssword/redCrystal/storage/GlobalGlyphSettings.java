@@ -1,13 +1,10 @@
 package com.diamssword.redCrystal.storage;
 
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
-import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.EnumCodec;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 public class GlobalGlyphSettings {
 	public static final BuilderCodec<GlobalGlyphSettings> CODEC = BuilderCodec.builder(GlobalGlyphSettings.class, GlobalGlyphSettings::new)

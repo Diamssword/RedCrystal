@@ -3,7 +3,6 @@ package com.diamssword.redCrystal.network;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
-import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.*;
@@ -30,7 +29,7 @@ public class NetworkUtil {
 	public static Set<Ref<EntityStore>> getVisibleEntities(Ref<EntityStore> playerRef) {
 		Store<EntityStore> store = playerRef.getStore();
 		EntityTrackerSystems.EntityViewer viewer = store.getComponent(playerRef, EntityTrackerSystems.EntityViewer.getComponentType());
-		return (viewer != null) ? viewer.visible : Collections.<Ref<EntityStore>>emptySet();
+		return (viewer != null) ? viewer.visible : Collections.emptySet();
 	}
 
 

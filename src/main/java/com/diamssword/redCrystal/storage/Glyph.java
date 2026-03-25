@@ -9,13 +9,11 @@ import com.hypixel.hytale.assetstore.map.JsonAssetWithMap;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.schema.metadata.ui.*;
-import com.hypixel.hytale.codec.validation.Validator;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.server.core.asset.common.CommonAssetValidator;
 import com.hypixel.hytale.server.core.asset.type.item.config.ItemTranslationProperties;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
 import java.util.Map;
 
 public class Glyph implements JsonAssetWithMap<String, DefaultAssetMap<String, Glyph>>, Comparable<Glyph> {

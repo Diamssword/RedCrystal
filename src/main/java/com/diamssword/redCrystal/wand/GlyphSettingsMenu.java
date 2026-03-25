@@ -4,14 +4,12 @@ import au.ellie.hyui.builders.*;
 import au.ellie.hyui.html.TemplateProcessor;
 import au.ellie.hyui.types.LayoutMode;
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
-import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderField;
 import com.hypixel.hytale.codec.codecs.simple.BooleanCodec;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.ui.DropdownEntryInfo;
 import com.hypixel.hytale.server.core.ui.LocalizableString;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -20,7 +18,6 @@ import org.bson.BsonString;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 

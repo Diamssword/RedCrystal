@@ -1,14 +1,12 @@
 package com.diamssword.redCrystal.wand;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
-import com.diamssword.redCrystal.network.NetworkUtil;
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
 import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.storage.RedElementState;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
@@ -16,17 +14,15 @@ import com.hypixel.hytale.math.vector.Vector2d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
-import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.asset.type.soundset.config.SoundSet;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
 
 public class RedWandTool {
 	public static final BuilderCodec<RedWandTool> CODEC = BuilderCodec.builder(RedWandTool.class, RedWandTool::new)
@@ -67,9 +63,10 @@ public class RedWandTool {
 	}
 
 	public static void updateToolStack(Player player, int slot, RedWandTool settings) {
-		var item = player.getInventory().getHotbar().getItemStack((short) slot);
+		var hotbar = player.getReference().getStore().getComponent(player.getReference(), InventoryComponent.Hotbar.getComponentType());
+		var item = hotbar.getInventory().getItemStack((short) slot);
 		if(item != null) {
-			player.getInventory().getHotbar().replaceItemStackInSlot((short) slot, item, item.withMetadata("RedCrystalToolSettings", RedWandTool.CODEC, settings));
+			hotbar.getInventory().replaceItemStackInSlot((short) slot, item, item.withMetadata("RedCrystalToolSettings", RedWandTool.CODEC, settings));
 			var dt = player.getReference().getStore().getComponent(player.getReference(), PlayerDatas.getComponentType());
 			if(dt != null) {
 				dt.onToolChange();
