@@ -213,8 +213,9 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static int redFromShort(short value) {
+		value = (short) Math.min(value, 255);
 		int v = Math.max(0, Math.min(RedCompBehavior.MAX, value & 0xFFFF));
-		double gamma = 2.2;                                 // adjust for perceptual brightness
+		double gamma = 1;                                 // adjust for perceptual brightness
 		int r = (int) Math.round(RedCompBehavior.MAX * Math.pow(v / (double) RedCompBehavior.MAX, gamma));
 		return 0xFF000000 | (r << 16);
 	}

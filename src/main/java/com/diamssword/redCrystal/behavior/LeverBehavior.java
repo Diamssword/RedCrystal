@@ -55,7 +55,7 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		var res = super.displayEntities(store, facing);
 		var holder = RedComponentDisplayUtils.createMinimalDisplayEntity(store, parent.getParent().getPosition(), facing);
-		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Lever"), 0.5f), facing);
+		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Lever"), 0.8f), facing);
 		short st = getInternalState("lever");
 		model = ModelUtils.withModel(model, "Items/RedCrystal/Lever" + (st == 1 ? "On" : "") + ".blockymodel", model.getTexture());
 		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));

@@ -3,8 +3,8 @@
     "Type": "NOT",
     "IsBinary": false
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/NotG.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/NotG@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Inverter.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Inverter@2x.png",
   "Outputs": 1,
   "Inputs": 1,
   "TranslationProperties": {

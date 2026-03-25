@@ -3,8 +3,8 @@
     "Type": "Variator",
     "Steps": 9
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Button.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Button@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Variator.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Variator@2x.png",
   "Outputs": 1,
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.Variator.name",

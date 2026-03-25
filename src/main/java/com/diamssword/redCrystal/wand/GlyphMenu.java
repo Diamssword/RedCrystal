@@ -54,7 +54,7 @@ public class GlyphMenu {
 				}
 			});
 			prototype.getById("mainSettings", GroupBuilder.class).ifPresent(div -> {
-				new GlyphSettingsMenu(ref, toolSettings::getMainSettings, s -> {
+				new GlyphSettingsMenu(ref, toolSettings.getMainSettings()::clone, s -> {
 					toolSettings.setMainSettings(s);
 					RedWandTool.updateToolStack(player, slot, toolSettings);
 				}).appendSettings(div);

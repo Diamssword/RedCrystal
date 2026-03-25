@@ -12,10 +12,12 @@ import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import io.netty.util.internal.ConcurrentSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PlayerDatas implements Component<EntityStore> {
 	public static ComponentType<EntityStore, PlayerDatas> getComponentType() {

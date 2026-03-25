@@ -2,8 +2,8 @@
   "BehaviorId": {
     "Type": "Lever"
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Button.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Button@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Lever.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Lever@2x.png",
   "Outputs": 1,
   "TranslationProperties": {
     "Name": "server.RedCrystal.glyph.Lever.name",

@@ -61,7 +61,7 @@ public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		var res = super.displayEntities(store, facing);
 		var holder = RedComponentDisplayUtils.createMinimalDisplayEntity(store, parent.getParent().getPosition(), facing);
-		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Variator"), 0.5f), facing);
+		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Variator"), 1f), facing);
 		short st = getInternalState("variator");
 		var rot = RedComponentDisplayUtils.rotationWithTilt(this.parent.getFace(), rotationBase * st);
 		var trans = holder.getComponent(TransformComponent.getComponentType());

@@ -13,8 +13,8 @@
       }
     ]
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Interact.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Interact@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Light.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Light@2x.png",
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {

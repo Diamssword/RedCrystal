@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
-	public static final short MAX = 255;
+	public static final short MAX = 256;
 	public static final short MIN = 0;
 	public final RedElement parent;
 	private final String id;

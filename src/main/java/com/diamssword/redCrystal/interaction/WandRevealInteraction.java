@@ -1,50 +1,24 @@
 package com.diamssword.redCrystal.interaction;
 
-import com.diamssword.redCrystal.display.ModelUtils;
-import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
-import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.network.NetworkUtil;
 import com.diamssword.redCrystal.storage.PlayerDatas;
-import com.diamssword.redCrystal.wand.LinkingState;
-import com.diamssword.redCrystal.wand.WandHud;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.vector.Transform;
-import com.hypixel.hytale.math.vector.Vector2d;
-import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.*;
-import com.hypixel.hytale.protocol.packets.entities.EntityUpdates;
-import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
-import com.hypixel.hytale.server.core.asset.type.model.config.Model;
-import com.hypixel.hytale.server.core.asset.type.model.config.ModelAttachment;
-import com.hypixel.hytale.server.core.cosmetics.CosmeticsModule;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.modules.collision.BlockCollisionProvider;
-import com.hypixel.hytale.server.core.modules.collision.CollisionMath;
-import com.hypixel.hytale.server.core.modules.collision.EntityRefCollisionProvider;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
-import com.hypixel.hytale.server.core.modules.entity.player.PlayerSkinComponent;
-import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
-import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInteraction;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.selector.RaycastSelector;
-import com.hypixel.hytale.server.core.receiver.IPacketReceiver;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.core.util.PositionUtil;
 import com.hypixel.hytale.server.core.util.TargetUtil;
-import com.nimbusds.jose.util.Pair;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class WandRevealInteraction extends SimpleInteraction {
 	public static final BuilderCodec<WandRevealInteraction> CODEC = BuilderCodec.builder(WandRevealInteraction.class, WandRevealInteraction::new, SimpleInteraction.CODEC).build();

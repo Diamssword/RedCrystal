@@ -10,7 +10,7 @@ public class ToggleBehavior extends RedCompBehavior<BehaviorAsset> {
 
 	@Override
 	void onSignalChange(short input, short oldValue, short value) {
-		if(value > MIN)
+		if(value > MIN && oldValue == MIN)
 			runNextTick(() -> setOutput((short) 0, getOutputState(0) == MIN ? value : MIN));
 	}
 
