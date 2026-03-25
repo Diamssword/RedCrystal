@@ -3,6 +3,7 @@ package com.diamssword.redCrystal.behavior;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
+import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.hypixel.hytale.component.Holder;
@@ -37,7 +38,7 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 			short st = getInternalState("lever");
 			setAllOutput(st == 0 ? MAX : MIN);
 			setInternalState("lever", (short) (st == 0 ? 1 : 0));
-			lightUpRune(this.parent.getEntities().getMain(), st == 0);
+			//lightUpRune(this.parent.getEntities().getMain(), st == 0);
 			var model = entity.getStore().getComponent(entity, ModelComponent.getComponentType());
 
 			if(model != null) {
@@ -48,7 +49,6 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 			}
 		}
 	}
-
 
 	@NullableDecl
 	@Override

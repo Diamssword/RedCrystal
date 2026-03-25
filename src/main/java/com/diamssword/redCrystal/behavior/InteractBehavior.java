@@ -49,7 +49,6 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 
 	@Override
 	void setLightState(DisplayState display) {
-		System.out.println("light change");
 		display.setMain(display.isAnyInputOn());
 	}
 
@@ -57,8 +56,6 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 	void onSignalChange(short input, short oldValue, short value) {
 		if(oldValue == value)
 			return;
-		this.parent.getParent().getChunkRef().getStore().getExternalData().getWorld().sendMessage(Message.raw("Signal is " + value));
-
 		var block = getWorld().getBlockType(this.parent.getParent().getPosition());
 		var map = block.getInteractions();
 		if(map != null && map.containsKey(InteractionType.Use)) {

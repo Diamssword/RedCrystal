@@ -10,6 +10,8 @@ import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.protocol.ComponentUpdate;
 import com.hypixel.hytale.protocol.ModelUpdate;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
+import com.hypixel.hytale.server.core.asset.type.model.config.ModelAttachment;
+import com.hypixel.hytale.server.core.modules.entity.component.Interactable;
 import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
@@ -46,46 +48,36 @@ public class DisplayEntitySystem extends EntityTickingSystem<EntityStore> {
 			});
 			if(hidden.needLightUpSync()) {
 				if(hidden.isLightUp()) {
-					lightRune(archetypeChunk.getReferenceTo(index), hidden);
 					hidden.setLightUpState(2);
+					updateRune(archetypeChunk.getReferenceTo(index), hidden, hidden.getVisibleScale());
 				} else {
 					hidden.setLightUpState(0);
-					hideRune(archetypeChunk.getReferenceTo(index), hidden);
+					updateRune(archetypeChunk.getReferenceTo(index), hidden, hidden.getHiddenScale());
 				}
 			}
 		}
 	}
 
-	public void lightRune(Ref<EntityStore> rune, RedEntityHiddenComponent comp) {
+	public void updateRune(Ref<EntityStore> rune, RedEntityHiddenComponent comp, float scale) {
 		var store = rune.getStore();
 		var modelComponent = store.getComponent(rune, ModelComponent.getComponentType());
 		if(modelComponent != null) {
 			try {
-				Model model = ModelUtils.withModel(modelComponent.getModel(), "Items/RedCrystal/Glyphs/Flat_Glow.blockymodel", modelComponent.getModel().getTexture());
+				Model model = ModelUtils.withModel(modelComponent.getModel(), comp.getCurrentModel(), modelComponent.getModel().getTexture());
 				ModelUpdate update = new ModelUpdate();
 				update.model = model.toPacket();
-				update.entityScale = comp.getVisibleScale();
+				update.entityScale = scale;
 				NetworkUtil.getPlayersInView(rune).forEach(e -> {
+					if(comp.getSeeingPlayers().contains(e)) {
+						var hasInteract = rune.getStore().getComponent(rune, Interactable.getComponentType()) != null;
+						if(hasInteract) {
+							var model1 = ModelUtils.withAttachment(model, new ModelAttachment("Items/RedCrystal/Glyphs/HitboxHighlight.blockymodel", "Items/RedCrystal/Glyphs/HitboxHighlight.png", null, null, 1));
+							update.model = model1.toPacket();
+						}
+						update.entityScale = comp.getVisibleScale();
+					}
 					NetworkUtil.sendEntityComponentUpdateToPlayer(e.getReference(), rune, null, new ComponentUpdate[]{update});
 				});
-
-			} catch(Exception exception) {}
-		}
-	}
-
-	public void hideRune(Ref<EntityStore> rune, RedEntityHiddenComponent comp) {
-		var store = rune.getStore();
-		var modelComponent = store.getComponent(rune, ModelComponent.getComponentType());
-		if(modelComponent != null) {
-			try {
-				Model model = ModelUtils.withModel(modelComponent.getModel(), "Items/RedCrystal/Glyphs/Flat.blockymodel", modelComponent.getModel().getTexture());
-				ModelUpdate update = new ModelUpdate();
-				update.model = model.toPacket();
-				update.entityScale = comp.getHiddenScale();
-				NetworkUtil.getPlayersInView(rune).forEach(e -> {
-					NetworkUtil.sendEntityComponentUpdateToPlayer(e.getReference(), rune, null, new ComponentUpdate[]{update});
-				});
-
 			} catch(Exception exception) {}
 		}
 	}

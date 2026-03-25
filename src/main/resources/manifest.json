@@ -10,7 +10,7 @@
     ],
     "Website": "https://your-plugin-website.com",
     "DisabledByDefault": false,
-    "IncludesAssetPack": true,
+    "IncludesAssetPack": false,
     "Dependencies": {
         "Hytale:InteractionModule": "*",
         "Hytale:EntityModule": "*",

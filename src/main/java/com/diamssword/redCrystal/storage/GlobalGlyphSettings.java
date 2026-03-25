@@ -7,6 +7,8 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.EnumCodec;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Supplier;
+
 public class GlobalGlyphSettings {
 	public static final BuilderCodec<GlobalGlyphSettings> CODEC = BuilderCodec.builder(GlobalGlyphSettings.class, GlobalGlyphSettings::new)
 			.append(new KeyedCodec<>("Visibility", new TypedEnumCodec<>(RedEntityHiddenComponent.Visibility.class)),
@@ -15,12 +17,18 @@ public class GlobalGlyphSettings {
 			.documentation("Set Glyph's visiblity:\n -Hidden:Shown only when powered\n -Visible:Always shown\n -Pulse:Only Show signal changing\n -Invisible:Never shown")
 			.add()
 			.build();
+
+	public GlobalGlyphSettings clone() {
+		var set = new GlobalGlyphSettings();
+		set.glyphVisibility = this.glyphVisibility;
+		return set;
+	}
+
 	private RedEntityHiddenComponent.Visibility glyphVisibility = RedEntityHiddenComponent.Visibility.Hidden;
 
 	public GlobalGlyphSettings() {}
 
 	public void updateFrom(GlobalGlyphSettings settings, RedElement element) {
-
 		if(this.glyphVisibility != settings.glyphVisibility) {
 			element.setAsset(element.getAsset());
 		}

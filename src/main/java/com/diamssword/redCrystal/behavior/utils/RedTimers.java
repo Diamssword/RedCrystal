@@ -15,12 +15,19 @@ public class RedTimers {
 	private int tick = 0;
 	private final List<Pair> scheluded = new ArrayList<>();
 	private final Queue<Pair> incoming = new ConcurrentLinkedQueue<>();
-	private AtomicIntegerArray plannedOutputs;
-	private Consumer<short[]> outFn;
+	private final AtomicIntegerArray plannedOutputs;
+	public final AtomicReference<Boolean> needLightStateUpdate = new AtomicReference<>(false);
+	private final Consumer<short[]> outFn;
+	private final Runnable lightStateUpdateFn;
 
-	public RedTimers(short outputSize, Consumer<short[]> outputChangeFunction) {
+	public RedTimers(short outputSize, Consumer<short[]> outputChangeFunction, Runnable updateLightState) {
 		plannedOutputs = new AtomicIntegerArray(outputSize);
 		this.outFn = outputChangeFunction;
+		this.lightStateUpdateFn = updateLightState;
+	}
+
+	public void markLightStateForUpdate() {
+		needLightStateUpdate.set(true);
 	}
 
 	public void setPlannedOutput(short index, short value) {
@@ -51,6 +58,10 @@ public class RedTimers {
 				values[i] = (short) plannedOutputs.get(i);
 			}
 			outFn.accept(values);
+		}
+		if(needLightStateUpdate.get() && lightStateUpdateFn != null) {
+			this.lightStateUpdateFn.run();
+			needLightStateUpdate.set(false);
 		}
 	}
 }

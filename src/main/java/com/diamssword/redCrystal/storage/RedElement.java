@@ -58,7 +58,8 @@ public class RedElement {
 		}
 		this.asset = asset;
 		this.behavior = null;
-		setupBehavior();
+		this.init(parent, face);
+		//setupBehavior();
 		return this;
 	}
 
@@ -86,6 +87,21 @@ public class RedElement {
 		var store = parent.getChunkRef().getStore().getExternalData().getWorld().getEntityStore();
 		if(this.linkedEntity != null) {
 			store.getWorld().execute(() -> linkedEntity.remove(store.getStore()));
+		}
+		for(int i = 0; i < this.outputs.length; i++) {
+			breakOutputNode(i);
+		}
+		for(int i = 0; i < this.inputs.length; i++) {
+			var in = inputs[i];
+			if(in != null) {
+				for(int j = 0; j < in.outputs.length; j++) {
+					if(in.getOuput(j).getInputIndex() == i) {
+						in.breakOutputNode(j);
+						break;
+					}
+				}
+
+			}
 		}
 		this.isValid = false;
 	}
@@ -205,7 +221,7 @@ public class RedElement {
 						}
 					}
 				}
-				this.behavior.timers.add(() -> this.behavior.updateLightState(), 2);
+				this.behavior.timers.add(() -> this.behavior.timers.markLightStateForUpdate(), 2);
 			});
 
 		}
@@ -236,6 +252,7 @@ public class RedElement {
 
 	public void onBreak(BlockFace s, CommandBuffer<ChunkStore> buffer) {
 		var world = parent.getChunkRef().getStore().getExternalData().getWorld();
+		this.invalidate();
 		if(world != null)
 			world.execute(() -> world.getEntityStore().getStore().addEntity(RedWandTool.dropDust(world.getEntityStore().getStore(), 1, parent.getPosition(), s), AddReason.SPAWN));
 

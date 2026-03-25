@@ -80,6 +80,7 @@ public class NetworkUtil {
 								model = ModelUtils.withAttachment(modelComponent.getModel(), new ModelAttachment("Items/RedCrystal/Glyphs/HitboxHighlight.blockymodel", "Items/RedCrystal/Glyphs/HitboxHighlight.png", null, null, 1));
 							else
 								model = new Model(modelComponent.getModel());
+							model = ModelUtils.withModel(model, hidd.getCurrentModel(), model.getTexture());
 							ModelUpdate update = new ModelUpdate();
 							update.model = model.toPacket();
 							update.entityScale = hidd.getVisibleScale();
@@ -92,6 +93,7 @@ public class NetworkUtil {
 					ModelComponent modelComponent = entityRef.getStore().getComponent(entityRef, ModelComponent.getComponentType());
 					if(modelComponent != null) {
 						Model model = ModelUtils.withAttachment(modelComponent.getModel());
+						model = ModelUtils.withModel(model, hidd.getCurrentModel(), model.getTexture());
 						ModelUpdate update = new ModelUpdate();
 						update.model = model.toPacket();
 						update.entityScale = hidd.getHiddenScale();

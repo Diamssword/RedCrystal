@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
@@ -40,7 +41,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		this.parent = parent;
 		this.id = id;
 		this.asset = asset;
-		this.timers = new RedTimers(outputsCount(), this::collectOutputsChanges);
+		this.timers = new RedTimers(outputsCount(), this::collectOutputsChanges, this::updateLightState);
 	}
 
 	private void collectOutputsChanges(short[] newOutputs) {
@@ -53,7 +54,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 			}
 		}
 		if(flg)
-			updateLightState();
+			timers.markLightStateForUpdate();
 	}
 
 	protected StateLoader getStateManager() {
@@ -106,7 +107,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 				setInputState(input, value);
 				onSignalChange(input, old, getInputState(input));
 			}
-			updateLightState();
+			timers.markLightStateForUpdate();
 		}
 	}
 
@@ -137,22 +138,21 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	protected void setOutputNow(short output, short value) {
 		var chan = parent.getOuput(output);
+		setOutputState(output, value);
 		if(chan != null) {
-			setOutputState(output, value);
+			//		setOutputState(output, value);
 			var behavior = chan.getBehavior(parent.getParent());
 			if(behavior != null && behavior.parent.isValid()) {
 				behavior.setInput(chan.getInputIndex(), value);
 				if(value > 0 && parent.getSettings().getVisibility() != RedEntityHiddenComponent.Visibility.Invisible)
 					RedComponentDisplayUtils.drawLaser(getWorld().getEntityStore().getStore(), RedComponentDisplayUtils.getInputPosition(chan.getInputIndex(), behavior), RedComponentDisplayUtils.getOutputPosition(output, this), 0.5f, value);
 
-				if(parent.getSettings().getVisibility() == RedEntityHiddenComponent.Visibility.Pulse)
-					timers.add(() -> lightUpRune(this.parent.getEntities().getOutput(output), false), 10);
 			}
 
 		}
 	}
 
-	public void updateLightState() {
+	protected void updateLightState() {
 		var state = new DisplayState(InputsCount(), outputsCount());
 		var bl = false;
 		for(int i = 0; i < InputsCount(); i++) {
@@ -167,13 +167,14 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		}
 		state.setMain(bl);
 		setLightState(state);
-		var entities = this.parent.getEntities();
-		lightUpRune(entities.getMain(), state.getMain());
-		for(int i = 0; i < state.getInputs().length; i++) {
-			lightUpRune(entities.getInput((short) i), state.getInputs()[i]);
-		}
-		for(int i = 0; i < state.getOutputs().length; i++) {
-			lightUpRune(entities.getOutput((short) i), state.getOutputs()[i]);
+		state.updateEntities(this.parent.getEntities());
+
+		if(parent.getSettings().getVisibility() == RedEntityHiddenComponent.Visibility.Pulse) {
+			timers.add(() -> {
+				var st = new DisplayState(InputsCount(), outputsCount());
+				st.setAll(false);
+				st.updateEntities(this.parent.getEntities());
+			}, 10);
 		}
 	}
 
@@ -189,15 +190,6 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	public void setPulse(short output, short onValue, int ticks) {
 		setOutput(output, onValue);
 		timers.add(() -> setOutput(output, MIN), ticks);
-	}
-
-
-	protected void lightUpRune(Ref<EntityStore> entity, boolean on) {
-		if(entity != null) {
-			var comp = entity.getStore().getComponent(entity, RedEntityHiddenComponent.getComponentType());
-			if(comp != null)
-				comp.setLightUp(on);
-		}
 	}
 
 	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity, InteractionContext context, InteractType action) {
@@ -241,7 +233,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	public void onMainRuneInteract(Ref<EntityStore> player, @Nullable Ref<EntityStore> entity, InteractionContext context, InteractType action) {
 		var pl = player.getStore().getComponent(player, PlayerRef.getComponentType());
 		if(pl != null)
-			new GlyphSettingsMenu(pl, this.parent::getSettings, this.parent::updateSettings).openMenu();
+			new GlyphSettingsMenu(pl, this.parent.getSettings()::clone, this.parent::updateSettings).openMenu();
 	}
 
 	public enum InteractType {

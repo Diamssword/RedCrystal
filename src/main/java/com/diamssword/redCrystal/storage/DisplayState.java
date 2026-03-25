@@ -1,5 +1,10 @@
 package com.diamssword.redCrystal.storage;
 
+import com.diamssword.redCrystal.display.DisplayEntityGroup;
+import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+
 import java.util.Arrays;
 
 public class DisplayState {
@@ -12,6 +17,24 @@ public class DisplayState {
 		Arrays.fill(inputs, false);
 		outputs = new Boolean[sizeOut];
 		Arrays.fill(outputs, false);
+	}
+
+	protected void lightUpRune(Ref<EntityStore> entity, boolean on) {
+		if(entity != null) {
+			var comp = entity.getStore().getComponent(entity, RedEntityHiddenComponent.getComponentType());
+			if(comp != null)
+				comp.setLightUp(on);
+		}
+	}
+
+	public void updateEntities(DisplayEntityGroup entities) {
+		lightUpRune(entities.getMain(), getMain());
+		for(int i = 0; i < getInputs().length; i++) {
+			lightUpRune(entities.getInput((short) i), getInputs()[i]);
+		}
+		for(int i = 0; i < getOutputs().length; i++) {
+			lightUpRune(entities.getOutput((short) i), getOutputs()[i]);
+		}
 	}
 
 	public void setOutput(short index, boolean value) {
@@ -62,5 +85,11 @@ public class DisplayState {
 				return true;
 		}
 		return false;
+	}
+
+	public void setAll(boolean b) {
+		this.setMain(b);
+		this.setAllInputs(b);
+		setAllOutputs(b);
 	}
 }

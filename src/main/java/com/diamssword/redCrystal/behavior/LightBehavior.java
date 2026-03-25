@@ -35,7 +35,6 @@ public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Beh
 
 		var ent = this.parent.getEntities().getOther("light");
 		if(ent != null && ent.isValid()) {
-			lightUpRune(ent, value > MIN);
 			var model = ent.getStore().getComponent(ent, ModelComponent.getComponentType());
 			if(model != null)
 				execute(() -> {

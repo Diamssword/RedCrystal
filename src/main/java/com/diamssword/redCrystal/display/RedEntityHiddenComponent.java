@@ -5,6 +5,7 @@ import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 public class RedEntityHiddenComponent implements Component<EntityStore> {
+	private static final String BASE_MODEL = "Items/RedCrystal/Glyphs/Flat.blockymodel";
+	private static final String GLOW_MODEL = "Items/RedCrystal/Glyphs/Flat_Glow.blockymodel";
 	private final float baseScale;
 	private final Visibility visibility;
 	public final RedElement parent;
@@ -71,6 +74,10 @@ public class RedEntityHiddenComponent implements Component<EntityStore> {
 		}
 	}
 
+	public String getCurrentModel() {
+		return isLightUp() ? GLOW_MODEL : BASE_MODEL;
+	}
+
 	public void setLightUpState(int lightUpState) {
 		this.lightUpState = lightUpState;
 	}
@@ -86,6 +93,8 @@ public class RedEntityHiddenComponent implements Component<EntityStore> {
 	}
 
 	public float getHiddenScale() {
+		if(isLightUp() && visibility != Visibility.Invisible)
+			return baseScale;
 		return visibility == Visibility.Visible ? baseScale : 0.00001f;
 	}
 

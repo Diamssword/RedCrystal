@@ -1,6 +1,7 @@
 package com.diamssword.redCrystal.behavior;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
+import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
@@ -36,14 +37,13 @@ public class ButtonBehavior extends RedCompBehavior<BehaviorAsset> {
 		super.onEntityInteract(type, index, player, entity, context, action);
 		if(type.equals("button") && action == InteractType.Interact) {
 			pulseAllOutput(MAX, 10);
-			lightUpRune(this.parent.getEntities().getMain(), true);
-			timers.add(() -> lightUpRune(this.parent.getEntities().getMain(), false), 10);
 			var model = entity.getStore().getComponent(entity, ModelComponent.getComponentType());
 			if(model != null) {
 				AnimationUtils.playAnimation(entity, AnimationSlot.Status, "Press", false, entity.getStore());
 			}
 		}
 	}
+
 
 	@NullableDecl
 	@Override
