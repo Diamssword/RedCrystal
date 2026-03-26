@@ -15,15 +15,16 @@
     "Light": {
       "Color": "#fff",
       "Radius": 0
-    }
+    },
+    "IsRGB": true
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/Light.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Light@2x.png",
   "Outputs": 0,
-  "Inputs": 1,
+  "Inputs": 3,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Light.name",
-    "Description": "server.RedCrystal.glyph.Light.desc"
+    "Name": "server.RedCrystal.glyph.ColoredLight.name",
+    "Description": "server.RedCrystal.glyph.ColoredLight.desc"
   },
   "Tags": {
     "Type": [

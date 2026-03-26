@@ -1,5 +1,16 @@
 package com.diamssword.redCrystal.behavior;
 
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.inputs.ButtonBehavior;
+import com.diamssword.redCrystal.behavior.inputs.LeverBehavior;
+import com.diamssword.redCrystal.behavior.inputs.VariatorBehavior;
+import com.diamssword.redCrystal.behavior.modifiers.AndBehavior;
+import com.diamssword.redCrystal.behavior.modifiers.NotBehavior;
+import com.diamssword.redCrystal.behavior.modifiers.OrBehavior;
+import com.diamssword.redCrystal.behavior.modifiers.ToggleBehavior;
+import com.diamssword.redCrystal.behavior.outputs.FanBehavior;
+import com.diamssword.redCrystal.behavior.outputs.InteractBehavior;
+import com.diamssword.redCrystal.behavior.outputs.LightBehavior;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
@@ -24,9 +35,10 @@ public class RedComponentRegister {
 		register("AND", AndBehavior::new);
 		register("OR", OrBehavior::new, BehaviorAssetWithSettings::AbsoluteCodec);
 		register("NOT", NotBehavior::new, BehaviorAssetWithSettings::BinaryCodec);
-		register("Light", LightBehavior::new, BehaviorAssetWithSettings::ParticleCodec);
+		register("Light", LightBehavior::new, BehaviorAssetWithSettings::LightCodec);
 		register("Lever", LeverBehavior::new);
 		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec);
+		register("Fan", FanBehavior::new, BehaviorAssetWithSettings::DistanceCodec);
 
 
 	}

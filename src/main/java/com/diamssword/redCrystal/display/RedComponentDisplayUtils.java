@@ -1,6 +1,6 @@
 package com.diamssword.redCrystal.display;
 
-import com.diamssword.redCrystal.behavior.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.matrix.Matrix4d;

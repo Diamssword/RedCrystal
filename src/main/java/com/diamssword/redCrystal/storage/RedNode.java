@@ -1,12 +1,11 @@
 package com.diamssword.redCrystal.storage;
 
-import com.diamssword.redCrystal.behavior.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
-import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

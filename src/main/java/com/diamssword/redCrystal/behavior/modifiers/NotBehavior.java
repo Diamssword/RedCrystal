@@ -1,5 +1,6 @@
-package com.diamssword.redCrystal.behavior;
+package com.diamssword.redCrystal.behavior.modifiers;
 
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.storage.RedElement;
 
@@ -15,7 +16,7 @@ public class NotBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 
 
 	@Override
-	void onSignalChange(short input, short oldValue, short value) {
+	public void onSignalChange(short input, short oldValue, short value) {
 
 		if(isBinary) {
 			runNextTick(() -> setAllOutput(value == MIN ? MAX : MIN));

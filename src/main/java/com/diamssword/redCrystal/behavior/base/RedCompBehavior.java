@@ -1,11 +1,10 @@
-package com.diamssword.redCrystal.behavior;
+package com.diamssword.redCrystal.behavior.base;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
-import com.diamssword.redCrystal.behavior.utils.RedTimers;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.component.Holder;
@@ -110,7 +109,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		}
 	}
 
-	abstract void onSignalChange(short input, short oldValue, short value);
+	public abstract void onSignalChange(short input, short oldValue, short value);
 
 	public void setAllOutput(short value) {
 		for(int i = 0; i < outputsCount(); i++) {
@@ -182,7 +181,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	 *
 	 * @param display a displaystate to modify
 	 */
-	void setLightState(DisplayState display) {
+	protected void setLightState(DisplayState display) {
 
 	}
 
@@ -246,11 +245,11 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		return new HashMap<>();
 	}
 
-	void runNextTick(Runnable runnable) {
+	protected void runNextTick(Runnable runnable) {
 		timers.add(runnable, 1);
 	}
 
-	void execute(Runnable runnable) {
+	protected void execute(Runnable runnable) {
 		World w = getWorld();
 		if(w != null)
 			w.execute(runnable);

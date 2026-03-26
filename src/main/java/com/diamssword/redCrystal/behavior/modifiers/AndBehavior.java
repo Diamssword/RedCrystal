@@ -1,5 +1,6 @@
-package com.diamssword.redCrystal.behavior;
+package com.diamssword.redCrystal.behavior.modifiers;
 
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.RedElement;
 
@@ -12,7 +13,7 @@ public class AndBehavior extends RedCompBehavior<BehaviorAsset> {
 
 
 	@Override
-	void onSignalChange(short input, short oldValue, short value) {
+	public void onSignalChange(short input, short oldValue, short value) {
 		if(value == MIN) {
 			runNextTick(() -> setAllOutput(MIN));
 		} else {

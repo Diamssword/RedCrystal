@@ -3,7 +3,7 @@ package com.diamssword.redCrystal.storage;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.display.DisplayEntityGroup;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
-import com.diamssword.redCrystal.behavior.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;

@@ -1,6 +1,6 @@
 package com.diamssword.redCrystal.storage.assets;
 
-import com.diamssword.redCrystal.behavior.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.codec.lookup.CodecMapCodec;

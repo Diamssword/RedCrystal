@@ -2,7 +2,9 @@ package com.diamssword.redCrystal.storage.assets;
 
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.protocol.ColorLight;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelParticle;
+import com.hypixel.hytale.server.core.codec.ProtocolCodecs;
 
 public class BehaviorAssetWithSettings {
 
@@ -23,27 +25,45 @@ public class BehaviorAssetWithSettings {
 				.documentation("The numbers of steps this variator has").add().build();
 	}
 
-	public static BuilderCodec<BehaviorAssetParticle> ParticleCodec(String id) {
-		return BuilderCodec.builder(BehaviorAssetParticle.class, () -> new BehaviorAssetParticle(id))
-				.appendInherited(
-						new KeyedCodec<>("Particles", ModelParticle.ARRAY_CODEC),
-						(item, s) -> item.particles = s,
-						item -> item.particles,
-						(item, parent) -> item.particles = parent.particles
-				).add().build();
+	public static BuilderCodec<BehaviorAssetDistance> DistanceCodec(String id) {
+		return BuilderCodec.builder(BehaviorAssetDistance.class, () -> new BehaviorAssetDistance(id)).append(new KeyedCodec<>("Distance", BuilderCodec.FLOAT), (a, b) -> a.distance = b, a -> a.distance)
+				.documentation("The numbers of steps this variator has").add().build();
 	}
 
-	public static class BehaviorAssetParticle extends AbstractBehaviorAsset<BehaviorAssetParticle> {
+	public static BuilderCodec<BehaviorAssetLight> LightCodec(String id) {
+		return BuilderCodec.builder(BehaviorAssetLight.class, () -> new BehaviorAssetLight(id))
+				.appendInherited(new KeyedCodec<>("Particles", ModelParticle.ARRAY_CODEC), (item, s) -> item.particles = s, item -> item.particles, (item, parent) -> item.particles = parent.particles
+				)
+				.add()
+				.appendInherited(new KeyedCodec<>("Light", ProtocolCodecs.COLOR_LIGHT), (a, b) -> a.light = b, a -> a.light, (a, b) -> a.light = b.light)
+				.add()
+				.append(new KeyedCodec<>("IsRGB", BuilderCodec.BOOLEAN), (a, b) -> a.isRGB = b, a -> a.isRGB)
+				.add()
+				.build();
+	}
 
+	public static class BehaviorAssetLight extends AbstractBehaviorAsset<BehaviorAssetLight> {
+		public ColorLight light = new ColorLight((byte) 0, (byte) 25, (byte) 25, (byte) 25);
+		public boolean isRGB = false;
 		public ModelParticle[] particles = new ModelParticle[0];
 
-		public BehaviorAssetParticle(String id) {
+		public BehaviorAssetLight(String id) {
 			super(id);
 		}
 
 	}
 
-	public static class BehaviorAssetSteps extends AbstractBehaviorAsset<BehaviorAssetBinary> {
+	public static class BehaviorAssetDistance extends AbstractBehaviorAsset<BehaviorAssetDistance> {
+
+		public float distance = 8;
+
+		public BehaviorAssetDistance(String id) {
+			super(id);
+		}
+
+	}
+
+	public static class BehaviorAssetSteps extends AbstractBehaviorAsset<BehaviorAssetSteps> {
 
 		public short steps = 9;
 
@@ -53,7 +73,7 @@ public class BehaviorAssetWithSettings {
 
 	}
 
-	public static class BehaviorAssetAbsolute extends AbstractBehaviorAsset<BehaviorAssetBinary> {
+	public static class BehaviorAssetAbsolute extends AbstractBehaviorAsset<BehaviorAssetAbsolute> {
 
 		public boolean isAbsolute;
 

@@ -2,7 +2,7 @@ package com.diamssword.redCrystal.interaction;
 
 
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
-import com.diamssword.redCrystal.behavior.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;

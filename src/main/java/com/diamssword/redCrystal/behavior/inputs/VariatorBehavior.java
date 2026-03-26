@@ -1,8 +1,8 @@
-package com.diamssword.redCrystal.behavior;
+package com.diamssword.redCrystal.behavior.inputs;
 
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
-import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.hypixel.hytale.component.Holder;
@@ -35,7 +35,7 @@ public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 	}
 
 	@Override
-	void onSignalChange(short input, short oldValue, short value) {
+	public void onSignalChange(short input, short oldValue, short value) {
 
 	}
 

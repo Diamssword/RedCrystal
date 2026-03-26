@@ -1,5 +1,6 @@
-package com.diamssword.redCrystal.behavior;
+package com.diamssword.redCrystal.behavior.inputs;
 
+import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
@@ -27,7 +28,7 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 	}
 
 	@Override
-	void onSignalChange(short input, short oldValue, short value) {
+	public void onSignalChange(short input, short oldValue, short value) {
 	}
 
 	@Override
