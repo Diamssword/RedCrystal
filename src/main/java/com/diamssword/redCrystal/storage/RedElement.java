@@ -149,7 +149,13 @@ public class RedElement {
 				inputs = Arrays.copyOf(inputs, index + 1);
 			}
 			if(inputs[index] != null && inputs[index].isValid() && inputs[index] != element) {
-				inputs[index].breakOutputNodeInternal(index);
+				for(int i = 0; i < inputs[index].outputs.length; i++) {
+					var ou = inputs[index].getOuput(i);
+					if(ou != null && ou.getInputIndex() == index) {
+						inputs[index].breakOutputNode(i);
+						break;
+					}
+				}
 			}
 			inputs[index] = element;
 			if(this.behavior != null && update)
@@ -189,12 +195,17 @@ public class RedElement {
 				outputs = Arrays.copyOf(outputs, index + 1);
 			}
 			RedElement el = node.getElement(this.parent);
+
 			if(el != null && el.isValid()) {
 				if(!el.setInput(node.inputIndex, this, index, true))
 					return false;
 			} else
 				return false;
-
+			if(outputs[index] != null) {
+				var elem = outputs[index].getElement(this.parent);
+				//if(elem != null)
+				//	elem.setInput(outputs[index].getInputIndex(), null, index, false);
+			}
 			outputs[index] = node;
 			getBehavior().setOutput(index, this.storedState.getOutput()[index]);
 

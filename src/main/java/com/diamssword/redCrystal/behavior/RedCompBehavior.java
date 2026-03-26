@@ -225,6 +225,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 			WandBlockInteraction.tryRemoveRune(getWorld(), parent.getParent(), parent.getFace(), context);
 			if(context.getState().state == InteractionState.Finished) {
 				RedWandTool.playSound("Break", parent.getParent().getPosition(), context.getEntity(), getWorld().getEntityStore().getStore());
+				RedWandTool.playParticle(parent.getParent().getPosition(), parent.getFace(), getWorld().getEntityStore().getStore());
 			}
 		}
 	}

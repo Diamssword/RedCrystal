@@ -10,19 +10,25 @@ import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.math.vector.Vector2d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.protocol.BlockParticleEvent;
+import com.hypixel.hytale.server.core.asset.type.blockparticle.config.BlockParticleSet;
 import com.hypixel.hytale.server.core.asset.type.soundset.config.SoundSet;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.modules.entity.EntityModule;
 import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
+import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class RedWandTool {
 	public static final BuilderCodec<RedWandTool> CODEC = BuilderCodec.builder(RedWandTool.class, RedWandTool::new)
@@ -105,6 +111,20 @@ public class RedWandTool {
 
 		var vec = RedComponentDisplayUtils.getCenteredPosition(blockPos, face, new Vector2d(0, 0));
 		return ItemComponent.generateItemDrop(accessor, new ItemStack("RedCrystal_Red_Sliver", count), vec, new Vector3f(), 0, 0, 0);
+	}
+
+	public static void playParticle(Vector3i at, BlockFace face, ComponentAccessor<EntityStore> accessor) {
+
+		SpatialResource<Ref<EntityStore>, EntityStore> playerSpatialResource = accessor.getResource(EntityModule.get().getPlayerSpatialResourceType());
+		List<Ref<EntityStore>> playerRefs = SpatialResource.getThreadLocalReferenceList();
+		var position = RedComponentDisplayUtils.getCenteredPosition(at, face, new Vector2d(0, 0));
+		playerSpatialResource.getSpatialStructure().collect(position, 75.0F, playerRefs);
+		var particles = BlockParticleSet.getAssetMap().getAsset(accessor.getExternalData().getWorld().getBlockType(at).getBlockParticleSetId());
+		if(particles != null) {
+			var id = particles.getParticleSystemIds().get(BlockParticleEvent.Break);
+			if(id != null)
+				ParticleUtil.spawnParticleEffect(id, position, 0, 0, 0, 0.3f, RedComponentDisplayUtils.redColorFromShort((short) 200), playerRefs, accessor);
+		}
 	}
 
 	public static void playSound(String type, Vector3i at, Ref<EntityStore> source, ComponentAccessor<EntityStore> accessor) {

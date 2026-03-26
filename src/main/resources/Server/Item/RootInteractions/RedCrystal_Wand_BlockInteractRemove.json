@@ -1,15 +1,9 @@
 {
   "Interactions": [
     {
-      "Type": "RedCrystal_Wand_Interact",
+      "Type": "RedCrystal_Wand_Interact_Entity",
       "RemoveMode": true,
-      "Failed": {
-        "Type": "RedCrystal_Wand_Interact_Entity",
-        "RemoveMode": true,
-        "Effects": {
-          "ItemAnimationId": "Mine"
-        }
-      },
+
       "Effects": {
         "ItemAnimationId": "Mine"
       }

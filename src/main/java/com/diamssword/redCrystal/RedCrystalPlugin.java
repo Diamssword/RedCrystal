@@ -45,7 +45,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 	@Override
 	protected void setup() {
 		var builder = HytaleAssetStore.builder(Glyph.class, new DefaultAssetMap<>());
-		builder.setPath("RedCrystal/Glyphs").setCodec(Glyph.CODEC).setKeyFunction(Glyph::getId).loadsAfter(ResourceType.class);
+		builder.setPath("RedCrystal/Glyphs").setCodec(Glyph.CODEC).loadsAfter(Item.class).setKeyFunction(Glyph::getId).loadsAfter(ResourceType.class);
 		GlyphAssets = AssetRegistry.register(builder.build());
 		RedComponentRegister.init();
 		RedElementComponent = this.getChunkStoreRegistry().registerComponent(RedElementState.class, "RedCrystal_RedElementState", RedElementState.CODEC);

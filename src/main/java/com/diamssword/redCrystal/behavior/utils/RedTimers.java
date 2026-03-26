@@ -16,7 +16,7 @@ public class RedTimers {
 	private final List<Pair> scheluded = new ArrayList<>();
 	private final Queue<Pair> incoming = new ConcurrentLinkedQueue<>();
 	private final AtomicIntegerArray plannedOutputs;
-	public final AtomicReference<Boolean> needLightStateUpdate = new AtomicReference<>(false);
+	private final AtomicReference<Boolean> needLightStateUpdate = new AtomicReference<>(false);
 	private final Consumer<short[]> outFn;
 	private final Runnable lightStateUpdateFn;
 

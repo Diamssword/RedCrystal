@@ -3,7 +3,7 @@
     "Type": "Light",
     "Particles": [
       {
-        "SystemId": "Light_Orb",
+        "SystemId": "RedCrystal_Light_Orb",
         "Color": "#981313",
         "TargetNodeName": "Origin",
         "PositionOffset": {
