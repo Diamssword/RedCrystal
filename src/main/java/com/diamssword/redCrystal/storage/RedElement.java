@@ -95,7 +95,8 @@ public class RedElement {
 			var in = inputs[i];
 			if(in != null) {
 				for(int j = 0; j < in.outputs.length; j++) {
-					if(in.getOuput(j).getInputIndex() == i) {
+					var out = in.getOuput(j);
+					if(out != null && out.getInputIndex() == i && out.getCachedElement() == this) {
 						in.breakOutputNode(j);
 						break;
 					}
@@ -151,7 +152,7 @@ public class RedElement {
 			if(inputs[index] != null && inputs[index].isValid() && inputs[index] != element) {
 				for(int i = 0; i < inputs[index].outputs.length; i++) {
 					var ou = inputs[index].getOuput(i);
-					if(ou != null && ou.getInputIndex() == index) {
+					if(ou != null && ou.getInputIndex() == index && ou.getCachedElement() == this) {
 						inputs[index].breakOutputNode(i);
 						break;
 					}

@@ -83,26 +83,26 @@ public class RedCrystalPlugin extends JavaPlugin {
 
 	private void onGlyphAssetChange(@Nonnull LoadedAssetsEvent<String, Glyph, DefaultAssetMap<String, Glyph>> event) {
 		if(!event.isInitial()) {
-			for(Map.Entry<String, Glyph> entry : event.getLoadedAssets().entrySet()) {
-
-				Universe.get().getWorlds().forEach((k, w) -> {
-					w.execute(() -> {
-						w.getChunkStore().getStore().forEachChunk(RedElementState.getComponent(), (archetypeChunk, buffer) -> {
-							for(int index = 0; index < archetypeChunk.size(); index++) {
-								var comp = archetypeChunk.getComponent(index, RedElementState.getComponent());
-								if(comp != null) {
-									comp.getAllElements().forEach((f, el) -> {
+			var keys = event.getLoadedAssets().keySet();
+			Universe.get().getWorlds().forEach((k, w) -> {
+				w.execute(() -> {
+					w.getChunkStore().getStore().forEachChunk(RedElementState.getComponent(), (archetypeChunk, buffer) -> {
+						for(int index = 0; index < archetypeChunk.size(); index++) {
+							var comp = archetypeChunk.getComponent(index, RedElementState.getComponent());
+							if(comp != null) {
+								comp.getAllElements().forEach((f, el) -> {
+									if(keys.contains(el.getAsset().getId())) {
 										var asset = event.getLoadedAssets().get(el.getAsset().getId());
 										if(asset != null) {
 											el.setAsset(asset);
 										}
-									});
-								}
+									}
+								});
 							}
-						});
+						}
 					});
 				});
-			}
+			});
 		}
 
 	}

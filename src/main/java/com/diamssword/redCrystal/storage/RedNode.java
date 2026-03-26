@@ -6,6 +6,7 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,6 +24,7 @@ public class RedNode {
 			.build();
 	protected Vector3i position;
 	protected BlockFace face;
+	protected RedElement cachedElement;
 	protected short inputIndex;
 
 	protected RedNode() {
@@ -85,10 +87,17 @@ public class RedNode {
 	}
 
 	@Nullable
+	public RedElement getCachedElement() {
+		return cachedElement;
+	}
+
+	@Nullable
 	public RedElement getElement(RedElementState known) {
+		if(cachedElement != null)
+			return cachedElement;
 		var state = getState(known);
 		if(state != null) {
-			return state.getElement(this.getFace());
+			return cachedElement = state.getElement(this.getFace());
 		}
 		return null;
 	}
