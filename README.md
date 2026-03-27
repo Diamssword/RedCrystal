@@ -1,55 +1,62 @@
-# Hytale Plugin Template
+![RedCrystal Banner](https://github.com/Diamssword/RedCrystal/blob/main/assets/banner.png?raw=true)
 
-A ready-to-use starting point for creating Hytale server plugins with Java, _or Kotlin_. If you've
-been using the Asset Editor and want to start writing server-side logic — custom commands, event
-handling, gameplay systems — this is the simplest place to begin.
+**Red Crystal** is an Hytale mod with a simple yet powerful system for interacting with and automating your world.
 
-## How to start?
+Using the **Glyph Carver**, you can inscribe glyphs onto any side of a block. Each glyph has unique properties, and by linking them together, you can create intricate and dynamic circuits.
 
-1. Copy the template by downloading it or using the "Use this template" button.
-2. [Configure or Install the Java SDK](https://hytalemodding.dev/en/docs/guides/plugin/setting-up-env)
-   to use the latest 25 from JetBrains or similar.
-3. Open the project in your favorite IDE, we
-   recommend [IntelliJ IDEA](https://www.jetbrains.com/idea/download).
-4. Optionally, run `./gradlew` if your IDE does not automtically synchronizes.
-5. Run the devserver with the Run Configuration created, or `./gradlew devServer`.
+Unlike traditional blocks, **glyphs do not occupy space**. Most can even be squeezed between two blocks, they also are not visible by default, allowing for compact and discret designs.
 
-> On Windows, use `.\gradlew.bat` instead of `./gradlew`, this script is here to run the
-> Gradle without you needing to install the tooling itself, only the Java is required.
+> ⚠️ _This mod is currently in an early stage of development._ Only a limited set of interactive glyphs is available for now, but many more are planned for future updates!
 
-With that you will be prompted in the output to authorize your server, and then you can start
-developing your plugin while the server is live reloading the code changes.
+***
 
-From here,
-the [HytaleModding guides](https://hytalemodding.dev/en/docs/guides/plugin/build-and-test) cover
-more details!
+## Getting Started
 
-## Scaffoldit Plugin
+Getting started is easy! You’ll only need:
 
-While there are multiple plugins made for Hytale, the template currently uses a zero-boilerplate one
-where you only need the absolute minimum to start. However, you do have access to everything as
-normal if you know what you are doing.
+*   An **Arcanist Workbench**
+*   Some **Red Crystal Shards**
+*   A bit of **Gold**
 
-For in-depth configuration, you can visit the [ScaffoldIt Plugin Docs](https://scaffoldit.dev).
+Craft the **Glyph Carver**, and you're ready to go — it's the only tool you'll need to begin experimenting with glyphs and automation.
 
-## Troubleshooting
+***
 
-- **Gradle sync fails in IntelliJ** –
-  _Check that Java 25 is installed and configured under File → Project Structure → SDKs._
-- **Build fails with missing dependencies** –
-  _Run `./gradlew build --refresh-dependencies`. Make sure you have internet access!_
-- **Permission denied on `./gradlew`** –
-  _Run `chmod +x gradlew` (macOS/Linux)._
-- **Hot-reload doesn't work** –
-  _Verify you're using JetBrains Runtime, not a regular JDK._
+## Glyph System Basics
 
-## Resources
+To begin, hold the **Glyph Carver** in your hand and press the `Ability 1` keybind (`Q` or `A` by default). This opens the glyph selection menu, where you can choose between three categories:
 
-- [Hytale Modding Guides](https://hytalemodding.dev)
-- [Hytale Modding Discord](https://discord.gg/hytalemodding)
-- [ScaffoldIt Plugin Docs](https://scaffoldit.dev)
+### Runes — Inputs
 
-## License
+Runes act as **inputs**. They gather information from the world and convert it into signals. This is where most systems begin.
 
-Add your own after copying the template, though we recommend using MIT, BSD, or Apache to keep
-the modding community open!
+### Hex — Transmission & Logic
+
+Hexes are used to **transport and transform signals**, allowing you to build more complex logic and connections.
+
+### Sigils — Outputs
+
+Sigils take a signal and **produce an effect in the world**, such as opening doors, emitting light, or triggering traps.
+
+***
+
+## 🎮 Controls
+
+*   **Place a glyph** → `Left Click` (Primary Ability) on a block
+*   **Remove a glyph** → `Right Click` (Secondary Ability)
+*   **Link glyphs** → `Left Click` an input/output, then connect it to another glyph
+*   **Remove a link** → `Right Click` an existing connection
+*   **Edit a glyph** → `Left Click` the central glyph node to modify its properties
+
+***
+
+## Rune Visibility
+
+By default, **runes are invisible** and only become visible when powered by a signal.
+
+You can change this behavior:
+
+*   Per rune → by editing an individual placed glyph
+*   Globally → via the **Global Settings** in the Carver Menu
+
+This allows you to customize visibility for both aesthetics and debugging.
