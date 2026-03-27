@@ -17,7 +17,7 @@ plugins {
 
 hytale {
 
-    usePatchline("pre-release")
+    usePatchline("release")
     useVersion("latest")
 
     repositories {

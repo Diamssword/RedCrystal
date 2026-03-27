@@ -18,8 +18,8 @@
     },
     "IsRGB": true
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Light.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Light@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/ColoredLight.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/ColoredLight@2x.png",
   "Outputs": 0,
   "Inputs": 3,
   "TranslationProperties": {

@@ -3,8 +3,8 @@
     "Type": "Fan",
     "Distance": 16
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Lever.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Lever@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Fan.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Fan@2x.png",
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {
