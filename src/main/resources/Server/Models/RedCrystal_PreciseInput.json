@@ -1,18 +1,18 @@
 {
-  "Model": "Items/RedCrystal/Lever.blockymodel",
+  "Model": "Items/RedCrystal/PreciseInput.blockymodel",
   "HitBox": {
     "Min": {
-      "X": -0.2,
-      "Y": -0.312,
-      "Z": -0.15
+      "X": -0.15,
+      "Y": -0.15,
+      "Z": -0.05
     },
     "Max": {
-      "Y": 0.312,
-      "Z": 0.15,
-      "X": 0.2
+      "Y": 0.15,
+      "Z": 0.05,
+      "X": 0.15
     }
   },
-  "Texture": "Items/RedCrystal/Lever.png",
+  "Texture": "Items/RedCrystal/PreciseInput.png",
   "AnimationSets": {
     "On": {
       "Animations": [

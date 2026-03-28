@@ -33,6 +33,6 @@ hytale {
         Main = "com.diamssword.redCrystal.RedCrystalPlugin"
         Version = modVersion
         Description = "A powerful way to automatically interact with the world"
-        IncludesAssetPack = false
+        IncludesAssetPack = true
     }
 }

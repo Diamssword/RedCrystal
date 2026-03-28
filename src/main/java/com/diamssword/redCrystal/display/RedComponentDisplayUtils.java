@@ -78,10 +78,10 @@ public class RedComponentDisplayUtils {
 	public static Vector3d rotationoffset(BlockFace face, double scale, double addedX, double addedY) {
 		return switch(face) {
 			case None -> new Vector3d(0, 0, 0);
-			case Up -> new Vector3d(addedX, scale, addedY);
+			case Up -> new Vector3d(-addedX, scale, addedY);
 			case Down -> new Vector3d(addedX, -scale, addedY);
-			case East -> new Vector3d(scale, addedY, addedX);
-			case West -> new Vector3d(-scale, addedY, -addedX);
+			case East -> new Vector3d(scale, addedY, -addedX);
+			case West -> new Vector3d(-scale, addedY, addedX);
 			case North -> new Vector3d(-addedX, addedY, -scale);
 			case South -> new Vector3d(addedX, addedY, scale);
 		};

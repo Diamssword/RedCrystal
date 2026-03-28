@@ -2,6 +2,7 @@ package com.diamssword.redCrystal.storage.assets;
 
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.protocol.ColorLight;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelParticle;
 import com.hypixel.hytale.server.core.codec.ProtocolCodecs;
@@ -42,6 +43,14 @@ public class BehaviorAssetWithSettings {
 				.build();
 	}
 
+	public static BuilderCodec<BehaviorAssetCalculus> CalculusCodec(String id) {
+		return BuilderCodec.builder(BehaviorAssetCalculus.class, () -> new BehaviorAssetCalculus(id))
+				.appendInherited(new KeyedCodec<>("Operation", new EnumCodec<>(BehaviorAssetCalculus.OperationType.class)), (item, s) -> item.operation = s, item -> item.operation, (item, parent) -> item.operation = parent.operation
+				)
+				.add()
+				.build();
+	}
+
 	public static class BehaviorAssetLight extends AbstractBehaviorAsset<BehaviorAssetLight> {
 		public ColorLight light = new ColorLight((byte) 0, (byte) 25, (byte) 25, (byte) 25);
 		public boolean isRGB = false;
@@ -68,6 +77,24 @@ public class BehaviorAssetWithSettings {
 		public short steps = 9;
 
 		public BehaviorAssetSteps(String id) {
+			super(id);
+		}
+
+	}
+
+	public static class BehaviorAssetCalculus extends AbstractBehaviorAsset<BehaviorAssetCalculus> {
+
+		public static enum OperationType {
+			ADD,
+			SUBSTRACT,
+			DIVIDE,
+			MULTIPLY,
+			MOD
+		}
+
+		public OperationType operation;
+
+		public BehaviorAssetCalculus(String id) {
 			super(id);
 		}
 

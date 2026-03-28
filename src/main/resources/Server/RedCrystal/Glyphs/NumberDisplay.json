@@ -1,0 +1,18 @@
+{
+  "BehaviorId": {
+    "Type": "NumberDisplay"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/NumberDisplay.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/NumberDisplay@2x.png",
+  "Outputs": 0,
+  "Inputs": 1,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.NumberDisplay.name",
+    "Description": "server.RedCrystal.glyph.NumberDisplay.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Sigil"
+    ]
+  }
+}

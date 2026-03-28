@@ -1,8 +1,9 @@
-package com.diamssword.redCrystal.wand;
+package com.diamssword.redCrystal.gui;
 
 import au.ellie.hyui.builders.*;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.storage.PlayerDatas;
+import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.universe.PlayerRef;

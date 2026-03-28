@@ -3,14 +3,13 @@ package com.diamssword.redCrystal.behavior;
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.behavior.inputs.ButtonBehavior;
 import com.diamssword.redCrystal.behavior.inputs.LeverBehavior;
+import com.diamssword.redCrystal.behavior.inputs.PreciseInput;
 import com.diamssword.redCrystal.behavior.inputs.VariatorBehavior;
-import com.diamssword.redCrystal.behavior.modifiers.AndBehavior;
-import com.diamssword.redCrystal.behavior.modifiers.NotBehavior;
-import com.diamssword.redCrystal.behavior.modifiers.OrBehavior;
-import com.diamssword.redCrystal.behavior.modifiers.ToggleBehavior;
+import com.diamssword.redCrystal.behavior.modifiers.*;
 import com.diamssword.redCrystal.behavior.outputs.FanBehavior;
 import com.diamssword.redCrystal.behavior.outputs.InteractBehavior;
 import com.diamssword.redCrystal.behavior.outputs.LightBehavior;
+import com.diamssword.redCrystal.behavior.outputs.NumberDisplayBehavior;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
@@ -39,6 +38,10 @@ public class RedComponentRegister {
 		register("Lever", LeverBehavior::new);
 		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec);
 		register("Fan", FanBehavior::new, BehaviorAssetWithSettings::DistanceCodec);
+		register("Calculus", CalculusBehavior::new, BehaviorAssetWithSettings::CalculusCodec);
+		register("PreciseInput", PreciseInput::new);
+		register("NumberDisplay", NumberDisplayBehavior::new);
+		register("Delayer", DelayBehavior::new, BehaviorAssetWithSettings::VariatorCodec);
 
 
 	}

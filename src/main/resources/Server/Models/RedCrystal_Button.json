@@ -2,17 +2,17 @@
   "Model": "Items/RedCrystal/Button.blockymodel",
   "HitBox": {
     "Min": {
-      "X": -0.5,
-      "Y": -0.312,
-      "Z": -0.15
+      "X": -0.25,
+      "Y": -0.15,
+      "Z": -0.12
     },
     "Max": {
-      "Y": 0.312,
-      "Z": 0.15,
-      "X": 0.5
+      "Y": 0.15,
+      "Z": 0.12,
+      "X": 0.25
     }
   },
-  "Texture": "Items/RedCrystal/button.png",
+  "Texture": "Items/RedCrystal/Button.png",
   "AnimationSets": {
     "Press": {
       "Animations": [

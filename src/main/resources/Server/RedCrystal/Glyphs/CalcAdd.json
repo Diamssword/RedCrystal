@@ -1,0 +1,19 @@
+{
+  "BehaviorId": {
+    "Type": "Calculus",
+    "Operation": "Add"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/CalcAdd.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/CalcAdd@2x.png",
+  "Outputs": 1,
+  "Inputs": 2,
+  "TranslationProperties": {
+    "Name": "server.RedCrystal.glyph.CalcAdd.name",
+    "Description": "server.RedCrystal.glyph.CalcAdd.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Hex"
+    ]
+  }
+}

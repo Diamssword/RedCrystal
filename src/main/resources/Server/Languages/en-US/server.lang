@@ -33,7 +33,17 @@ RedCrystal.glyph.ColoredLight.name=Colored Light
 RedCrystal.glyph.ColoredLight.desc=Use it's 3 inputs to define the Red,Green and Blue channels of the emitted light
 RedCrystal.glyph.Fan.name=[WIP]Fan
 RedCrystal.glyph.Fan.desc=Push entity in front of it with a force and distance debending on the signal's strength
-RedCrystal.glyph.Input.name=[TMP]Input
-RedCrystal.glyph.Input.desc=[TMP]Input's description
-RedCrystal.glyph.Output.name=[TMP]Output
-RedCrystal.glyph.Output.desc=[TMP]Output's description
+RedCrystal.glyph.CalcSubstract.name=Math: Substract
+RedCrystal.glyph.CalcSubstract.desc=Make a substract operation\nA-B=C\n(A is the left input,B is the right input)
+RedCrystal.glyph.CalcAdd.name=Math: Add
+RedCrystal.glyph.CalcAdd.desc=Add the 2 inputs together\nA+B=C\n(A is the left input,B is the right input)
+RedCrystal.glyph.CalcMod.name=Math: Modulo
+RedCrystal.glyph.CalcMod.desc=Make a modulo operation\nA%B=C\n(A is the left input,B is the right input)
+RedCrystal.glyph.CalcDivide.name=Math: Divide
+RedCrystal.glyph.CalcDivide.desc=Make a divide operation\nA/B=C\n(A is the left input,B is the right input)
+RedCrystal.glyph.CalcMultiply.name=Math: Multiply
+RedCrystal.glyph.CalcMultiply.desc=Make a multiply operation\nA*B=C\n(A is the left input,B is the right input)
+RedCrystal.glyph.NumberDisplay.name=Number Display
+RedCrystal.glyph.NumberDisplay.desc=Display the input strength as floating number
+RedCrystal.glyph.PreciseInput.name=Precise Input
+RedCrystal.glyph.PreciseInput.desc=Allow to precisely set the strength of the signal

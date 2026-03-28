@@ -32,14 +32,12 @@ public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Beh
 
 		var ent = this.parent.getEntities().getOther("light");
 		var light = getLightFromValue(value);
-		System.out.println(light.red);
 		if(ent != null && ent.isValid()) {
 			var model = ent.getStore().getComponent(ent, ModelComponent.getComponentType());
 			if(model != null)
 				execute(() -> {
 					ent.getStore().ensureComponent(ent, MovementStatesComponent.getComponentType());
 					ModelParticle[] particles = new ModelParticle[0];
-					System.out.println(light);
 					if(light.red > 0 || light.blue > 0 || light.green > 0) {
 						var col = asset.isRGB ? computeRGBColor() : computeColor(asset.light, value);
 						var scale = asset.isRGB ? Math.max(getInputState(0), Math.max(getInputState(1), getInputState(2))) / (float) MAX : value / (float) MAX;
@@ -59,9 +57,9 @@ public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Beh
 
 	public Color computeRGBColor() {
 		// Clamp inputs (0–255)
-		int R = Math.max(0, Math.min(255, getInputState(0)));
-		int G = Math.max(0, Math.min(255, getInputState(1)));
-		int B = Math.max(0, Math.min(255, getInputState(2)));
+		int R = Math.clamp(getInputState(0), 0, 255);
+		int G = Math.clamp(getInputState(1), 0, 255);
+		int B = Math.clamp(getInputState(2), 0, 255);
 
 		int gray = 128;
 

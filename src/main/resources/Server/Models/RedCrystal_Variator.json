@@ -2,17 +2,17 @@
   "Model": "Items/RedCrystal/Variator.blockymodel",
   "HitBox": {
     "Min": {
-      "X": -0.5,
-      "Y": -0.312,
-      "Z": -0.15
+      "X": -0.15,
+      "Y": -0.15,
+      "Z": -0.05
     },
     "Max": {
-      "Y": 0.312,
-      "Z": 0.15,
-      "X": 0.5
+      "Y": 0.15,
+      "Z": 0.05,
+      "X": 0.15
     }
   },
-  "Texture": "Items/RedCrystal/button.png",
+  "Texture": "Items/RedCrystal/Variator.png",
   "AnimationSets": {
     "On": {
       "Animations": [

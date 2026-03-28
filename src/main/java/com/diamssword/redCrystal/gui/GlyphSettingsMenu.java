@@ -1,4 +1,4 @@
-package com.diamssword.redCrystal.wand;
+package com.diamssword.redCrystal.gui;
 
 import au.ellie.hyui.builders.*;
 import au.ellie.hyui.html.TemplateProcessor;

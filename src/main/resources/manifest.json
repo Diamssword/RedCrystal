@@ -1,7 +1,7 @@
 {
     "Group": "Diamssword",
     "Name": "RedCrystal",
-    "Version": "0.0.1",
+    "Version": "0.0.2",
     "Description": "A powerful way to automatically interact with the world",
     "Authors": [
         {
@@ -10,7 +10,7 @@
     ],
     "Website": "https://your-plugin-website.com",
     "DisabledByDefault": false,
-    "IncludesAssetPack": false,
+    "IncludesAssetPack": true,
     "Dependencies": {
         "Hytale:InteractionModule": "*",
         "Hytale:EntityModule": "*",

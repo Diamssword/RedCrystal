@@ -50,7 +50,7 @@ public class ButtonBehavior extends RedCompBehavior<BehaviorAsset> {
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		var res = super.displayEntities(store, facing);
 		var holder = RedComponentDisplayUtils.createMinimalDisplayEntity(store, parent.getParent().getPosition(), facing);
-		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Button"), 0.5f), facing);
+		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Button"), 1f), facing);
 		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));
 		holder.ensureComponent(Interactable.getComponentType());
 		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));

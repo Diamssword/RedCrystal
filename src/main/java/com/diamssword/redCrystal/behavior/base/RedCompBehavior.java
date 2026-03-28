@@ -3,7 +3,7 @@ package com.diamssword.redCrystal.behavior.base;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.storage.*;
-import com.diamssword.redCrystal.wand.GlyphSettingsMenu;
+import com.diamssword.redCrystal.gui.GlyphSettingsMenu;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.wand.RedWandTool;

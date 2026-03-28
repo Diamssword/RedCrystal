@@ -3,7 +3,7 @@ package com.diamssword.redCrystal.storage;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.wand.LinkingState;
-import com.diamssword.redCrystal.wand.WandHud;
+import com.diamssword.redCrystal.gui.WandHud;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;

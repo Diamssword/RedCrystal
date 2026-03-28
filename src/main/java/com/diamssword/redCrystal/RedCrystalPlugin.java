@@ -2,7 +2,7 @@ package com.diamssword.redCrystal;
 
 import au.ellie.hyui.builders.HyUIPage;
 import com.diamssword.redCrystal.storage.*;
-import com.diamssword.redCrystal.wand.GlyphMenu;
+import com.diamssword.redCrystal.gui.GlyphMenu;
 import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.display.DisplayEntitySystem;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
@@ -27,7 +27,6 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Map;
 
 public class RedCrystalPlugin extends JavaPlugin {
 

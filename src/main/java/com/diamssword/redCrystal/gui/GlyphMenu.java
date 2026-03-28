@@ -1,4 +1,4 @@
-package com.diamssword.redCrystal.wand;
+package com.diamssword.redCrystal.gui;
 
 import au.ellie.hyui.builders.*;
 import au.ellie.hyui.events.MouseEventData;
@@ -7,6 +7,7 @@ import au.ellie.hyui.types.DefaultStyles;
 import au.ellie.hyui.types.LayoutMode;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.storage.Glyph;
+import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
