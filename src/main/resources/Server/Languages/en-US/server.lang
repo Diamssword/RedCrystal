@@ -47,3 +47,5 @@ RedCrystal.glyph.NumberDisplay.name=Number Display
 RedCrystal.glyph.NumberDisplay.desc=Display the input strength as floating number
 RedCrystal.glyph.PreciseInput.name=Precise Input
 RedCrystal.glyph.PreciseInput.desc=Allow to precisely set the strength of the signal
+RedCrystal.glyph.Delayer.name=Delayer
+RedCrystal.glyph.Delayer.desc=Replicate the input signal but with a 2 seconds delay

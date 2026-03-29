@@ -1,10 +1,10 @@
 {
   "BehaviorId": {
     "Type": "Delayer",
-    "Steps": 10
+    "Steps": 20
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Relay.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Relay@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Delayer.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Delayer@2x.png",
   "Outputs": 5,
   "Inputs": 1,
   "TranslationProperties": {

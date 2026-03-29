@@ -94,8 +94,9 @@ public class RedWandTool {
 						RedComponentDisplayUtils.createTempRune(world.getEntityStore(), el.getParent().getPosition(), face, el);
 						if(player != null && player.isValid()) {
 							var comp = player.getStore().getComponent(player, PlayerDatas.getComponentType());
-							if(comp != null)
+							if(comp != null) {
 								comp.invalidateHovered();
+							}
 						}
 					});
 
