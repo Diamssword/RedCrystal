@@ -49,3 +49,7 @@ RedCrystal.glyph.PreciseInput.name=Precise Input
 RedCrystal.glyph.PreciseInput.desc=Allow to precisely set the strength of the signal
 RedCrystal.glyph.Delayer.name=Delayer
 RedCrystal.glyph.Delayer.desc=Replicate the input signal but with a 2 seconds delay
+RedCrystal.glyphSetting.global.Visibility.name=Visibility
+RedCrystal.glyphSetting.global.Visibility.desc=Set Glyph's visiblity:\n -Hidden: Shown only when powered\n -Visible: Always shown\n -Pulse: Only Show signal changing\n -Invisible: Never shown
+RedCrystal.glyphSetting.Delayer.DelayBehaviorTime.name=Delay in seconds
+RedCrystal.glyphSetting.Delayer.DelayBehaviorTime.desc=The delay in seconds between input an output, can have decimal

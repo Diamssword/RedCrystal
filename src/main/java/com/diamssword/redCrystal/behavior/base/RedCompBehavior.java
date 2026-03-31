@@ -7,6 +7,7 @@ import com.diamssword.redCrystal.gui.GlyphSettingsMenu;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.wand.RedWandTool;
+import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
@@ -15,12 +16,14 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.bson.codecs.BsonCodecProvider;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
@@ -231,8 +234,13 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	public void onMainRuneInteract(Ref<EntityStore> player, @Nullable Ref<EntityStore> entity, InteractionContext context, InteractType action) {
 		var pl = player.getStore().getComponent(player, PlayerRef.getComponentType());
-		if(pl != null)
-			new GlyphSettingsMenu(pl, this.parent.getSettings()::clone, this.parent::updateSettings).openMenu();
+		if(pl != null) {
+			var menu = new GlyphSettingsMenu(pl, this.parent.getSettings()::clone, this.parent::updateSettings);
+			if(this instanceof RedCompBehaviorWithSettings<?, ?> casted) {
+				menu.withSpecific(casted.getId(), () -> casted.getStateManager().getStoredSettings(), casted::setStoredSettings, casted.getSettingsCodec());
+			}
+			menu.openMenu();
+		}
 	}
 
 	public enum InteractType {

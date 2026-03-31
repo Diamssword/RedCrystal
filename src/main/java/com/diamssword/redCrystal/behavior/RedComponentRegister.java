@@ -24,7 +24,7 @@ import java.util.function.Function;
 
 public class RedComponentRegister {
 	private static final Map<String, TriFunction<String, RedElement, ? extends AbstractBehaviorAsset<?>, ? extends RedCompBehavior<? extends AbstractBehaviorAsset<?>>>> registry = new ConcurrentHashMap<>();
-
+	private static Map<String, BuilderCodec<?>> settingsCodecRegistry = new ConcurrentHashMap<>();
 
 	public static void init() {
 		registry.clear();
@@ -41,9 +41,15 @@ public class RedComponentRegister {
 		register("Calculus", CalculusBehavior::new, BehaviorAssetWithSettings::CalculusCodec);
 		register("PreciseInput", PreciseInput::new);
 		register("NumberDisplay", NumberDisplayBehavior::new);
-		register("Delayer", DelayBehavior::new, BehaviorAssetWithSettings::VariatorCodec);
+		register("Delayer", DelayBehavior::new, DelayBehavior.CODEC);
 
 
+	}
+
+	public static void register(String id, TriFunction<String, RedElement, BehaviorAsset, RedCompBehavior<BehaviorAsset>> factory, BuilderCodec<?> settingsCodec) {
+		var beh = new BehaviorAsset(id);
+		register(id, factory, BehaviorAsset.class, BuilderCodec.builder(BehaviorAsset.class, () -> beh).build());
+		settingsCodecRegistry.put(id, settingsCodec);
 	}
 
 	public static void register(String id, TriFunction<String, RedElement, BehaviorAsset, RedCompBehavior<BehaviorAsset>> factory) {
@@ -60,6 +66,11 @@ public class RedComponentRegister {
 		registry.put(id, factory);
 		var codec = codecBuilder.apply(id);
 		AbstractBehaviorAsset.BEHAVIOR_CODEC.register(id, codec.getInnerClass(), codec);
+	}
+
+	@Nullable
+	public static BuilderCodec<?> getSettingsCodec(String id) {
+		return settingsCodecRegistry.get(id);
 	}
 
 	@Nullable

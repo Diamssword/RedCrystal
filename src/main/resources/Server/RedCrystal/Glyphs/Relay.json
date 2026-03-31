@@ -1,7 +1,6 @@
 {
   "BehaviorId": {
-    "Type": "Delayer",
-    "Steps": 1
+    "Type": "OR"
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/Relay.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Relay@2x.png",

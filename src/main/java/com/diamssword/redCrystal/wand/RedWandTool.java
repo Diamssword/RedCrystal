@@ -1,12 +1,14 @@
 package com.diamssword.redCrystal.wand;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
+import com.diamssword.redCrystal.storage.BsonDocumentCodec;
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
 import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.storage.RedElementState;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.codec.codecs.map.MapCodec;
 import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
@@ -26,9 +28,12 @@ import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.bson.BsonDocument;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RedWandTool {
 	public static final BuilderCodec<RedWandTool> CODEC = BuilderCodec.builder(RedWandTool.class, RedWandTool::new)
@@ -40,12 +45,24 @@ public class RedWandTool {
 			.add()
 			.append(new KeyedCodec<>("GlobalSettings", GlobalGlyphSettings.CODEC), (a, b) -> a.mainSettings = b, a -> a.mainSettings)
 			.add()
+			.append(new KeyedCodec("GlyphsSpecificSettings", new MapCodec(new BsonDocumentCodec(), BsonDocument::new, false)), (a, b) -> a.glyphSpecificSettings = b, a -> a.glyphSpecificSettings)
+			.add()
 			.build();
 	private String selectedGlyph;
 	private GlobalGlyphSettings mainSettings = new GlobalGlyphSettings();
+	private Map<String, BsonDocument> glyphSpecificSettings = new HashMap<>();
 
 	public RedWandTool() {
 
+	}
+
+	@Nullable
+	public BsonDocument getGlyphSettings(String id) {
+		return glyphSpecificSettings.get(id);
+	}
+
+	public void setGlyphSettings(String id, BsonDocument settings) {
+		this.glyphSpecificSettings.put(id, settings);
 	}
 
 	public String getSelectedGlyph() {
@@ -89,6 +106,9 @@ public class RedWandTool {
 				boolean re = state.createElement(face, tool.getSelectedGlyph(), tool.mainSettings);
 				if(re) {
 					var el = state.getElement(face);
+					var setts = tool.getGlyphSettings(tool.getSelectedGlyph());
+					if(setts != null)
+						el.getStoredState().setStoredSettings(settsz);
 					var world = el.getParent().getChunkRef().getStore().getExternalData().getWorld();
 					world.execute(() -> {
 						RedComponentDisplayUtils.createTempRune(world.getEntityStore(), el.getParent().getPosition(), face, el);

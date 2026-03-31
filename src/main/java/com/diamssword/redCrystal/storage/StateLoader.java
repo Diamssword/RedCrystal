@@ -5,6 +5,7 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.codec.codecs.map.MapCodec;
+import org.bson.BsonDocument;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -22,9 +23,12 @@ public class StateLoader {
 			.add()
 			.append(new KeyedCodec<>("RedElementBehaviorStateInternal", new MapCodec<>(Codec.SHORT, HashMap::new, false)), (a, b) -> a.internalStates = b, (a) -> a.internalStates)
 			.add()
+			.append(new KeyedCodec<>("RedElementBehaviorStateSettings", new BsonDocumentCodec()), (a, b) -> a.storedSettings = b, a -> a.storedSettings)
+			.add()
 			.build();
 	private Short[] input = new Short[0];
 	private Short[] output = new Short[0];
+	private BsonDocument storedSettings = new BsonDocument();
 	private Map<String, Short> internalStates = new HashMap<>();
 
 	public StateLoader() {
@@ -40,6 +44,14 @@ public class StateLoader {
 	public void updateSize(short inSize, short outSize) {
 		this.input = extend(input, inSize);
 		this.output = extend(output, outSize);
+	}
+
+	public BsonDocument getStoredSettings() {
+		return storedSettings;
+	}
+
+	public void setStoredSettings(BsonDocument doc) {
+		this.storedSettings = doc;
 	}
 
 	private Short[] extend(Short[] input, short size) {

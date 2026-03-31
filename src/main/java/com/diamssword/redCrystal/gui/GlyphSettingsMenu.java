@@ -4,8 +4,10 @@ import au.ellie.hyui.builders.*;
 import au.ellie.hyui.html.TemplateProcessor;
 import au.ellie.hyui.types.LayoutMode;
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
+import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.codec.KeyedCodec;
+import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.builder.BuilderField;
 import com.hypixel.hytale.codec.codecs.simple.BooleanCodec;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
@@ -25,12 +27,38 @@ public class GlyphSettingsMenu {
 
 	private final PlayerRef ref;
 	private final Consumer<GlobalGlyphSettings> setter;
-	private Supplier<GlobalGlyphSettings> getter;
+	private final Supplier<GlobalGlyphSettings> getter;
+	private GlyphSettingsMenuConverter<?> sepcific;
 
 	public GlyphSettingsMenu(PlayerRef ref, Supplier<GlobalGlyphSettings> settingsProvider, Consumer<GlobalGlyphSettings> settingsSetter) {
 		this.ref = ref;
 		this.setter = settingsSetter;
 		this.getter = settingsProvider;
+
+	}
+
+	public GlyphSettingsMenu(PlayerRef ref) {
+		this.ref = ref;
+		this.setter = null;
+		this.getter = null;
+
+	}
+
+	public <T> GlyphSettingsMenu withSpecific(String id, Supplier<BsonDocument> getter, Consumer<BsonDocument> setter, BuilderCodec<T> codec) {
+		this.sepcific = new GlyphSettingsMenuConverter<T>(id, ref, () -> codec.decode(getter.get(), new ExtraInfo()), (res) -> setter.accept(codec.encode(res, new ExtraInfo())), codec);
+		return this;
+	}
+
+	public HyUIPage openAsSubMenu(Runnable onClose) {
+		TemplateProcessor template = new TemplateProcessor();
+
+		var prototype = PageBuilder.pageForPlayer(ref).loadHtml("Pages/RedCrystal/GlyphSettingsCentered.html", template)
+				.withLifetime(CustomPageLifetime.CanDismiss);
+		prototype.getById("main", GroupBuilder.class).ifPresent(this::appendSettings);
+		prototype.onDismiss((page, bool) -> {
+			onClose.run();
+		});
+		return prototype.open(ref.getReference().getStore());
 	}
 
 	public HyUIPage openMenu() {
@@ -43,59 +71,14 @@ public class GlyphSettingsMenu {
 	}
 
 	public void appendSettings(UIElementBuilder<?> container) {
-		GlobalGlyphSettings.CODEC.getEntries().forEach((k, v) -> {
-			for(BuilderField<GlobalGlyphSettings, ?> f : v) {
-				codecFieldConverter(f, container);
-			}
-		});
-	}
-
-	private void codecFieldConverter(BuilderField<GlobalGlyphSettings, ?> field, UIElementBuilder<?> container) {
-		var div = GroupBuilder.group().withLayoutMode(LayoutMode.Left);
-		div.addChild(LabelBuilder.label().withText(field.getCodec().getKey()).withPadding(new HyUIPadding().setRight(5)).withTooltipText(field.getDocumentation()));
-		if(field.getCodec().getChildCodec() instanceof BooleanCodec) {
-			div.addChild(new CheckBoxBuilder().withValue(getValue(field, Boolean.class).orElse(false)).withTooltipText(field.getDocumentation())
-					.addEventListener(CustomUIEventBindingType.ValueChanged, (v) -> {
-						setValue(field, v);
-					}));
-
-		} else if(field.getCodec().getChildCodec() instanceof GlobalGlyphSettings.TypedEnumCodec<?> ec) {
-			var values = ec.clazz.getEnumConstants();
-
-			var drop = DropdownBoxBuilder.dropdownBox().withAnchor(new HyUIAnchor().setWidth(200)).withMaxSelection(1).withTooltipText(field.getDocumentation());
-			getValue(field, ec.clazz).ifPresent((v) -> drop.withValue(v.toString()));
-
-			for(Enum<? extends Enum<?>> value : values) {
-				drop.addEntry(new DropdownEntryInfo(LocalizableString.fromString(value.toString()), value.toString()));
-			}
-			drop.addEventListener(CustomUIEventBindingType.ValueChanged, (v) -> {
-				setValueE((BuilderField<GlobalGlyphSettings, Enum<?>>) field, ec.decode(new BsonString(v), new ExtraInfo()));
-				drop.withValue(v);
-			});
-			div.addChild(drop);
+		if(setter != null) {
+			var global = new GlyphSettingsMenuConverter<>("global", ref, getter, setter, GlobalGlyphSettings.CODEC);
+			global.appendSettings(container);
 		}
-		container.addChild(div);
+		if(sepcific != null) {
+			sepcific.appendSettings(container);
+		}
+
 	}
 
-	private <T> void setValue(BuilderField<GlobalGlyphSettings, ?> field, T value) {
-		var inst = getter.get();
-		((BuilderField<GlobalGlyphSettings, T>) field).setValue(inst, value, new ExtraInfo());
-		setter.accept(inst);
-		//baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
-	}
-
-	private void setValueE(BuilderField<GlobalGlyphSettings, Enum<?>> field, Enum<?> value) {
-		var inst = getter.get();
-		field.setValue(inst, value, new ExtraInfo());
-		setter.accept(inst);
-		//baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
-	}
-
-	public BsonDocument getBaseState() {
-		return GlobalGlyphSettings.CODEC.encode(getter.get(), new ExtraInfo());
-	}
-
-	private <T> Optional<T> getValue(BuilderField<GlobalGlyphSettings, ?> field, Class<T> type) {
-		return ((KeyedCodec<T>) field.getCodec()).get(getBaseState(), new ExtraInfo());
-	}
 }

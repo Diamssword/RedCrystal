@@ -6,18 +6,22 @@ import au.ellie.hyui.events.UIContext;
 import au.ellie.hyui.types.DefaultStyles;
 import au.ellie.hyui.types.LayoutMode;
 import com.diamssword.redCrystal.RedCrystalPlugin;
+import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.storage.Glyph;
 import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
+import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -52,21 +56,45 @@ public class GlyphMenu {
 			prototype.getById("GlyphContainer", GroupBuilder.class).ifPresent(this::createGlyphs);
 			prototype.onBuild((a, b) -> {
 				if(!b) {
-					this.refreshGlyphs(a);
+					this.refreshGlyphs(a::getById);
 					setupSelectedPanel(a);
 				}
 			});
+			prototype.getById("glyphSettingsBt", ButtonBuilder.class).ifPresent(bt -> {
+				boolean flag = false;
+				if(selected.get() != null)
+					flag = RedComponentRegister.getSettingsCodec(selected.get()) != null;
+				bt.withVisible(flag);
+				bt.onClick(() -> {
+					var select = selected.get();
+					var codec = RedComponentRegister.getSettingsCodec(select);
+					if(codec != null)
+						new GlyphSettingsMenu(playerRef).withSpecific(select, () -> toolSettings.getGlyphSettings(select), doc -> {
+							toolSettings.setGlyphSettings(select, doc);
+							RedWandTool.updateToolStack(player, slot, toolSettings);
+						}, codec).openAsSubMenu(() -> {
+							playerRef.getReference().getStore().getExternalData().getWorld().execute(() -> {
+								var menu = new GlyphMenu();
+								menu.openMenu(playerRef).updatePage(true);
+
+							});
+
+						});
+
+				});
+			});
 			prototype.getById("mainSettings", GroupBuilder.class).ifPresent(div -> {
-				new GlyphSettingsMenu(ref, toolSettings.getMainSettings()::clone, s -> {
+				var settings = new GlyphSettingsMenu(ref, toolSettings.getMainSettings()::clone, s -> {
 					toolSettings.setMainSettings(s);
 					RedWandTool.updateToolStack(player, slot, toolSettings);
-				}).appendSettings(div);
+				});
+				settings.appendSettings(div);
 			});
 			prototype.addEventListener("search", CustomUIEventBindingType.ValueChanged, (ob, ctx) -> {
 				var val = ((String) ob).toLowerCase().trim();
 				if(!search.get().equals(val)) {
 					search.set(val);
-					this.refreshGlyphs(ctx);
+					this.refreshGlyphs(ctx::getById);
 					ctx.getById("search", TextFieldBuilder.class).ifPresent(f -> f.withValue(search.get()));
 					ctx.updatePage(false);
 				}
@@ -118,7 +146,7 @@ public class GlyphMenu {
 		return assets;
 	}
 
-	private void refreshGlyphs(UIContext ctx) {
+	private void refreshGlyphs(WandHud.ElementGetter ctx) {
 
 		Queue<Glyph> assets = getSortedAssets();
 
@@ -133,8 +161,8 @@ public class GlyphMenu {
 		}
 	}
 
-	private void updateGlyphLine(int index, List<Glyph> assets, UIContext ctx) {
-		ctx.getById("GlyphLine" + index, GroupBuilder.class).ifPresent(l -> {
+	private void updateGlyphLine(int index, List<Glyph> assets, WandHud.ElementGetter ctx) {
+		ctx.apply("GlyphLine" + index, GroupBuilder.class).ifPresent(l -> {
 			l.withVisible(!assets.isEmpty());
 			if(!assets.isEmpty()) {
 				for(int i = 0; i < contentSize; i++) {
@@ -147,18 +175,18 @@ public class GlyphMenu {
 		});
 	}
 
-	private void updateGlyph(int index, @Nullable Glyph asset, UIContext ctx) {
-		ctx.getById("GlyphPanel" + index, GroupBuilder.class).ifPresent(l -> {
+	private void updateGlyph(int index, @Nullable Glyph asset, WandHud.ElementGetter ctx) {
+		ctx.apply("GlyphPanel" + index, GroupBuilder.class).ifPresent(l -> {
 			l.withVisible(asset != null);
 		});
 		if(asset != null) {
-			ctx.getById("GlyphImage" + index, ImageBuilder.class).ifPresent(l -> {
+			ctx.apply("GlyphImage" + index, ImageBuilder.class).ifPresent(l -> {
 				l.withImage(parseUrl(asset.getIcon()));
 			});
-			ctx.getById("GlyphLabel" + index, LabelBuilder.class).ifPresent(l -> {
+			ctx.apply("GlyphLabel" + index, LabelBuilder.class).ifPresent(l -> {
 				l.withText(translate(asset.getTranslationProperties().getName()));
 			});
-			ctx.getById("GlyphButton" + index, CustomButtonBuilder.class).ifPresent(b -> {
+			ctx.apply("GlyphButton" + index, CustomButtonBuilder.class).ifPresent(b -> {
 				b.addEventListener(CustomUIEventBindingType.Activating, (_, ctx1) -> selectButton(asset.getId(), ctx1));
 				b.addEventListenerWithContext(CustomUIEventBindingType.MouseEntered, MouseEventData.class, (_, ctx1) -> {
 					hovered.set(index);
@@ -190,9 +218,14 @@ public class GlyphMenu {
 			toolSettings.setSelectedGlyph(id);
 			ctx.getById("search", TextFieldBuilder.class).ifPresent(f -> f.withValue(search.get()));
 			setSelected(id);
+			ctx.getById("glyphSettingsBt", ButtonBuilder.class).ifPresent(bt -> {
+				var codec = RedComponentRegister.getSettingsCodec(id);
+				bt.withVisible(codec != null);
+			});
 			setupSelectedPanel(ctx);
-			ctx.updatePage(false);
 			RedWandTool.updateToolStack(playerRef.getReference().getStore().getComponent(playerRef.getReference(), Player.getComponentType()), slot, toolSettings);
+
+
 		}
 	}
 
