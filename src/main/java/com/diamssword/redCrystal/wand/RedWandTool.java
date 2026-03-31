@@ -108,7 +108,7 @@ public class RedWandTool {
 					var el = state.getElement(face);
 					var setts = tool.getGlyphSettings(tool.getSelectedGlyph());
 					if(setts != null)
-						el.getStoredState().setStoredSettings(settsz);
+						el.getStoredState().setStoredSettings(setts);
 					var world = el.getParent().getChunkRef().getStore().getExternalData().getWorld();
 					world.execute(() -> {
 						RedComponentDisplayUtils.createTempRune(world.getEntityStore(), el.getParent().getPosition(), face, el);
