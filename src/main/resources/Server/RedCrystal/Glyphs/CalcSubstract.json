@@ -1,15 +1,15 @@
 {
   "BehaviorId": {
     "Type": "Calculus",
-    "Operation": "Substract"
+    "Operation": "Subtract"
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/CalcSubstract.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/CalcSubstract@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/CalcSubtract.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/CalcSubtract@2x.png",
   "Outputs": 1,
   "Inputs": 2,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.CalcSubstract.name",
-    "Description": "server.RedCrystal.glyph.CalcSubstract.desc"
+    "Name": "server.RedCrystal.glyph.CalcSubtract.name",
+    "Description": "server.RedCrystal.glyph.CalcSubtract.desc"
   },
   "Tags": {
     "Type": [

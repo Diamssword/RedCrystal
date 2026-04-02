@@ -20,7 +20,7 @@ public class CalculusBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 		short res = 0;
 		switch(asset.operation) {
 			case ADD -> res = (short) (A + B);
-			case SUBSTRACT -> res = (short) (A - B);
+			case SUBTRACT -> res = (short) (A - B);
 			case DIVIDE -> {
 				if(B > 0)
 					res = (short) (A / B);

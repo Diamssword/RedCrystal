@@ -21,11 +21,6 @@ public class DelayBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, De
 			.add().build();
 
 	@Override
-	public BuilderCodec<DelaySettings> getSettingsCodec() {
-		return CODEC;
-	}
-
-	@Override
 	public void onSignalChange(short input, short oldValue, short value) {
 		timers.add(() -> setAllOutput(value), (int) (getSettings().delayInSec * 10));
 	}

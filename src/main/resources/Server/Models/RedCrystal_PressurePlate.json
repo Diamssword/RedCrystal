@@ -1,0 +1,16 @@
+{
+  "Model": "Items/RedCrystal/PressurePlate.blockymodel",
+  "HitBox": {
+    "Min": {
+      "X": -0.3,
+      "Y": -0.3,
+      "Z": -0.12
+    },
+    "Max": {
+      "Y": 0.3,
+      "Z": 0.1,
+      "X": 0.3
+    }
+  },
+  "Texture": "Items/RedCrystal/PressurePlate.png"
+}

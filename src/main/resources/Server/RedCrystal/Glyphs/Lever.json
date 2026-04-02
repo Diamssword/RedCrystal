@@ -1,6 +1,8 @@
 {
   "BehaviorId": {
-    "Type": "Lever"
+    "Type": "Lever",
+    "ModelOn": "RedCrystal_Lever_On",
+    "ModelOff": "RedCrystal_Lever"
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/Lever.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Lever@2x.png",

@@ -9,6 +9,8 @@ RedCrystal.interactionHints.input=Input\nLeft Click to create link\nRight Click 
 RedCrystal.interactionHints.output=Output\nLeft Click to create link\nRight Click to break link
 RedCrystal.glyph.Interact.name=Interactor
 RedCrystal.glyph.Interact.desc=An element that can interact with blocks the same way a player can, you can open doors, toggle lights, etc.
+
+# === Glyphs ===
 RedCrystal.glyph.OrG.name=OR Gate
 RedCrystal.glyph.OrG.desc=A binary OR gate
 RedCrystal.glyph.XOrG.name=XOR Gate
@@ -31,10 +33,10 @@ RedCrystal.glyph.Light.name=Light
 RedCrystal.glyph.Light.desc=Emit light which strength depend on signal intensity
 RedCrystal.glyph.ColoredLight.name=Colored Light
 RedCrystal.glyph.ColoredLight.desc=Use it's 3 inputs to define the Red,Green and Blue channels of the emitted light
-RedCrystal.glyph.Fan.name=[WIP]Fan
+RedCrystal.glyph.Fan.name=Fan
 RedCrystal.glyph.Fan.desc=Push entity in front of it with a force and distance debending on the signal's strength
-RedCrystal.glyph.CalcSubstract.name=Math: Substract
-RedCrystal.glyph.CalcSubstract.desc=Make a substract operation\nA-B=C\n(A is the left input,B is the right input)
+RedCrystal.glyph.CalcSubtract.name=Math: Subtract
+RedCrystal.glyph.CalcSubtract.desc=Make a subtract operation\nA-B=C\n(A is the left input,B is the right input)
 RedCrystal.glyph.CalcAdd.name=Math: Add
 RedCrystal.glyph.CalcAdd.desc=Add the 2 inputs together\nA+B=C\n(A is the left input,B is the right input)
 RedCrystal.glyph.CalcMod.name=Math: Modulo
@@ -48,8 +50,14 @@ RedCrystal.glyph.NumberDisplay.desc=Display the input strength as floating numbe
 RedCrystal.glyph.PreciseInput.name=Precise Input
 RedCrystal.glyph.PreciseInput.desc=Allow to precisely set the strength of the signal
 RedCrystal.glyph.Delayer.name=Delayer
-RedCrystal.glyph.Delayer.desc=Replicate the input signal but with a 2 seconds delay
+RedCrystal.glyph.Delayer.desc=Replicate the input signal but with a configurable delay
 RedCrystal.glyphSetting.global.Visibility.name=Visibility
-RedCrystal.glyphSetting.global.Visibility.desc=Set Glyph's visiblity:\n -Hidden: Shown only when powered\n -Visible: Always shown\n -Pulse: Only Show signal changing\n -Invisible: Never shown
+RedCrystal.glyphSetting.global.Visibility.desc=Set Glyph's visibility:\n -Hidden: Shown only when powered\n -Visible: Always shown\n -Pulse: Only Show signal changing\n -Invisible: Never shown
 RedCrystal.glyphSetting.Delayer.DelayBehaviorTime.name=Delay in seconds
 RedCrystal.glyphSetting.Delayer.DelayBehaviorTime.desc=The delay in seconds between input an output, can have decimal
+RedCrystal.glyphSetting.PressurePlate.PressurePlateBehaviorItemCheck.name=Detect Items
+RedCrystal.glyphSetting.PressurePlate.PressurePlateBehaviorItemCheck.desc=Uncheck to prevent thrown item to trigger the plate
+RedCrystal.glyphSetting.PressurePlate.PressurePlateBehaviorHidePlate.name=Hide Plate
+RedCrystal.glyphSetting.PressurePlate.PressurePlateBehaviorHidePlate.desc=Make the Pressure Plate Model invisible
+RedCrystal.glyph.PressurePlate.name=Pressure Plate
+RedCrystal.glyph.PressurePlate.desc=Trigger when an entity collide with it

@@ -1,10 +1,7 @@
 package com.diamssword.redCrystal.behavior;
 
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
-import com.diamssword.redCrystal.behavior.inputs.ButtonBehavior;
-import com.diamssword.redCrystal.behavior.inputs.LeverBehavior;
-import com.diamssword.redCrystal.behavior.inputs.PreciseInput;
-import com.diamssword.redCrystal.behavior.inputs.VariatorBehavior;
+import com.diamssword.redCrystal.behavior.inputs.*;
 import com.diamssword.redCrystal.behavior.modifiers.*;
 import com.diamssword.redCrystal.behavior.outputs.FanBehavior;
 import com.diamssword.redCrystal.behavior.outputs.InteractBehavior;
@@ -12,6 +9,7 @@ import com.diamssword.redCrystal.behavior.outputs.LightBehavior;
 import com.diamssword.redCrystal.behavior.outputs.NumberDisplayBehavior;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
+import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithModelSwitch;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -35,7 +33,8 @@ public class RedComponentRegister {
 		register("OR", OrBehavior::new, BehaviorAssetWithSettings::AbsoluteCodec);
 		register("NOT", NotBehavior::new, BehaviorAssetWithSettings::BinaryCodec);
 		register("Light", LightBehavior::new, BehaviorAssetWithSettings::LightCodec);
-		register("Lever", LeverBehavior::new);
+		register("Lever", LeverBehavior::new, BehaviorAssetWithModelSwitch::getCODEC);
+		register("PressurePlate", PressurePlateBehavior::new, BehaviorAssetWithModelSwitch::getCODEC, PressurePlateBehavior.CODEC);
 		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec);
 		register("Fan", FanBehavior::new, BehaviorAssetWithSettings::DistanceCodec);
 		register("Calculus", CalculusBehavior::new, BehaviorAssetWithSettings::CalculusCodec);
@@ -66,6 +65,13 @@ public class RedComponentRegister {
 		registry.put(id, factory);
 		var codec = codecBuilder.apply(id);
 		AbstractBehaviorAsset.BEHAVIOR_CODEC.register(id, codec.getInnerClass(), codec);
+	}
+
+	public static <T extends AbstractBehaviorAsset<?>> void register(String id, TriFunction<String, RedElement, T, RedCompBehavior<T>> factory, Function<String, BuilderCodec<T>> codecBuilder, BuilderCodec<?> settingsCodec) {
+		registry.put(id, factory);
+		var codec = codecBuilder.apply(id);
+		AbstractBehaviorAsset.BEHAVIOR_CODEC.register(id, codec.getInnerClass(), codec);
+		settingsCodecRegistry.put(id, settingsCodec);
 	}
 
 	@Nullable

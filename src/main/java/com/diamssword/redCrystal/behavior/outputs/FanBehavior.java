@@ -6,6 +6,7 @@ import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
+import com.diamssword.redCrystal.worldInteraction.CollideUtil;
 import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Holder;
@@ -21,6 +22,7 @@ import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.InteractionManager;
+import com.hypixel.hytale.server.core.modules.collision.CollisionMath;
 import com.hypixel.hytale.server.core.modules.debug.DebugUtils;
 import com.hypixel.hytale.server.core.modules.entity.EntityModule;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
@@ -68,12 +70,6 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 	public void tick() {
 		super.tick();
 		var val = getInputState(0);
-
-		/*var min = RedComponentDisplayUtils.getCenteredPosition(parent.getParent().getPosition(), parent.getFace(), new Vector2d(-0.5, -0.5));
-		var max = min.clone().add(RedComponentDisplayUtils.rotationoffset(this.parent.getFace(), (maxDistance / (float) MAX) * val, 1, 1));
-		var box = new Box(new Vector3d(Math.min(min.x, max.x), Math.min(min.y, max.y), Math.min(min.z, max.z)), new Vector3d(Math.max(min.x, max.x), Math.max(min.y, max.y), Math.max(min.z, max.z)));
-*/
-		//TODO find the proper methods to find bounding boxes intersecting with the fan
 		if(val > MIN) {
 			var ents = getEntities(val);
 			for(Ref<EntityStore> ent : ents) {
@@ -83,10 +79,15 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 					var it = ent.getStore().getComponent(ent, ItemPhysicsComponent.getComponentType());
 					if(it != null) {
 						var trans = ent.getStore().getComponent(ent, TransformComponent.getComponentType());
-						//TODO velocity dosen't work on items
-						trans.teleportPosition(trans.getPosition().clone().add(dir.scale(0.1)));
+						if(trans != null) {
+							//item physic completely stop item when it's on top of a block, we prevent that by moving in up a bit if it is resting on a block
+							if(it.collisionResult != null)
+								trans.teleportPosition(trans.getPosition().clone().add(0, 0.1, 0));
+						}
 					}
-					vel.addInstruction(dir, new VelocityConfig(), ChangeVelocityType.Add);
+					dir.add(0, 0.2, 0);
+					vel.addInstruction(dir, null, ChangeVelocityType.Set);
+
 				}
 			}
 		}
@@ -94,18 +95,15 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 	}
 
 	public List<Ref<EntityStore>> getEntities(short value) {
-		var rot = RedComponentDisplayUtils.rotationoffset(this.parent.getFace(), (maxDistance / (float) MAX) * value, 3, 3);
-		var base = RedComponentDisplayUtils.getCenteredPosition(parent.getParent().getPosition(), parent.getFace(), new Vector2d(-2, -2));
+		var rot = RedComponentDisplayUtils.rotationoffset(this.parent.getFace(), (maxDistance / (float) MAX) * value, 1, 1);
+		var base = RedComponentDisplayUtils.getCenteredPosition(parent.getParent().getPosition(), parent.getFace(), new Vector2d(-0.5, -0.5));
 		var p1 = base.clone();
 		var p2 = base.clone().add(rot.clone());
-		//var targ = TargetUtil.getAllEntitiesInSphere(p1, 10, getWorld().getEntityStore().getStore());
-		var p3 = new Vector3d(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.min(p1.z, p2.z));
-		var p4 = new Vector3d(Math.max(p1.x, p2.x), Math.max(p1.y, p2.y), Math.max(p1.z, p2.z));
-		var targ = TargetUtil.getAllEntitiesInBox(p3, p4, getWorld().getEntityStore().getStore());
+		var center = CollideUtil.getBoxCenter(new Box(p1, p2));
+		var targ = TargetUtil.getAllEntitiesInSphere(center, maxDistance * 2, getWorld().getEntityStore().getStore());
 		SpatialResource<Ref<EntityStore>, EntityStore> entitySpatialResource = getWorld().getEntityStore().getStore().getResource(EntityModule.get().getItemSpatialResourceType());
-		entitySpatialResource.getSpatialStructure().collectBox(p3, p4, targ);
-		return targ;
-		//playerSpatialResource.getSpatialStructure().collectBox(base, base.clone().add(rot), playerRefs);
-		//return playerRefs;
+		entitySpatialResource.getSpatialStructure().collect(center, maxDistance * 2, targ);
+		return CollideUtil.filterEntitiesInBox(getWorld().getEntityStore().getStore(), targ, new Box(p1, p2));
+		
 	}
 }

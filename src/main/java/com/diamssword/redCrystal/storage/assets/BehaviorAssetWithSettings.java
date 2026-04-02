@@ -86,7 +86,7 @@ public class BehaviorAssetWithSettings {
 
 		public static enum OperationType {
 			ADD,
-			SUBSTRACT,
+			SUBTRACT,
 			DIVIDE,
 			MULTIPLY,
 			MOD

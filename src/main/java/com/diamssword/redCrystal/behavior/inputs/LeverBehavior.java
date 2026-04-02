@@ -6,6 +6,7 @@ import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
+import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithModelSwitch;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
@@ -22,8 +23,8 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;
 
-public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
-	public LeverBehavior(String id, RedElement parent, BehaviorAsset asset) {
+public class LeverBehavior extends RedCompBehavior<BehaviorAssetWithModelSwitch> {
+	public LeverBehavior(String id, RedElement parent, BehaviorAssetWithModelSwitch asset) {
 		super(id, parent, asset);
 	}
 
@@ -44,7 +45,7 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 			if(model != null) {
 				//hold last frame doesn't work consistently
 				//AnimationUtils.playAnimation(entity, AnimationSlot.Movement, st == 0 ? "On" : "Off", false, entity.getStore());
-				execute(() -> entity.getStore().replaceComponent(entity, ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withModel(model.getModel(), "Items/RedCrystal/Lever" + (st == 0 ? "On" : "") + ".blockymodel", model.getModel().getTexture()))));
+				execute(() -> asset.switchModel(this, entity, st == 0));
 
 			}
 		}
@@ -54,21 +55,12 @@ public class LeverBehavior extends RedCompBehavior<BehaviorAsset> {
 	@Override
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		var res = super.displayEntities(store, facing);
-		var holder = RedComponentDisplayUtils.createMinimalDisplayEntity(store, parent.getParent().getPosition(), facing);
-		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Lever"), 1f), facing);
-		short st = getInternalState("lever");
-		model = ModelUtils.withModel(model, "Items/RedCrystal/Lever" + (st == 1 ? "On" : "") + ".blockymodel", model.getTexture());
-		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));
-		holder.ensureComponent(Interactable.getComponentType());
 
-		//server crash when updating model without this
-		holder.ensureComponent(MovementStatesComponent.getComponentType());
-
-		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
+		var holder = this.asset.createEntity(store, this, getInternalState("lever") == 1);
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("lever", (short) 0, this.parent));
+		holder.ensureComponent(Interactable.getComponentType());
 		Interactions interactions = new Interactions();
-		interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");  // e.g., "*UseNPC" or custom RootInteraction asset ID
-		//interactions.setInteractionHint("your.hint.key");  // Optional client hint text
+		interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");
 		holder.addComponent(Interactions.getComponentType(), interactions);
 		res.put("lever", holder);
 		return res;
