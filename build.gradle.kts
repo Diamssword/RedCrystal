@@ -14,6 +14,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly("curse.maven:hyui-1431415:7820303")
     implementation("curse.maven:hyui-1431415:7820303")
 }
 tasks.jar {

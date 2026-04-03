@@ -28,12 +28,25 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class GlyphSettingsValidators {
 
-	public static class FloatRangeValidator extends RangeValidator<Float> {
-		public final float min;
-		public final float max;
-		public final float step;
+	public static class StepRangeValidator<T extends Number & Comparable<T>> extends RangeValidator<T> {
+		public final T min;
+		public final T max;
+		public final T step;
 
-		public FloatRangeValidator(float min, float max, float step) {
+		public StepRangeValidator(T min, T max, T step) {
+			super(min, max, true);
+			this.min = min;
+			this.max = max;
+			this.step = step;
+		}
+	}
+
+	public static class SliderRangeValidator<T extends Number & Comparable<T>> extends RangeValidator<T> {
+		public final T min;
+		public final T max;
+		public final T step;
+
+		public SliderRangeValidator(T min, T max, T step) {
 			super(min, max, true);
 			this.min = min;
 			this.max = max;

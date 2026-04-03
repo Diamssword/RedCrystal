@@ -9,7 +9,10 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.builder.BuilderField;
 import com.hypixel.hytale.codec.codecs.simple.BooleanCodec;
+import com.hypixel.hytale.codec.codecs.simple.DoubleCodec;
 import com.hypixel.hytale.codec.codecs.simple.FloatCodec;
+import com.hypixel.hytale.codec.codecs.simple.IntegerCodec;
+import com.hypixel.hytale.codec.validation.Validator;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.ui.DropdownEntryInfo;
@@ -79,38 +82,85 @@ public class GlyphSettingsMenuConverter<T> {
 				});
 				div.addChild(drop);
 			}
+			case IntegerCodec _ -> {
+				numberFieldsHandler(div, field, Integer.class, (d) -> setValue(field, d.intValue()));
+
+			}
 			case FloatCodec _ -> {
-				var div1 = GroupBuilder.group().withLayoutMode(LayoutMode.Left);
-				//div.addChild(div1);
-				AtomicReference<Float> value = new AtomicReference<>(getValue(field, Float.class).orElse(0f));
+				numberFieldsHandler(div, field, Float.class, (d) -> setValue(field, d.floatValue()));
 
-				var format = new NumberFieldFormat();
-				field.getValidators().forEach(v -> {
-					if(v instanceof GlyphSettingsValidators.FloatRangeValidator val) {
-						format.withMaxDecimalPlaces(1).withStep(val.step).withMaxValue(val.max).withMinValue(val.min);
-					}
-				});
-				div1.addChild(ButtonBuilder.smallSecondaryTextButton().withText("<").onClick(() -> {
+			}
+			case DoubleCodec _ -> {
+				numberFieldsHandler(div, field, Double.class, (d) -> setValue(field, d));
 
-					value.set(value.get() - 1);
-
-					setValue(field, value.get());
-				}));
-				NumberFieldBuilder input = NumberFieldBuilder.numberInput().withAnchor(new HyUIAnchor().setWidth(100)).withFormat(format)
-						.withValue(value.get());
-				input.addEventListener(CustomUIEventBindingType.ValueChanged, (v) -> {
-					input.withValue(v);
-					setValue(field, v.floatValue());
-					value.set(v.floatValue());
-
-				});
-				div.addChild(input);
-				div1.addChild(ButtonBuilder.smallSecondaryTextButton().withText(">"));
 			}
 			default -> {
 			}
 		}
 		container.addChild(div);
+	}
+
+	private <J extends Number> void numberFieldsHandler(UIElementBuilder<?> container, BuilderField<T, ?> field, Class<J> numberClass, Consumer<Double> valueSetter) {
+
+		var valO = getValue(field, numberClass);
+		if(valO.isPresent()) {
+			var value = valO.get();
+			var format = new NumberFieldFormat();
+			for(Validator<?> v : field.getValidators()) {
+				if(v instanceof GlyphSettingsValidators.StepRangeValidator<?> val) {
+					format.withMaxDecimalPlaces(1).withStep(val.step.floatValue()).withMaxValue(val.max.floatValue()).withMinValue(val.min.floatValue());
+					break;
+				} else if(v instanceof GlyphSettingsValidators.SliderRangeValidator<?> val) {
+					container.addChild(generateSlider(val.min.doubleValue(), val.max.doubleValue(), value.doubleValue(), val.step.doubleValue(), valueSetter));
+					return;
+				}
+			}
+			container.addChild(generateNumberField(format, value.doubleValue(), valueSetter));
+		}
+	}
+
+	private GroupBuilder generateNumberField(NumberFieldFormat format, double initialValue, Consumer<Double> onChange) {
+		AtomicReference<Double> value = new AtomicReference<>(initialValue);
+		NumberFieldBuilder input = NumberFieldBuilder.numberInput().withAnchor(new HyUIAnchor().setWidth(80)).withFormat(format)
+				.withValue(value.get());
+		var div1 = GroupBuilder.group().withLayoutMode(LayoutMode.Left);
+		div1.addChild(ButtonBuilder.smallSecondaryTextButton().withText("<").addEventListenerWithContext(CustomUIEventBindingType.Activating, ButtonBuilder.class, (_, c) -> {
+			value.set(value.get() - 1);
+			input.withValue(value.get());
+			onChange.accept(value.get());
+			c.updatePage(false);
+		}));
+		input.addEventListener(CustomUIEventBindingType.ValueChanged, (v) -> {
+			input.withValue(v);
+			value.set(v);
+			onChange.accept(value.get());
+
+		});
+		div1.addChild(input);
+		div1.addChild(ButtonBuilder.smallSecondaryTextButton().withText(">").addEventListenerWithContext(CustomUIEventBindingType.Activating, ButtonBuilder.class, (_, c) -> {
+			value.set(value.get() + 1);
+			input.withValue(value.get());
+			onChange.accept(value.get());
+			c.updatePage(false);
+		}));
+		return div1;
+	}
+
+	private GroupBuilder generateSlider(double min, double max, double value, double step, Consumer<Double> onChange) {
+		var factor = 1 / step;
+		var div1 = GroupBuilder.group().withLayoutMode(LayoutMode.Left);
+		var slider = SliderBuilder.gameSlider().withAnchor(new HyUIAnchor().setLeft(10).setWidth(150).setHeight(10)).withValue((int) (value * factor)).withMax((int) (max * factor)).withMin((int) (min * factor)).withStep((int) (step * factor));
+		var text = LabelBuilder.label().withText(value + "").withAnchor(new HyUIAnchor().setLeft(5)).withStyle(new HyUIStyle().setAlignment(Alignment.Center));
+		slider.addEventListenerWithContext(CustomUIEventBindingType.ValueChanged, Integer.class, (b, ctx) -> {
+			double val = b / factor;
+			text.withText(val + "");
+			slider.withValue(b);
+			onChange.accept(val);
+			ctx.updatePage(false);
+		});
+		div1.addChild(slider);
+		div1.addChild(text);
+		return div1;
 	}
 
 	private <J> void setValue(BuilderField<T, ?> field, J value) {

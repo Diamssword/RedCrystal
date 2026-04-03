@@ -17,7 +17,7 @@ public class DelayBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, De
 
 	public static BuilderCodec<DelaySettings> CODEC = BuilderCodec.builder(DelaySettings.class, DelaySettings::new)
 			.append(new KeyedCodec<>("DelayBehaviorTime", BuilderCodec.FLOAT), (a, b) -> a.delayInSec = b, a -> a.delayInSec)
-			.addValidator(new GlyphSettingsValidators.FloatRangeValidator(0.1f, 60f, 0.1f))
+			.addValidator(new GlyphSettingsValidators.StepRangeValidator<>(0.1f, 60f, 0.1f))
 			.add().build();
 
 	@Override

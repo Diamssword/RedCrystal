@@ -61,3 +61,7 @@ RedCrystal.glyphSetting.PressurePlate.PressurePlateBehaviorHidePlate.name=Hide P
 RedCrystal.glyphSetting.PressurePlate.PressurePlateBehaviorHidePlate.desc=Make the Pressure Plate Model invisible
 RedCrystal.glyph.PressurePlate.name=Pressure Plate
 RedCrystal.glyph.PressurePlate.desc=Trigger when an entity collide with it
+RedCrystal.glyphSetting.Piston.PistonBehaviorExtend.name=Extend Distance
+RedCrystal.glyphSetting.Piston.PistonBehaviorExtend.desc=The distance the blocks can be pushed
+RedCrystal.glyphSetting.Piston.PistonBehaviorGrab.name=Block Amount
+RedCrystal.glyphSetting.Piston.PistonBehaviorGrab.desc=The number of blocks in that can be grabbed

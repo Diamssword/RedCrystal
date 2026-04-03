@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class RedWandTool {
 	public static final BuilderCodec<RedWandTool> CODEC = BuilderCodec.builder(RedWandTool.class, RedWandTool::new)
@@ -57,8 +58,8 @@ public class RedWandTool {
 	}
 
 	@Nullable
-	public BsonDocument getGlyphSettings(String id) {
-		return glyphSpecificSettings.get(id);
+	public Optional<BsonDocument> getGlyphSettings(String id) {
+		return Optional.ofNullable(glyphSpecificSettings.get(id));
 	}
 
 	public void setGlyphSettings(String id, BsonDocument settings) {
@@ -107,8 +108,7 @@ public class RedWandTool {
 				if(re) {
 					var el = state.getElement(face);
 					var setts = tool.getGlyphSettings(tool.getSelectedGlyph());
-					if(setts != null)
-						el.getStoredState().setStoredSettings(setts);
+					setts.ifPresent(bsonDocument -> el.getStoredState().setStoredSettings(bsonDocument));
 					var world = el.getParent().getChunkRef().getStore().getExternalData().getWorld();
 					world.execute(() -> {
 						RedComponentDisplayUtils.createTempRune(world.getEntityStore(), el.getParent().getPosition(), face, el);

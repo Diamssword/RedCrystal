@@ -5,6 +5,7 @@ import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
+import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
@@ -50,7 +51,7 @@ public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 			setAllOutput((short) (stepRange * st));
 			setInternalState("variator", st);
 			var trans = entity.getStore().getComponent(entity, TransformComponent.getComponentType());
-			var rot = RedComponentDisplayUtils.rotationWithTilt(this.parent.getFace(), rotationBase * st);
+			var rot = FacingUtil.facingToRotationWithTilt(this.parent.getFace(), rotationBase * st);
 			trans.setRotation(rot);
 			execute(() -> {entity.getStore().replaceComponent(entity, TransformComponent.getComponentType(), trans);});
 		}
@@ -64,7 +65,7 @@ public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 		var holder = RedComponentDisplayUtils.createMinimalDisplayEntity(store, parent.getParent().getPosition(), facing);
 		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Variator"), 1f), facing);
 		short st = getInternalState("variator");
-		var rot = RedComponentDisplayUtils.rotationWithTilt(this.parent.getFace(), rotationBase * st);
+		var rot = FacingUtil.facingToRotationWithTilt(this.parent.getFace(), rotationBase * st);
 		var trans = holder.getComponent(TransformComponent.getComponentType());
 		trans.setRotation(rot);
 		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));

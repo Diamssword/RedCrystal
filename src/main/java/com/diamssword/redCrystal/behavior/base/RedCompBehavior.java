@@ -206,7 +206,8 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 							var other = this.parent.getInput(index);
 							if(other != null && other.isValid()) {
 								for(int i = 0; i < other.getAsset().getOutputs(); i++) {
-									if(other.getOuput(i).getInputIndex() == index) {
+									var out = other.getOuput(i);
+									if(out != null && out.getInputIndex() == index && out.getCachedElement() == this.parent) {
 										other.breakOutputNode(i);
 										break;
 									}

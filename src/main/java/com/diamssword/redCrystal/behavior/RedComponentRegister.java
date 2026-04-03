@@ -3,10 +3,7 @@ package com.diamssword.redCrystal.behavior;
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.behavior.inputs.*;
 import com.diamssword.redCrystal.behavior.modifiers.*;
-import com.diamssword.redCrystal.behavior.outputs.FanBehavior;
-import com.diamssword.redCrystal.behavior.outputs.InteractBehavior;
-import com.diamssword.redCrystal.behavior.outputs.LightBehavior;
-import com.diamssword.redCrystal.behavior.outputs.NumberDisplayBehavior;
+import com.diamssword.redCrystal.behavior.outputs.*;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithModelSwitch;
@@ -40,6 +37,7 @@ public class RedComponentRegister {
 		register("Calculus", CalculusBehavior::new, BehaviorAssetWithSettings::CalculusCodec);
 		register("PreciseInput", PreciseInput::new);
 		register("NumberDisplay", NumberDisplayBehavior::new);
+		register("Piston", PistonBehavior::new, PistonBehavior.CODEC);
 		register("Delayer", DelayBehavior::new, DelayBehavior.CODEC);
 
 

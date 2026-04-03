@@ -2,6 +2,7 @@ package com.diamssword.redCrystal.display;
 
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.storage.RedElement;
+import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.matrix.Matrix4d;
 import com.hypixel.hytale.math.shape.Box;
@@ -29,27 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class RedComponentDisplayUtils {
-	public static Vector3f rotationToVec(BlockFace face) {
-		return toRadians(switch(face) {
-			case None, North -> new Vector3f(0, 0, 0);
-			case Up -> new Vector3f(90, 0, 0);
-			case Down -> new Vector3f(-90, 0, 0);
-			case West -> new Vector3f(0, 90, 0);
-			case East -> new Vector3f(0, -90, 0);
-			case South -> new Vector3f(0, 180, 0);
-		});
-	}
-
-	public static Vector3f rotationWithTilt(BlockFace face, float tiltInDegree) {
-		return toRadians(switch(face) {
-			case None, North -> new Vector3f(0, 0, tiltInDegree);
-			case Up -> new Vector3f(90, -tiltInDegree, 0);
-			case Down -> new Vector3f(-90, -tiltInDegree, 0);
-			case West -> new Vector3f(0, 90, tiltInDegree);
-			case East -> new Vector3f(0, -90, tiltInDegree);
-			case South -> new Vector3f(0, 180, tiltInDegree);
-		});
-	}
+	
 
 	public static Model getFlatModel(BlockFace facing) {
 		return modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Glyph_Flat"), 1f), facing);
@@ -68,25 +49,6 @@ public class RedComponentDisplayUtils {
 		return model;
 	}
 
-	/**
-	 * Turn a degreeVector to a Radians Vector
-	 */
-	private static Vector3f toRadians(Vector3f degreeVec) {
-		return new Vector3f((float) Math.toRadians(degreeVec.x), (float) Math.toRadians(degreeVec.y), (float) Math.toRadians(degreeVec.z));
-	}
-
-	public static Vector3d rotationoffset(BlockFace face, double scale, double addedX, double addedY) {
-		return switch(face) {
-			case None -> new Vector3d(0, 0, 0);
-			case Up -> new Vector3d(-addedX, scale, addedY);
-			case Down -> new Vector3d(addedX, -scale, addedY);
-			case East -> new Vector3d(scale, addedY, -addedX);
-			case West -> new Vector3d(-scale, addedY, addedX);
-			case North -> new Vector3d(-addedX, addedY, -scale);
-			case South -> new Vector3d(addedX, addedY, scale);
-		};
-	}
-
 	public static Holder<EntityStore> createMinimalDisplayEntity(EntityStore entityStore, Vector3i position, BlockFace face) {
 		return createMinimalDisplayEntity(entityStore, position, face, new Vector2d(0, 0));
 	}
@@ -100,11 +62,11 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static TransformComponent getCenteredTransform(Vector3i position, BlockFace face, Vector2d offset) {
-		return new TransformComponent(getCenteredPosition(position, face, offset), rotationToVec(face));
+		return new TransformComponent(getCenteredPosition(position, face, offset), FacingUtil.facingToRotation(face));
 	}
 
 	public static Vector3d getCenteredPosition(Vector3i position, BlockFace face, Vector2d offset) {
-		return position.toVector3d().clone().add(0.5, 0.5, 0.5).clone().add(rotationoffset(face, 0.51, offset.x, offset.y));
+		return position.toVector3d().clone().add(0.5, 0.5, 0.5).clone().add(FacingUtil.facingToDir(face, 0.51, offset.x, offset.y));
 	}
 
 	public static Vector3d getIOPosition(short index, RedCompBehavior behavior, boolean isOutput) {

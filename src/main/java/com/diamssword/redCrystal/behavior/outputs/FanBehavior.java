@@ -7,6 +7,7 @@ import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.worldInteraction.CollideUtil;
+import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Holder;
@@ -75,7 +76,7 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 			for(Ref<EntityStore> ent : ents) {
 				var vel = ent.getStore().getComponent(ent, Velocity.getComponentType());
 				if(vel != null) {
-					var dir = RedComponentDisplayUtils.rotationoffset(this.parent.getFace(), 10 * (val / (float) MAX), 0, 0);
+					var dir = FacingUtil.facingToDir(this.parent.getFace(), 10 * (val / (float) MAX), 0, 0);
 					var it = ent.getStore().getComponent(ent, ItemPhysicsComponent.getComponentType());
 					if(it != null) {
 						var trans = ent.getStore().getComponent(ent, TransformComponent.getComponentType());
@@ -95,7 +96,7 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 	}
 
 	public List<Ref<EntityStore>> getEntities(short value) {
-		var rot = RedComponentDisplayUtils.rotationoffset(this.parent.getFace(), (maxDistance / (float) MAX) * value, 1, 1);
+		var rot = FacingUtil.facingToDir(this.parent.getFace(), (maxDistance / (float) MAX) * value, 1, 1);
 		var base = RedComponentDisplayUtils.getCenteredPosition(parent.getParent().getPosition(), parent.getFace(), new Vector2d(-0.5, -0.5));
 		var p1 = base.clone();
 		var p2 = base.clone().add(rot.clone());
@@ -104,6 +105,6 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 		SpatialResource<Ref<EntityStore>, EntityStore> entitySpatialResource = getWorld().getEntityStore().getStore().getResource(EntityModule.get().getItemSpatialResourceType());
 		entitySpatialResource.getSpatialStructure().collect(center, maxDistance * 2, targ);
 		return CollideUtil.filterEntitiesInBox(getWorld().getEntityStore().getStore(), targ, new Box(p1, p2));
-		
+
 	}
 }

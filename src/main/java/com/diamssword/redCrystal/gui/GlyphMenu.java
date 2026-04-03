@@ -18,6 +18,7 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import org.bson.BsonDocument;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -69,7 +70,7 @@ public class GlyphMenu {
 					var select = selected.get();
 					var codec = RedComponentRegister.getSettingsCodec(select);
 					if(codec != null)
-						new GlyphSettingsMenu(playerRef).withSpecific(select, () -> toolSettings.getGlyphSettings(select), doc -> {
+						new GlyphSettingsMenu(playerRef).withSpecific(select, () -> toolSettings.getGlyphSettings(select).orElse(new BsonDocument()), doc -> {
 							toolSettings.setGlyphSettings(select, doc);
 							RedWandTool.updateToolStack(player, slot, toolSettings);
 						}, codec).openAsSubMenu(() -> {
