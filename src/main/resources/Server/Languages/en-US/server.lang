@@ -65,3 +65,5 @@ RedCrystal.glyphSetting.Piston.PistonBehaviorExtend.name=Extend Distance
 RedCrystal.glyphSetting.Piston.PistonBehaviorExtend.desc=The distance the blocks can be pushed
 RedCrystal.glyphSetting.Piston.PistonBehaviorGrab.name=Block Amount
 RedCrystal.glyphSetting.Piston.PistonBehaviorGrab.desc=The number of blocks in that can be grabbed
+RedCrystal.glyph.Piston.name=Block Pusher
+RedCrystal.glyph.Piston.desc=Push a selected number of blocks in a row in a configurable direction.\nThe blocs pushed will be at the opposite direction of the glyph\n The distance of push is also based on signal strength.\n Unpowering the Sigil will bring the pushed blocks back

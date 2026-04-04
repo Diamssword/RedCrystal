@@ -85,8 +85,11 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 		super.tick();
 		var state = getInputState(0);
 		if(state > MIN) {
-			if(getInternalState("extended") < getSettings().extendLength)
+			var dist = Math.floor(getSettings().extendLength * getInputState(0) / (float) MAX);
+			if(getInternalState("extended") < dist)
 				moveBlock(false);
+			else if(getInternalState("extended") > dist)
+				moveBlock(true);
 		} else if(getInternalState("extended") > 0)
 			moveBlock(true);
 	}

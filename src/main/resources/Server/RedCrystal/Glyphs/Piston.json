@@ -2,8 +2,8 @@
   "BehaviorId": {
     "Type": "Piston"
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Fan.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Fan@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Piston.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Piston@2x.png",
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {
