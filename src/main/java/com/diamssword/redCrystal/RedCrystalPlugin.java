@@ -1,8 +1,8 @@
 package com.diamssword.redCrystal;
 
 import au.ellie.hyui.builders.HyUIPage;
-import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.gui.GlyphMenu;
+import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.display.DisplayEntitySystem;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
@@ -62,7 +62,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 		Interaction.getAssetStore().loadAssets("Diamssword:RedCrystal", List.of(new UseRedEntityInteraction("*UseRedCrystalEntity")));
 		RootInteraction.getAssetStore().loadAssets("Diamssword:RedCrystal", List.of(UseRedEntityInteraction.DEFAULT_ROOT));
 
-		OpenCustomUIInteraction.registerCustomPageSupplier(this, HyUIPage.class, "RedCrystalGlyphMenu", (a, b, c, d) -> new GlyphMenu().openMenu(c));
+		OpenCustomUIInteraction.registerCustomPageSupplier(this, HyUIPage.class, "RedCrystalGlyphMenu", (a, b, c, d) -> new GlyphMenu(c));
 		this.getEventRegistry().register(LoadedAssetsEvent.class, Glyph.class, this::onGlyphAssetChange);
 
 	}

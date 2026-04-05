@@ -20,7 +20,7 @@ public class DisplayState {
 	}
 
 	protected void lightUpRune(Ref<EntityStore> entity, boolean on) {
-		if(entity != null) {
+		if(entity != null && entity.isValid()) {
 			var comp = entity.getStore().getComponent(entity, RedEntityHiddenComponent.getComponentType());
 			if(comp != null)
 				comp.setLightUp(on);

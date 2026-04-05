@@ -1,0 +1,18 @@
+$C = "../../Common.ui";
+Group{
+    LayoutMode:Center;
+      $C.@Container #SettingsPanel {
+            Anchor: (Width: 400, Height: 500,Right:10);
+            #Title {
+              $C.@Title { @Text = "Glyph's Settings"; }
+            }
+            #Content {
+                LayoutMode:Top;
+                Group #Main {
+                    LayoutMode:Top;
+                }
+            }
+      }
+}
+
+

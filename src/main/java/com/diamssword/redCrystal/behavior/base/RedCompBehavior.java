@@ -2,28 +2,26 @@ package com.diamssword.redCrystal.behavior.base;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
-import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.gui.GlyphSettingsMenu;
+import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.wand.RedWandTool;
-import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import org.bson.codecs.BsonCodecProvider;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
@@ -240,7 +238,10 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 			if(this instanceof RedCompBehaviorWithSettings<?, ?> casted) {
 				menu.withSpecific(casted.getId(), () -> casted.getStateManager().getStoredSettings(), casted::setStoredSettings, casted.getSettingsCodec());
 			}
-			menu.openMenu();
+			Player playerComponent = (Player) player.getStore().getComponent(player, Player.getComponentType());
+			if(playerComponent != null)
+				playerComponent.getPageManager().openCustomPage(player, player.getStore(), menu);
+
 		}
 	}
 

@@ -71,8 +71,10 @@ public class WandRevealInteraction extends SimpleInteraction {
 						comp.setToolEquiped(true);
 
 						var pref = s.getComponent(context.getEntity(), PlayerRef.getComponentType());
-						if(pref != null)
+						/*if(pref != null)
 							comp.showHud(pref);
+							//TODO re-enable
+						 */
 					}
 				});
 

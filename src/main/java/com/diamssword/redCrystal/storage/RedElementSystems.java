@@ -60,10 +60,12 @@ public class RedElementSystems {
 
 			RedElementState redComponent = archetype.getComponent(index, RedElementState.getComponent());
 			assert redComponent != null;
-			redComponent.getAllElements().forEach((f, e) -> {
-				if(e.isValid())
-					e.getBehavior().displayTick();
+			commandBuffer.getExternalData().getWorld().execute(() -> {
+				redComponent.getAllElements().forEach((f, e) -> {
+					if(e.isValid())
+						e.getBehavior().displayTick();
 
+				});
 			});
 		}
 
