@@ -28,9 +28,9 @@ public class GlyphSettingsMenuConverter<T> {
 	private final Supplier<T> getter;
 	private final BuilderCodec<T> codec;
 	private final String glyphId;
-	private final GlyphSettingsMenu.EventBinder binder;
+	private final UniversalEventBinder binder;
 
-	public GlyphSettingsMenuConverter(GlyphSettingsMenu.EventBinder binder, String glyphId, PlayerRef playerRef, Supplier<T> settingsProvider, Consumer<T> settingsSetter, BuilderCodec<T> codec) {
+	public GlyphSettingsMenuConverter(UniversalEventBinder binder, String glyphId, PlayerRef playerRef, Supplier<T> settingsProvider, Consumer<T> settingsSetter, BuilderCodec<T> codec) {
 		this.setter = settingsSetter;
 		this.getter = settingsProvider;
 		this.playerRef = playerRef;
@@ -76,7 +76,7 @@ public class GlyphSettingsMenuConverter<T> {
 					setValueE((BuilderField<T, Enum<?>>) field, ec.decode(new BsonString(s), new ExtraInfo()));
 				});
 				binder.setStyle(id, "DefaultDropdownBoxStyle");
-				content.append("DropdownBox #").append(id).append(" {Anchor:(Width:200); TooltipText:\"").append(doc).append("\";");
+				content.append("DropdownBox #").append(id).append(" {Anchor:(Width:180); TooltipText:\"").append(doc).append("\";");
 				getValue(field, ec.clazz).ifPresent((v) -> content.append("Value:\"").append(v).append("\";"));
 				for(Enum<? extends Enum<?>> value : values) {
 					content.append("DropdownEntry{ Value:\"").append(value.toString()).append("\"; Text:\"").append(value).append("\";} ");

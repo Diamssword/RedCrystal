@@ -1,63 +1,85 @@
 package com.diamssword.redCrystal.gui;
 
-import au.ellie.hyui.builders.*;
-import au.ellie.hyui.events.MouseEventData;
-import au.ellie.hyui.events.UIContext;
-import au.ellie.hyui.types.DefaultStyles;
-import au.ellie.hyui.types.LayoutMode;
-import com.diamssword.redCrystal.RedCrystalPlugin;
-import com.diamssword.redCrystal.storage.Glyph;
-import com.diamssword.redCrystal.wand.RedWandTool;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.function.consumer.TriConsumer;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
-import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.inventory.InventoryComponent;
-import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
+import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
+import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
+import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import javax.annotation.Nonnull;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
-public class ValueSelectMenu {
+public class ValueSelectMenu extends InteractiveCustomUIPage<UniversalDataBinding> {
 
+	private UniversalEventBinder binder = new UniversalEventBinder();
+	private final String uiFile;
+	private TriConsumer<UICommandBuilder, UIEventBuilder, UniversalEventBinder> onBuild;
+
+	protected ValueSelectMenu(@Nonnull PlayerRef playerRef, String uiFile) {
+		super(playerRef, CustomPageLifetime.CanDismiss, UniversalDataBinding.CODEC);
+		this.uiFile = uiFile;
+	}
+
+	public void onBuild(TriConsumer<UICommandBuilder, UIEventBuilder, UniversalEventBinder> callback) {
+		this.onBuild = callback;
+	}
+
+	public void open() {
+		if(playerRef.isValid() && playerRef.getReference().isValid()) {
+			var player = playerRef.getReference().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+			if(player != null)
+				player.getPageManager().openCustomPage(playerRef.getReference(), playerRef.getReference().getStore(), this);
+		}
+	}
 
 	public static void openRange(PlayerRef ref, int min, int max, int value, Consumer<Integer> onChange) {
+		var page = new ValueSelectMenu(ref, "Pages/RedCrystal/RangeInput.ui");
+		page.onBuild((builder, e, bind) -> {
+			AtomicInteger valueIn = new AtomicInteger(value);
+			Consumer<UICommandBuilder> update = (b) -> {
+				var val = valueIn.get();
+				b.set("#Text.Text", val + "");
+				onChange.accept(val);
+			};
+			builder.set("#Text.Text", value + "");
+			builder.set("#Slider.Min", min).set("#Slider.Max", max).set("#Slider.Value", value);
+			bind.bindEvent("Slider", "#Slider.Value", (v, b) -> {
+				valueIn.set(v);
+				update.accept(b);
+			}, Integer.class);
+			bind.bindButton("BtM", (b) -> {
+				valueIn.set(Math.min(valueIn.get() + 1, max));
+				update.accept(b);
+			});
+			bind.bindButton("BtL", (b) -> {
+				valueIn.set(Math.max(valueIn.get() - 1, min));
+				update.accept(b);
+			});
 
+		});
+		page.open();
+	}
 
-		var prototype = PageBuilder.pageForPlayer(ref).loadHtml("Pages/RedCrystal/RangeInput.html")
-				.withLifetime(CustomPageLifetime.CanDismiss);
-		AtomicInteger valueIn = new AtomicInteger(value);
-		Consumer<UIContext> update = (ctx) -> {
-			var val = valueIn.get();
-			ctx.getById("label", LabelBuilder.class).ifPresent(l -> l.withText(val + ""));
-			ctx.getById("input", SliderBuilder.class).ifPresent(l -> l.withValue(val));
-			onChange.accept(val);
-			ctx.updatePage(false);
-		};
-		prototype.addEventListener("input", CustomUIEventBindingType.ValueChanged, (b, ctx) -> {
-			valueIn.set((Integer) b);
-			update.accept(ctx);
-		});
-		prototype.getById("input", SliderBuilder.class).ifPresent(s -> s.withMin(min).withMax(max).withValue(value));
-		prototype.getById("label", LabelBuilder.class).ifPresent(l -> l.withText(value + ""));
-		prototype.addEventListener("btM", CustomUIEventBindingType.Activating, (b, ctx) -> {
-			valueIn.set(Math.min(valueIn.get() + 1, max));
-			update.accept(ctx);
-		});
-		prototype.addEventListener("btL", CustomUIEventBindingType.Activating, (b, ctx) -> {
-			valueIn.set(Math.max(valueIn.get() - 1, min));
-			update.accept(ctx);
-		});
-		prototype.open(ref, ref.getReference().getStore());
+	@Override
+	public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull UniversalDataBinding data) {
+		var builder = new UICommandBuilder();
+		binder.onReceived(builder, data);
+		this.sendUpdate(builder, false);
+	}
+
+	@Override
+	public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder commandBuilder, @Nonnull UIEventBuilder eventBuilder, @Nonnull Store<EntityStore> store) {
+		commandBuilder.append(uiFile);
+		if(onBuild != null)
+			onBuild.accept(commandBuilder, eventBuilder, binder);
+		binder.setEventBuilder(eventBuilder, commandBuilder);
 	}
 
 }

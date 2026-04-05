@@ -1,7 +1,7 @@
 {
     "Group": "Diamssword",
     "Name": "RedCrystal",
-    "Version": "0.0.7",
+    "Version": "0.0.8",
     "Description": "A powerful way to automatically interact with the world",
     "Authors": [
         {
@@ -14,8 +14,7 @@
     "Dependencies": {
         "Hytale:InteractionModule": "*",
         "Hytale:EntityModule": "*",
-        "Hytale:BlockModule": "*",
-        "Ellie:HyUI": "*"
+        "Hytale:BlockModule": "*"
     },
     "OptionalDependencies": {},
     "ServerVersion": "2026.03.26-89796e57b",

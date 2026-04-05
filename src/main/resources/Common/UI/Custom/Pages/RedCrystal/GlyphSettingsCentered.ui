@@ -1,4 +1,5 @@
 $C = "../../Common.ui";
+$C.@PageOverlay {}
 Group{
     LayoutMode:Center;
       $C.@Container #SettingsPanel {

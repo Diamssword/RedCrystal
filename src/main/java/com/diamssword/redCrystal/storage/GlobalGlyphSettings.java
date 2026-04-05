@@ -4,7 +4,8 @@ import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.EnumCodec;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class GlobalGlyphSettings {
 	public static final BuilderCodec<GlobalGlyphSettings> CODEC = BuilderCodec.builder(GlobalGlyphSettings.class, GlobalGlyphSettings::new)
@@ -39,7 +40,7 @@ public class GlobalGlyphSettings {
 	public static class TypedEnumCodec<T extends Enum<T>> extends EnumCodec<T> {
 		public final Class<T> clazz;
 
-		public TypedEnumCodec(@NotNull Class<T> clazz) {
+		public TypedEnumCodec(@Nonnull Class<T> clazz) {
 			super(clazz);
 			this.clazz = clazz;
 		}

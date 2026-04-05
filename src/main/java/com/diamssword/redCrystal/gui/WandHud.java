@@ -1,50 +1,35 @@
 package com.diamssword.redCrystal.gui;
 
-import au.ellie.hyui.builders.*;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.wand.RedWandTool;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
+import com.hypixel.hytale.server.core.entity.entities.player.hud.HudManager;
 import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
+import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 
-public class WandHud {
-	private final PlayerRef playerRef;
+public class WandHud extends CustomUIHud {
 	private final PlayerDatas playerDatas;
-	private HyUIHud toolHud;
-	private HyUIHud hoveredHud;
+	private final Player player;
 
 	public WandHud(PlayerRef player, PlayerDatas datas) {
-		this.playerRef = player;
+		super(player);
 		this.playerDatas = datas;
-		create();
+		this.player = player.getReference().getStore().getComponent(player.getReference(), Player.getComponentType());
 	}
 
-	public void create() {
-
-		var hud = HudBuilder.hudForPlayer(playerRef).loadHtml("Pages/RedCrystal/WandHudTool.html").onRefresh(this::onRefreshTool);
-		var tool = RedWandTool.getForStack(InventoryComponent.getItemInHand(playerRef.getReference().getStore(), playerRef.getReference()));
-		hud.getById("SelectedPanel", GroupBuilder.class).ifPresent(p -> {
-			p.withVisible(tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank());
-			hud.getById("Selected", LabelBuilder.class).ifPresent(l -> {
-				l.withText("Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
-			});
-		});
-		var hud1 = HudBuilder.hudForPlayer(playerRef).loadHtml("Pages/RedCrystal/WandHudHover.html").withRefreshRate(500).onRefresh(ui -> {updateHovered(ui::getById);});
-		updateHovered(hud1::getById);
-		playerRef.getReference().getStore().getExternalData().getWorld().execute(() -> {
-			toolHud = hud.show(playerRef);
-			hoveredHud = hud1.show(playerRef);
-		});
-
-	}
-
-	@FunctionalInterface
-	interface ElementGetter {
-		<E extends UIElementBuilder<E>> Optional<E> apply(String id, Class<E> clazz);
+	@Override
+	protected void build(@Nonnull UICommandBuilder builder) {
+		builder.append("Pages/RedCrystal/WandHud.ui");
+		onRefreshTool(builder);
+		updateHovered(builder);
 	}
 
 	private String parseIO(boolean in, List<Short> values) {
@@ -70,51 +55,45 @@ public class WandHud {
 		return val.toString();
 	}
 
-	private void updateHovered(ElementGetter getter) {
+	private void updateHovered(UICommandBuilder builder) {
 
 		var hov = playerDatas.getHovered();
-		getter.apply("SelectedPanel", ContainerBuilder.class).ifPresent(c -> {
-			if(hov == null || !hov.isValid()) {
-				c.withVisible(false);
-			} else {
-				c.withVisible(true);
-				c.withTitleText(getTranslatedName(hov.getAsset().getId()));
-				getter.apply("InLine", LabelBuilder.class).ifPresent(l -> {
-					l.withText(parseIO(true, hov.getBehavior().getInputValues()));
-				});
-				getter.apply("OutLine", LabelBuilder.class).ifPresent(l -> {
-					l.withText(parseIO(false, hov.getBehavior().getOutputValues()));
-				});
-			}
-
-		});
+		if(hov == null || !hov.isValid()) {
+			builder.set("#SelectedPanel.Visible", false);
+		} else {
+			builder.set("#SelectedPanel.Visible", true);
+			builder.set("#TitleA.Text", getTranslatedName(hov.getAsset().getId()));
+			builder.set("#InLine.Text", parseIO(true, hov.getBehavior().getInputValues()));
+			builder.set("#OutLine.Text", parseIO(false, hov.getBehavior().getOutputValues()));
+		}
 	}
 
-	public void show() {
-		if(toolHud != null) {
-			toolHud.triggerRefresh();
-			toolHud.unhide();
-		}
-		if(hoveredHud != null) {
-			hoveredHud.triggerRefresh();
-			hoveredHud.unhide();
-		}
+	private void setHud(@Nonnull CustomUIHud hud) {
+		if(player.getHudManager().getCustomHud() != hud)
+			getPlayerRef().getReference().getStore().getExternalData().getWorld().execute(() -> {
+				this.player.getHudManager().setCustomHud(getPlayerRef(), hud);
+			});
+	}
+
+	public void showHud() {
+		setHud(this);
+
 	}
 
 	public void hide() {
-		if(toolHud != null)
-			toolHud.hide();
-		if(hoveredHud != null)
-			hoveredHud.hide();
+		setHud(null);
 	}
 
 	public void refreshTool() {
-		toolHud.triggerRefresh();
+		var builder = new UICommandBuilder();
+		this.onRefreshTool(builder);
+		this.update(false, builder);
 	}
 
 	public void refreshHovered() {
-		hoveredHud.triggerRefresh();
-		hoveredHud.refreshOrRerender(true, false);
+		var builder = new UICommandBuilder();
+		this.updateHovered(builder);
+		this.update(false, builder);
 	}
 
 	private String getTranslatedName(String id) {
@@ -126,20 +105,17 @@ public class WandHud {
 	}
 
 	private String translate(String translateString) {
-		var tr = I18nModule.get().getMessage(playerRef.getLanguage(), translateString);
+		var tr = I18nModule.get().getMessage(getPlayerRef().getLanguage(), translateString);
 		return tr != null ? tr : translateString;
 	}
 
-	private void onRefreshTool(HyUIHud hud) {
-		var stack = InventoryComponent.getItemInHand(playerRef.getReference().getStore(), playerRef.getReference());
+	private void onRefreshTool(UICommandBuilder builder) {
+		var stack = InventoryComponent.getItemInHand(getPlayerRef().getReference().getStore(), getPlayerRef().getReference());
 		if(stack != null) {
 			var tool = RedWandTool.getForStack(stack);
-			hud.getById("SelectedPanel", GroupBuilder.class).ifPresent(p -> {
-				p.withVisible(tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank());
-				hud.getById("Selected", LabelBuilder.class).ifPresent(l -> {
-					l.withText("Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
-				});
-			});
+			builder.set("#SelectedPanel.Visible", tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank());
+			builder.set("#Selected.Text", "Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
+
 		}
 	}
 }

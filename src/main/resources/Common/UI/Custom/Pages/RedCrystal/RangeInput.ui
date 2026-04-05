@@ -1,0 +1,38 @@
+$C = "../../Common.ui";
+
+Group{
+    LayoutMode:Center;
+    $C.@DecoratedContainer {
+      Anchor: (Width: 400, Height: 130);
+      Padding:(Right:15);
+       #Title {
+         $C.@Title { @Text = "Set Input"; }
+       }
+
+       #Content {
+           LayoutMode:Top;
+           $C.@Slider #Slider {
+             @Anchor = (Width: 300,Height:10);
+             Value: 50;
+             Min: 0;
+             Max: 100;
+           }
+           Group{
+             Padding:(Top:10);
+           LayoutMode:Center;
+             $C.@SmallSecondaryTextButton #BtL {
+                @Text = "<";
+             }
+             $C.@Subtitle #Text {
+               @Anchor = (Width: 40);
+               @Text = "0";
+               Padding:(Left:5,Right:5);
+               Style: (HorizontalAlignment:Center);
+             }
+             $C.@SmallSecondaryTextButton #BtM {
+                @Text = ">";
+             }
+           }
+       }
+    }
+}

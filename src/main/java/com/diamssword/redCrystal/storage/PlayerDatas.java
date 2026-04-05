@@ -12,8 +12,8 @@ import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,10 +60,7 @@ public class PlayerDatas implements Component<EntityStore> {
 	public void showHud(PlayerRef player) {
 		if(currentHud == null)
 			currentHud = new WandHud(player, this);
-		else {
-			currentHud.show();
-
-		}
+		currentHud.showHud();
 	}
 
 	public void hideHud() {
@@ -90,9 +87,10 @@ public class PlayerDatas implements Component<EntityStore> {
 				lastHoveredElement = state.getElement(face);
 			} else
 				lastHoveredElement = null;
-			if(currentHud != null)
-				currentHud.refreshHovered();
+
 		}
+		if(currentHud != null)
+			currentHud.refreshHovered();
 	}
 
 	public void onToolChange() {

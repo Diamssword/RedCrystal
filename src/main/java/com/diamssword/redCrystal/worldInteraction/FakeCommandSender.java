@@ -2,8 +2,8 @@ package com.diamssword.redCrystal.worldInteraction;
 
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class FakeCommandSender implements CommandSender {
@@ -18,17 +18,17 @@ public class FakeCommandSender implements CommandSender {
 	}
 
 	@Override
-	public boolean hasPermission(@NotNull String var1) {
+	public boolean hasPermission(@Nonnull String var1) {
 		return true;
 	}
 
 	@Override
-	public boolean hasPermission(@NotNull String var1, boolean var2) {
+	public boolean hasPermission(@Nonnull String var1, boolean var2) {
 		return true;
 	}
 
 	@Override
-	public void sendMessage(@NotNull Message var1) {
+	public void sendMessage(@Nonnull Message var1) {
 
 	}
 }

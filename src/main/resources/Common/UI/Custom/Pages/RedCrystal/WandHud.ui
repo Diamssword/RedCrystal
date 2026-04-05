@@ -1,0 +1,46 @@
+$C = "../../Common.ui";
+
+Group{
+    LayoutMode:Left;
+    Anchor:(Left:0);
+    Group{
+        LayoutMode:Left;
+        Anchor:(Height:400,Bottom:0);
+        $C.@Container #SelectedPanel {
+            Anchor: (Height: 200);
+            Padding:(Left:10);
+            #Title {
+                $C.@Title #TitleA { @Text = "Rune"; }
+            }
+            #Content {
+                 $C.@Subtitle #InLine {
+                   @Text = "Input Signals: 0 |255| 0 |";
+                   Padding:(Left:5);
+                   Style: (RenderBold:true);
+                 }
+                   $C.@Subtitle #OutLine {
+                    @Text = "Output Signals: 0 |255| 0 |";
+                    Padding:(Left:5);
+                    Style: (RenderBold:true);
+                  }
+            }
+        }
+    }
+}
+Group{
+    LayoutMode:Bottom;
+    Anchor:(Bottom:30);
+    Group{
+        LayoutMode:Center;
+        Anchor:(Width:1600,Height:170);
+        Group #SelectedPanel {
+               Background:(TexturePath:"../../Common/DropdownPressed.png");
+               Anchor:(Top:0,Height:30);
+               $C.@Subtitle #Selected {
+                    @Text = "Selected Glyph:";
+                    Padding:(Full:5);
+                    Style: (RenderBold:true);
+                }
+        }
+    }
+}

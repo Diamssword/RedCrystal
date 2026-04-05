@@ -12,8 +12,8 @@ import com.hypixel.hytale.codec.schema.metadata.ui.*;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.server.core.asset.common.CommonAssetValidator;
 import com.hypixel.hytale.server.core.asset.type.item.config.ItemTranslationProperties;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public class Glyph implements JsonAssetWithMap<String, DefaultAssetMap<String, Glyph>>, Comparable<Glyph> {
@@ -159,7 +159,7 @@ public class Glyph implements JsonAssetWithMap<String, DefaultAssetMap<String, G
 	}
 
 	@Override
-	public int compareTo(@NotNull Glyph other) {
+	public int compareTo(@Nonnull Glyph other) {
 		var cat = getCategorie();
 		var catO = other.getCategorie();
 		// 1. Compare weight (category priority)

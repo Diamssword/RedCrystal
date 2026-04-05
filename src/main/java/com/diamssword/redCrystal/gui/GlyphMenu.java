@@ -263,12 +263,12 @@ public class GlyphMenu extends InteractiveCustomUIPage<GlyphMenu.MenuEventData> 
 	}
 
 
-	public static class MenuEventData implements GlyphSettingsMenu.EventDataWithGlyphSettings {
+	public static class MenuEventData implements EventDataWithGlyphSettings {
 		static final String KEY_BUTTON = "ButtonClicked";
 		static final String KEY_ASSET = "AssetId";
 		static final String KEY_HOVERED = "Hovered";
 		static final String KEY_SEARCH = "@SearchQuery";
-		public static final BuilderCodec<MenuEventData> CODEC = GlyphSettingsMenu.MenuEventData.appendFields(BuilderCodec.builder(
+		public static final BuilderCodec<MenuEventData> CODEC = UniversalDataBinding.appendFields(BuilderCodec.builder(
 								MenuEventData.class, MenuEventData::new
 						)
 						.append(new KeyedCodec<>(KEY_BUTTON, Codec.STRING), (entry, s) -> entry.clickedButton = s, entry -> entry.clickedButton)
@@ -284,13 +284,13 @@ public class GlyphMenu extends InteractiveCustomUIPage<GlyphMenu.MenuEventData> 
 		private boolean hovered = false;
 		private String assetId;
 		private String search;
-		private GlyphSettingsMenu.MenuEventData settings = new GlyphSettingsMenu.MenuEventData();
+		private UniversalDataBinding settings = new UniversalDataBinding();
 
 		public MenuEventData() {
 		}
 
 		@Override
-		public GlyphSettingsMenu.MenuEventData getSettings() {
+		public UniversalDataBinding getSettings() {
 			return settings;
 		}
 	}
