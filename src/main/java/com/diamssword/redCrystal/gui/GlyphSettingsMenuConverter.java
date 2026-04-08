@@ -10,6 +10,8 @@ import com.hypixel.hytale.codec.codecs.simple.DoubleCodec;
 import com.hypixel.hytale.codec.codecs.simple.FloatCodec;
 import com.hypixel.hytale.codec.codecs.simple.IntegerCodec;
 import com.hypixel.hytale.codec.validation.Validator;
+import com.hypixel.hytale.protocol.ColorLight;
+import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -56,11 +58,16 @@ public class GlyphSettingsMenuConverter<T> {
 		return tr != null ? tr : translateString;
 	}
 
+	private String getLabel(BuilderField<T, ?> field) {
+		var doc = translate(field.getCodec().getKey() + ".desc");
+		return new StringBuilder("Label{Text:\"").append(translate(field.getCodec().getKey() + ".name")).append("\"; Padding:(Right:5);TooltipText:\"").append(doc).append("\"; Style: (HorizontalAlignment:Center);}").toString();
+	}
+
 	private String codecFieldConverter(BuilderField<T, ?> field) {
 		var div = new StringBuilder("Group{LayoutMode:Left; Padding:(Top:10,Bottom:10,Left:5,Right:5);Anchor: (Height:40); ");
 
 		var doc = translate(field.getCodec().getKey() + ".desc");
-		div.append("Label{Text:\"").append(translate(field.getCodec().getKey() + ".name")).append("\"; Padding:(Right:5);TooltipText:\"").append(doc).append("\"; Style: (HorizontalAlignment:Center);}");
+		div.append(getLabel(field));
 		StringBuilder content = new StringBuilder();
 		switch(field.getCodec().getChildCodec()) {
 			case BooleanCodec _ -> {
@@ -94,11 +101,39 @@ public class GlyphSettingsMenuConverter<T> {
 				content.append(numberFieldsHandler(field, Double.class, (d) -> setValue(field, d)));
 
 			}
+			case BuilderCodec builder -> {
+				if(builder.getInnerClass() == ColorLight.class) {
+					div = new StringBuilder("Group{LayoutMode:Left; Padding:(Top:10,Bottom:10,Left:5,Right:5); Anchor:(Left:0,Height:120); ");
+					div.append(getLabel(field));
+					content.append(lightField(field, (v) -> setValue(field, v)));
+				}
+			}
 			default -> {
 			}
 		}
 		div.append(content).append("}");
 		return div.toString();
+	}
+
+	private <J extends Number> String lightField(BuilderField<T, ?> field, Consumer<ColorLight> valueSetter) {
+		var valO = getValue(field, ColorLight.class);
+		var value = valO.orElse(new ColorLight((byte) 0, (byte) 15, (byte) 15, (byte) 15));
+		int r8 = (value.red << 4) | value.red;
+		int g8 = (value.green << 4) | value.green;
+		int b8 = (value.blue << 4) | value.blue;
+		int rgb = (r8 << 16) | (g8 << 8) | b8;
+		var id = binder.bindEvent((val, builder) -> {
+			val = val.substring(1);
+			int r = Integer.parseInt(val.substring(0, 2), 16);
+			int g = Integer.parseInt(val.substring(2, 4), 16);
+			int b = Integer.parseInt(val.substring(4, 6), 16);
+			byte r4 = (byte) (r >> 4);
+			byte g4 = (byte) (g >> 4);
+			byte b4 = (byte) (b >> 4);
+			valueSetter.accept(new ColorLight((byte) 0, r4, g4, b4));
+		});
+		binder.setStyle(id, "DefaultColorPickerStyle");
+		return "ColorPicker #" + id + " {Anchor: (Width: 120, Height: 120); Value: #" + String.format("%06X", rgb) + "; Format:RgbShort;}";
 	}
 
 	private <J extends Number> String numberFieldsHandler(BuilderField<T, ?> field, Class<J> numberClass, Consumer<Double> valueSetter) {
@@ -148,27 +183,6 @@ public class GlyphSettingsMenuConverter<T> {
 		div1.append("TextButton #").append(idL).append(" {Text:\"<\"; Padding: (Horizontal: 16); Anchor:(Height:32);}");
 		div1.append("NumberField #").append(idIn).append(" {Anchor:(Width:80,Height:34);Padding: (Horizontal: 10); Value:").append(value.get()).append("; Format:").append(format).append(";}");
 		div1.append("TextButton #").append(idM).append(" {Text:\">\"; Padding: (Horizontal: 16); Anchor:(Height:32);}");
-		/*div1.addChild(ButtonBuilder.smallSecondaryTextButton().withText("<").addEventListenerWithContext(CustomUIEventBindingType.Activating, ButtonBuilder.class, (_, c) -> {
-			value.set(value.get() - 1);
-			input.withValue(value.get());
-			onChange.accept(value.get());
-			c.updatePage(false);
-		}));
-
-
-		input.addEventListener(CustomUIEventBindingType.ValueChanged, (v) -> {
-			input.withValue(v);
-			value.set(v);
-			onChange.accept(value.get());
-
-		});
-		div1.addChild(input);
-		div1.addChild(ButtonBuilder.smallSecondaryTextButton().withText(">").addEventListenerWithContext(CustomUIEventBindingType.Activating, ButtonBuilder.class, (_, c) -> {
-			value.set(value.get() + 1);
-			input.withValue(value.get());
-			onChange.accept(value.get());
-			c.updatePage(false);
-		})); */
 		return div1.append("}").toString();
 	}
 
@@ -177,25 +191,12 @@ public class GlyphSettingsMenuConverter<T> {
 		var div1 = new StringBuilder("Group{ LayoutMode:Left; ");
 		var id = binder.bindEventDouble((v, builder) -> {
 			double val = v / factor;
-			//slider.withValue(v);
 			onChange.accept(val);
-			//ctx.updatePage(false);
 		});
 		binder.setStyle(id, "SliderStyle", "DefaultSliderStyle");
 		binder.setStyle(id, "NumberFieldStyle", "DefaultInputFieldStyle");
 		div1.append("SliderNumberField #").append(id).append(" { Anchor:(Left:10,Width:150,Height:10); Value:").append((int) (value * factor)).append("; Min:").append((int) (min * factor)).append("; Max:").append((int) (max * factor)).append("; Step:").append((int) (step * factor)).append(";}");
-		//var text = LabelBuilder.label().withText(value + "").withAnchor(new HyUIAnchor().setLeft(5)).withStyle(new HyUIStyle().setAlignment(Alignment.Center));
-		/*slider.addEventListenerWithContext(CustomUIEventBindingType.ValueChanged, Integer.class, (b, ctx) -> {
-			double val = b / factor;
-			text.withText(val + "");
-			slider.withValue(b);
-			onChange.accept(val);
-			ctx.updatePage(false);
-		});
-		div1.addChild(slider);
-		div1.addChild(text);
 
-		 */
 		return div1.append("}").toString();
 	}
 
@@ -203,14 +204,12 @@ public class GlyphSettingsMenuConverter<T> {
 		var inst = getter.get();
 		((BuilderField<T, J>) field).setValue(inst, value, new ExtraInfo());
 		setter.accept(inst);
-		//baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
 	}
 
 	private void setValueE(BuilderField<T, Enum<?>> field, Enum<?> value) {
 		var inst = getter.get();
 		field.setValue(inst, value, new ExtraInfo());
 		setter.accept(inst);
-		//baseState = GlobalGlyphSettings.CODEC.encode(inst, new ExtraInfo());
 	}
 
 	public BsonDocument getBaseState() {

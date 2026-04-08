@@ -29,7 +29,7 @@ public class RedComponentRegister {
 		register("AND", AndBehavior::new);
 		register("OR", OrBehavior::new, BehaviorAssetWithSettings::AbsoluteCodec);
 		register("NOT", NotBehavior::new, BehaviorAssetWithSettings::BinaryCodec);
-		register("Light", LightBehavior::new, BehaviorAssetWithSettings::LightCodec);
+		register("Light", LightBehavior::new, BehaviorAssetWithSettings::LightCodec, LightBehavior.CODEC);
 		register("Lever", LeverBehavior::new, BehaviorAssetWithModelSwitch::getCODEC);
 		register("PressurePlate", PressurePlateBehavior::new, BehaviorAssetWithModelSwitch::getCODEC, PressurePlateBehavior.CODEC);
 		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec);

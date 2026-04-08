@@ -37,6 +37,7 @@ public class BehaviorAssetWithSettings {
 				)
 				.add()
 				.appendInherited(new KeyedCodec<>("Light", ProtocolCodecs.COLOR_LIGHT), (a, b) -> a.light = b, a -> a.light, (a, b) -> a.light = b.light)
+				.documentation("NOT USED ANYMORE! This is a deprecated settings,it doesn't have a use anymore")
 				.add()
 				.append(new KeyedCodec<>("IsRGB", BuilderCodec.BOOLEAN), (a, b) -> a.isRGB = b, a -> a.isRGB)
 				.add()
@@ -52,6 +53,7 @@ public class BehaviorAssetWithSettings {
 	}
 
 	public static class BehaviorAssetLight extends AbstractBehaviorAsset<BehaviorAssetLight> {
+		@Deprecated
 		public ColorLight light = new ColorLight((byte) 0, (byte) 25, (byte) 25, (byte) 25);
 		public boolean isRGB = false;
 		public ModelParticle[] particles = new ModelParticle[0];

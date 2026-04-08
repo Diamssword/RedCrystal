@@ -75,9 +75,7 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 
 	@Override
 	public void onSignalChange(short input, short oldValue, short value) {
-		if(value > MIN) {
-
-		}
+	
 	}
 
 	@Override
@@ -145,21 +143,6 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 				playSound();
 			}
 		}
-		//if(getWorld().getBlock(a) == 0)
-
-		/*var pos = this.parent.getParent().getPosition();
-		var dest = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1, 0, 0).add(pos.clone()).toVector3i();
-		var block = this.getWorld().getBlock(pos);
-		var chunkOrigin = getWorld().getChunk(ChunkUtil.indexChunkFromBlock(pos.x, pos.z));
-		var chunkDest = getWorld().getChunk(ChunkUtil.indexChunkFromBlock(dest.x, dest.z));
-		var assetMap = BlockType.getAssetMap();
-
-		//		chunkOrigin.setb
-		chunkDest.setBlock(dest.x, dest.y, dest.z, block);
-		chunkOrigin.setBlock(pos.x, pos.y, pos.z, 0);
-		//LocalCachedChunkAccessor accessor = LocalCachedChunkAccessor.atWorldCoords(world, xMin + halfWidth, zMin + halfDepth, Math.max(width, depth));
-
-		 */
 	}
 
 	public boolean isAir(Vector3i pos) {

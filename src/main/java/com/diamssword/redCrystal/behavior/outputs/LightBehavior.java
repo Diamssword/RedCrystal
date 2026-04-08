@@ -1,16 +1,20 @@
 package com.diamssword.redCrystal.behavior.outputs;
 
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithSettings;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
+import com.hypixel.hytale.codec.KeyedCodec;
+import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.protocol.ColorLight;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelParticle;
+import com.hypixel.hytale.server.core.codec.ProtocolCodecs;
 import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.EntityScaleComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.Intangible;
@@ -20,11 +24,27 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;
 
-public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.BehaviorAssetLight> {
+public class LightBehavior extends RedCompBehaviorWithSettings<BehaviorAssetWithSettings.BehaviorAssetLight, LightBehavior.LightSettings> {
 
+	public static BuilderCodec<LightSettings> CODEC = BuilderCodec.builder(LightSettings.class, LightSettings::new)
+			.append(new KeyedCodec<>("Light", ProtocolCodecs.COLOR_LIGHT), (a, b) -> a.light = b, a -> a.light)
+			.add()
+			.build();
 
 	public LightBehavior(String id, RedElement parent, BehaviorAssetWithSettings.BehaviorAssetLight asset) {
 		super(id, parent, asset);
+		this.setSettingsChangeListener(_ -> onSettingsChange());
+	}
+
+	@Override
+	public boolean hideSettings() {
+		return asset.isRGB;
+	}
+
+	private void onSettingsChange() {
+		if(parent.getEntities() != null) {
+			onSignalChange((short) 0, this.getInputState(0), this.getInputState(0));
+		}
 	}
 
 	@Override
@@ -39,7 +59,7 @@ public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Beh
 					ent.getStore().ensureComponent(ent, MovementStatesComponent.getComponentType());
 					ModelParticle[] particles = new ModelParticle[0];
 					if(light.red > 0 || light.blue > 0 || light.green > 0) {
-						var col = asset.isRGB ? computeRGBColor() : computeColor(asset.light, value);
+						var col = asset.isRGB ? computeRGBColor() : computeColor(getSettings().light, value);
 						var scale = asset.isRGB ? Math.max(getInputState(0), Math.max(getInputState(1), getInputState(2))) / (float) MAX : value / (float) MAX;
 						particles = new ModelParticle[asset.particles.length];
 						for(int i = 0; i < asset.particles.length; i++) {
@@ -85,7 +105,7 @@ public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Beh
 			return new ColorLight(this.asset.light.radius, (byte) (15 * r), (byte) (15 * g), (byte) (15 * b));
 		} else {
 			var fac = (value / (float) MAX) * 2; //looks better and brighter
-			return new ColorLight(this.asset.light.radius, (byte) (this.asset.light.red * fac), (byte) (this.asset.light.green * fac), (byte) (this.asset.light.blue * fac));
+			return new ColorLight(this.getSettings().light.radius, (byte) (this.getSettings().light.red * fac), (byte) (this.getSettings().light.green * fac), (byte) (this.getSettings().light.blue * fac));
 		}
 	}
 
@@ -96,7 +116,6 @@ public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Beh
 		int targetR = light.red * 17;
 		int targetG = light.green * 17;
 		int targetB = light.blue * 17;
-
 		int gray = 128;
 		byte finalR = (byte) (gray + t * (targetR - gray));
 		byte finalG = (byte) (gray + t * (targetG - gray));
@@ -117,6 +136,12 @@ public class LightBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Beh
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("light", (short) 0, this.parent));
 		res.put("light", holder);
 		return res;
+	}
+
+	public static class LightSettings {
+		public ColorLight light = new ColorLight((byte) 0, (byte) 15, (byte) 15, (byte) 15);
+
+		public LightSettings() {}
 	}
 
 }

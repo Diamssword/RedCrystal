@@ -42,7 +42,7 @@ public class UniversalEventBinder {
 		});
 	}
 
-	public <T> void bindEvent(String id, String value, BiConsumer<T, UICommandBuilder> callback, Class<T> clazz) {
+	public <T> void bindEvent(String id, String value, BiConsumer<T, UICommandBuilder> callback, Class<T> clazz, CustomUIEventBindingType event) {
 		map.put(id, (BiConsumer<Object, UICommandBuilder>) callback);
 		delayedCalls.add((eventBuilder) -> {
 			var key = UniversalDataBinding.KEY_VALUE_S;
@@ -58,8 +58,12 @@ public class UniversalEventBinder {
 				type = "Integer";
 			}
 
-			eventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#" + id, EventData.of(UniversalDataBinding.KEY_ID, id).append(UniversalDataBinding.KEY_TYPE, type).append(key, value), false);
+			eventBuilder.addEventBinding(event, "#" + id, EventData.of(UniversalDataBinding.KEY_ID, id).append(UniversalDataBinding.KEY_TYPE, type).append(key, value), false);
 		});
+	}
+
+	public <T> void bindEvent(String id, String value, BiConsumer<T, UICommandBuilder> callback, Class<T> clazz) {
+		bindEvent(id, value, callback, clazz, CustomUIEventBindingType.ValueChanged);
 	}
 
 	public <T> String bindEvent(BiConsumer<T, UICommandBuilder> callback, Class<T> clazz) {
