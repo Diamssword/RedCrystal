@@ -1,6 +1,9 @@
 package com.diamssword.redCrystal;
 
 import com.diamssword.redCrystal.gui.GlyphMenu;
+import com.diamssword.redCrystal.gui.HudManager;
+import com.diamssword.redCrystal.gui.MultiHudManager;
+import com.diamssword.redCrystal.gui.WandHud;
 import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.display.DisplayEntitySystem;
@@ -11,6 +14,8 @@ import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.hypixel.hytale.assetstore.AssetRegistry;
 import com.hypixel.hytale.assetstore.event.LoadedAssetsEvent;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
+import com.hypixel.hytale.common.plugin.PluginIdentifier;
+import com.hypixel.hytale.common.semver.SemverRange;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.asset.HytaleAssetStore;
@@ -20,6 +25,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Roo
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.plugin.PluginManager;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -77,6 +83,11 @@ public class RedCrystalPlugin extends JavaPlugin {
 		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.ToolTicking());
 		this.getEntityStoreRegistry().registerSystem(new PlayerSystems.InventoryTicking());
 		this.getEntityStoreRegistry().registerSystem(new DisplayEntitySystem());
+		if(PluginManager.get().hasPlugin(new PluginIdentifier("Buuz135", "MultipleHUD"), SemverRange.WILDCARD)) {
+			LOGGER.atInfo().log("MultipleHUD detected: enabling compatibility.");
+			WandHud.manager = new MultiHudManager();
+		} else
+			WandHud.manager = new HudManager();
 	}
 
 	private void onGlyphAssetChange(@Nonnull LoadedAssetsEvent<String, Glyph, DefaultAssetMap<String, Glyph>> event) {

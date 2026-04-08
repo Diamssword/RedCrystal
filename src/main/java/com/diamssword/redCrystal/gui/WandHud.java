@@ -5,7 +5,6 @@ import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
-import com.hypixel.hytale.server.core.entity.entities.player.hud.HudManager;
 import com.hypixel.hytale.server.core.inventory.InventoryComponent;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
@@ -18,6 +17,7 @@ import java.util.Optional;
 public class WandHud extends CustomUIHud {
 	private final PlayerDatas playerDatas;
 	private final Player player;
+	public static HudManager manager = new HudManager();
 
 	public WandHud(PlayerRef player, PlayerDatas datas) {
 		super(player);
@@ -68,32 +68,29 @@ public class WandHud extends CustomUIHud {
 		}
 	}
 
-	private void setHud(@Nonnull CustomUIHud hud) {
-		if(player.getHudManager().getCustomHud() != hud)
-			getPlayerRef().getReference().getStore().getExternalData().getWorld().execute(() -> {
-				this.player.getHudManager().setCustomHud(getPlayerRef(), hud);
-			});
-	}
-
 	public void showHud() {
-		setHud(this);
+		manager.attachHud(this, player);
 
 	}
 
 	public void hide() {
-		setHud(null);
+		manager.removeHud(player, getPlayerRef());
 	}
 
 	public void refreshTool() {
-		var builder = new UICommandBuilder();
-		this.onRefreshTool(builder);
-		this.update(false, builder);
+		if(manager.isStillMyHud(player)) {
+			var builder = new UICommandBuilder();
+			this.onRefreshTool(builder);
+			this.update(false, builder);
+		}
 	}
 
 	public void refreshHovered() {
-		var builder = new UICommandBuilder();
-		this.updateHovered(builder);
-		this.update(false, builder);
+		if(manager.isStillMyHud(player)) {
+			var builder = new UICommandBuilder();
+			this.updateHovered(builder);
+			this.update(false, builder);
+		}
 	}
 
 	private String getTranslatedName(String id) {
@@ -113,8 +110,10 @@ public class WandHud extends CustomUIHud {
 		var stack = InventoryComponent.getItemInHand(getPlayerRef().getReference().getStore(), getPlayerRef().getReference());
 		if(stack != null) {
 			var tool = RedWandTool.getForStack(stack);
-			builder.set("#SelectedPanel.Visible", tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank());
-			builder.set("#Selected.Text", "Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
+			var bool = tool.getSelectedGlyph() != null && !tool.getSelectedGlyph().isBlank();
+			builder.set("#SelectedPanel.Visible", bool);
+			if(bool)
+				builder.set("#Selected.Text", "Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
 
 		}
 	}
