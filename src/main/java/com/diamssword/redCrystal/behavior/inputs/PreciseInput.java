@@ -1,12 +1,14 @@
 package com.diamssword.redCrystal.behavior.inputs;
 
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.gui.ValueSelectMenu;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
+import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSwitchModels;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.vector.Vector2d;
@@ -28,10 +30,11 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;
 
-public class PreciseInput extends RedCompBehavior<BehaviorAsset> {
+public class PreciseInput extends RedCompBehaviorWithModel<BehaviorAssetWithSwitchModels, RedCompBehaviorWithModel.PickedModelSettings> {
 
-	public PreciseInput(String id, RedElement parent, BehaviorAsset asset) {
+	public PreciseInput(String id, RedElement parent, BehaviorAssetWithSwitchModels asset) {
 		super(id, parent, asset);
+		this.setSettingsChangeListener(_ -> onSettingsChange());
 	}
 
 	@Override
@@ -39,17 +42,31 @@ public class PreciseInput extends RedCompBehavior<BehaviorAsset> {
 
 	}
 
+
+	private void onSettingsChange() {
+		if(parent.getEntities() != null) {
+			var plate = parent.getEntities().getOther("selector");
+			if(plate != null) {
+				getModel().switchModel(this, plate, false, getSettings().pickedTexture);
+			}
+		}
+	}
+
 	@Override
 	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity, InteractionContext context, InteractType action) {
 		super.onEntityInteract(type, index, player, entity, context, action);
-		if(type.equals("selector") && action == InteractType.Interact) {
-			var ref = player.getStore().getComponent(player, PlayerRef.getComponentType());
-			if(ref != null)
-				ValueSelectMenu.openRange(ref, MIN, MAX, getInternalState("selector"), (i) -> {
-					if(i != null)
-						setInternalState("selector", i.shortValue());
-					setAllOutput(getInternalState("selector"));
-				});
+		if(type.equals("selector")) {
+			if(action == InteractType.Interact) {
+				var ref = player.getStore().getComponent(player, PlayerRef.getComponentType());
+				if(ref != null)
+					ValueSelectMenu.openRange(ref, MIN, MAX, getInternalState("selector"), (i) -> {
+						if(i != null)
+							setInternalState("selector", i.shortValue());
+						setAllOutput(getInternalState("selector"));
+					});
+			} else if(action == InteractType.Use) {
+				onMainRuneInteract(player, entity, context, action);
+			}
 		}
 	}
 
@@ -58,20 +75,11 @@ public class PreciseInput extends RedCompBehavior<BehaviorAsset> {
 	@Override
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		var res = super.displayEntities(store, facing);
-		var holder = RedComponentDisplayUtils.createMinimalDisplayEntity(store, parent.getParent().getPosition(), facing);
-		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_PreciseInput"), 1f), facing);
-		short st = getInternalState("selector");
-
+		var holder = this.getModel().createEntity(store, this, false, getSettings().pickedTexture);
 		holder.ensureComponent(Interactable.getComponentType());
-
-		//server crash when updating model without this
-		holder.ensureComponent(MovementStatesComponent.getComponentType());
-
-		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("selector", (short) 0, this.parent));
 		Interactions interactions = new Interactions();
-		interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");  // e.g., "*UseNPC" or custom RootInteraction asset ID
-		//interactions.setInteractionHint("your.hint.key");  // Optional client hint text
+		interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");
 		holder.addComponent(Interactions.getComponentType(), interactions);
 		res.put("selector", holder);
 		return res;

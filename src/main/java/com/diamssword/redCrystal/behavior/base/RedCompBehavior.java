@@ -236,7 +236,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		if(pl != null) {
 			var menu = new GlyphSettingsMenu(pl, this.parent.getSettings()::clone, this.parent::updateSettings);
 			if(this instanceof RedCompBehaviorWithSettings<?, ?> casted && !casted.hideSettings()) {
-				menu.withSpecific(casted.getId(), () -> casted.getStateManager().getStoredSettings(), casted::setStoredSettings, casted.getSettingsCodec());
+				menu.withSpecific(casted.getId(), () -> casted.getStateManager().getStoredSettings(), casted::setStoredSettings, casted.getSettingsCodec(), asset, casted::canShowSetting);
 			}
 			Player playerComponent = (Player) player.getStore().getComponent(player, Player.getComponentType());
 			if(playerComponent != null)

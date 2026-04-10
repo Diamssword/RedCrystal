@@ -1,6 +1,12 @@
 {
   "BehaviorId": {
-    "Type": "PreciseInput"
+    "Type": "PreciseInput",
+    "Models": {
+      "Default": {
+        "ModelOn": "RedCrystal_PreciseInput",
+        "ModelOff": "RedCrystal_PreciseInput"
+      }
+    }
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/PreciseInput.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/PreciseInput@2x.png",

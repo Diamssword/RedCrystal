@@ -1,8 +1,16 @@
 {
   "BehaviorId": {
     "Type": "PressurePlate",
-    "ModelOn": "RedCrystal_PressurePlate_Pressed",
-    "ModelOff": "RedCrystal_PressurePlate"
+    "Model": {
+      "ModelOn": "RedCrystal_PressurePlate_Pressed",
+      "ModelOff": "RedCrystal_PressurePlate"
+    },
+    "Models": {
+      "Default": {
+        "ModelOn": "RedCrystal_PressurePlate_Pressed",
+        "ModelOff": "RedCrystal_PressurePlate"
+      }
+    }
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/PressurePlate.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/PressurePlate@2x.png",

@@ -71,7 +71,12 @@ public class ValueSelectMenu extends InteractiveCustomUIPage<UniversalDataBindin
 	public void handleDataEvent(@Nonnull Ref<EntityStore> ref, @Nonnull Store<EntityStore> store, @Nonnull UniversalDataBinding data) {
 		var builder = new UICommandBuilder();
 		binder.onReceived(builder, data);
-		this.sendUpdate(builder, false);
+		if(binder.getReloadFlag()) {
+			var binder = new UIEventBuilder();
+			build(ref, builder, binder, store);
+			sendUpdate(builder, binder, true);
+		} else
+			sendUpdate(builder, false);
 	}
 
 	@Override

@@ -1,9 +1,10 @@
 package com.diamssword.redCrystal.behavior.inputs;
 
+import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel;
 import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithSettings;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
-import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithModelSwitch;
+import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSwitchModels;
 import com.diamssword.redCrystal.worldInteraction.CollideUtil;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -24,13 +25,13 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import java.util.List;
 import java.util.Map;
 
-public class PressurePlateBehavior extends RedCompBehaviorWithSettings<BehaviorAssetWithModelSwitch, PressurePlateBehavior.PressurePlateSettings> {
-	public PressurePlateBehavior(String id, RedElement parent, BehaviorAssetWithModelSwitch asset) {
+public class PressurePlateBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSwitchModels, PressurePlateBehavior.PressurePlateSettings> {
+	public PressurePlateBehavior(String id, RedElement parent, BehaviorAssetWithSwitchModels asset) {
 		super(id, parent, asset);
 		this.setSettingsChangeListener(_ -> onSettingsChange());
 	}
 
-	public static BuilderCodec<PressurePlateBehavior.PressurePlateSettings> CODEC = BuilderCodec.builder(PressurePlateBehavior.PressurePlateSettings.class, PressurePlateBehavior.PressurePlateSettings::new)
+	public static BuilderCodec<PressurePlateBehavior.PressurePlateSettings> CODEC = PickedModelSettings.addToCodec(BuilderCodec.builder(PressurePlateBehavior.PressurePlateSettings.class, PressurePlateBehavior.PressurePlateSettings::new))
 			.append(new KeyedCodec<>("PressurePlateBehaviorItemCheck", BuilderCodec.BOOLEAN), (a, b) -> a.checkForItem = b, a -> a.checkForItem)
 			.add()
 			.append(new KeyedCodec<>("PressurePlateBehaviorHidePlate", BuilderCodec.BOOLEAN), (a, b) -> a.hidePlate = b, a -> a.hidePlate)
@@ -53,7 +54,7 @@ public class PressurePlateBehavior extends RedCompBehaviorWithSettings<BehaviorA
 		if(parent.getEntities() != null) {
 			var plate = parent.getEntities().getOther("plate");
 			if(plate != null) {
-				asset.switchModel(this, plate, this.pressed, 0.8f, getSettings().hidePlate);
+				getModel().switchModel(this, plate, this.pressed, 0.8f, getSettings().hidePlate);
 			}
 
 		}
@@ -81,7 +82,7 @@ public class PressurePlateBehavior extends RedCompBehaviorWithSettings<BehaviorA
 						timers.add(() -> pressed = false, 5);
 					setAllOutput(pressed ? MAX : MIN);
 					if(!getSettings().hidePlate)
-						asset.switchModel(this, plate, pressed, 0.8f);
+						getModel().switchModel(this, plate, pressed, 0.8f);
 				}
 			}
 		}
@@ -101,14 +102,14 @@ public class PressurePlateBehavior extends RedCompBehaviorWithSettings<BehaviorA
 	@Override
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		var res = super.displayEntities(store, facing);
-		var holder = this.asset.createEntity(store, this, false, 0.8f, this.getSettings().hidePlate);
+		var holder = this.getModel().createEntity(store, this, false, 0.8f, this.getSettings().hidePlate);
 
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("plate", (short) 0, this.parent));
 		res.put("plate", holder);
 		return res;
 	}
 
-	public static class PressurePlateSettings {
+	public static class PressurePlateSettings extends PickedModelSettings {
 		public boolean checkForItem = true;
 		public boolean hidePlate = false;
 

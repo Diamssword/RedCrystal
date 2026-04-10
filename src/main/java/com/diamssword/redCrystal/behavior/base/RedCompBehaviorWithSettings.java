@@ -35,6 +35,10 @@ public abstract class RedCompBehaviorWithSettings<T extends AbstractBehaviorAsse
 		return false;
 	}
 
+	public boolean canShowSetting(String key) {
+		return true;
+	}
+
 	public void saveSettings() {
 		this.getStateManager().setStoredSettings(this.getSettingsCodec().encode(settings, new ExtraInfo()));
 	}

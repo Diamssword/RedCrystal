@@ -3,6 +3,7 @@ package com.diamssword.redCrystal.gui;
 import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.storage.Glyph;
+import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.diamssword.redCrystal.wand.RedWandTool;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -204,11 +205,12 @@ public class GlyphMenu extends InteractiveCustomUIPage<GlyphMenu.MenuEventData> 
 	private void settingsClicked() {
 		var select = selected.get();
 		var codec = RedComponentRegister.getSettingsCodec(select);
+		var behavior = RedCrystalPlugin.GlyphAssets.getAssetMap().getAsset(select).getBehavior();
 		if(codec != null)
 			new GlyphSettingsMenu(playerRef).withSpecific(select, () -> toolSettings.getGlyphSettings(select).orElse(new BsonDocument()), doc -> {
 				toolSettings.setGlyphSettings(select, doc);
 				RedWandTool.updateToolStack(player, slot, toolSettings);
-			}, codec).openAsSubMenu(() -> {
+			}, codec, behavior, (_) -> true).openAsSubMenu(() -> {
 				playerRef.getReference().getStore().getExternalData().getWorld().execute(() -> {
 					var menu = new GlyphMenu(playerRef);
 					Player playerComponent = playerRef.getReference().getStore().getComponent(playerRef.getReference(), Player.getComponentType());

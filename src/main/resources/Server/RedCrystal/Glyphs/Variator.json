@@ -1,7 +1,13 @@
 {
   "BehaviorId": {
     "Type": "Variator",
-    "Steps": 9
+    "Steps": 9,
+    "Models": {
+      "Default": {
+        "ModelOn": "RedCrystal_Variator",
+        "ModelOff": "RedCrystal_Variator"
+      }
+    }
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/Variator.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Variator@2x.png",

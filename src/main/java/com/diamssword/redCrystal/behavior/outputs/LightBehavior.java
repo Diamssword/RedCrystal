@@ -27,7 +27,7 @@ import java.util.Map;
 public class LightBehavior extends RedCompBehaviorWithSettings<BehaviorAssetWithSettings.BehaviorAssetLight, LightBehavior.LightSettings> {
 
 	public static BuilderCodec<LightSettings> CODEC = BuilderCodec.builder(LightSettings.class, LightSettings::new)
-			.append(new KeyedCodec<>("Light", ProtocolCodecs.COLOR_LIGHT), (a, b) -> a.light = b, a -> a.light)
+			.append(new KeyedCodec<>("LightBehaviorLight", ProtocolCodecs.COLOR_LIGHT), (a, b) -> a.light = b, a -> a.light)
 			.add()
 			.build();
 

@@ -1,8 +1,19 @@
 {
   "BehaviorId": {
     "Type": "Lever",
-    "ModelOn": "RedCrystal_Lever_On",
-    "ModelOff": "RedCrystal_Lever"
+    "Models": {
+      "Default": {
+        "ModelOn": "RedCrystal_Lever_On",
+        "ModelOff": "RedCrystal_Lever",
+        "AltTextures": {
+          "Golden": "Items/RedCrystal/LeverGold.png"
+        }
+      },
+      "Button": {
+        "ModelOn": "RedCrystal_Button",
+        "ModelOff": "RedCrystal_PreciseInput"
+      }
+    }
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/Lever.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Lever@2x.png",

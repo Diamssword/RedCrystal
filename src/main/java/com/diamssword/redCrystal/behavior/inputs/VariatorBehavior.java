@@ -1,10 +1,12 @@
 package com.diamssword.redCrystal.behavior.inputs;
 
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
+import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSwitchModels;
 import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
@@ -23,7 +25,7 @@ import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;
 
-public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.BehaviorAssetSteps> {
+public class VariatorBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSettings.BehaviorAssetSteps, RedCompBehaviorWithModel.PickedModelSettings> {
 	private final short stepCount;
 	private final short stepRange;
 	private final float rotationBase;
@@ -33,6 +35,7 @@ public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 		stepCount = asset.steps;
 		stepRange = (short) (MAX / (stepCount - 1));
 		rotationBase = 300f / stepCount;
+		this.setSettingsChangeListener(_ -> onSettingsChange());
 	}
 
 	@Override
@@ -40,20 +43,33 @@ public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 
 	}
 
+	private void onSettingsChange() {
+		if(parent.getEntities() != null) {
+			var plate = parent.getEntities().getOther("selector");
+			if(plate != null) {
+				getModel().switchModel(this, plate, false, getSettings().pickedTexture);
+			}
+		}
+	}
+
 	@Override
 	public void onEntityInteract(String type, short index, Ref<EntityStore> player, Ref<EntityStore> entity, InteractionContext context, InteractType action) {
 		super.onEntityInteract(type, index, player, entity, context, action);
-		if(type.equals("variator") && action == InteractType.Interact) {
-			short st = getInternalState("variator");
-			st++;
-			if(st == stepCount)
-				st = 0;
-			setAllOutput((short) (stepRange * st));
-			setInternalState("variator", st);
-			var trans = entity.getStore().getComponent(entity, TransformComponent.getComponentType());
-			var rot = FacingUtil.facingToRotationWithTilt(this.parent.getFace(), rotationBase * st);
-			trans.setRotation(rot);
-			execute(() -> {entity.getStore().replaceComponent(entity, TransformComponent.getComponentType(), trans);});
+		if(type.equals("variator")) {
+			if(action == InteractType.Interact) {
+				short st = getInternalState("variator");
+				st++;
+				if(st == stepCount)
+					st = 0;
+				setAllOutput((short) (stepRange * st));
+				setInternalState("variator", st);
+				var trans = entity.getStore().getComponent(entity, TransformComponent.getComponentType());
+				var rot = FacingUtil.facingToRotationWithTilt(this.parent.getFace(), rotationBase * st);
+				trans.setRotation(rot);
+				execute(() -> {entity.getStore().replaceComponent(entity, TransformComponent.getComponentType(), trans);});
+			} else if(action == InteractType.Use) {
+				onMainRuneInteract(player, entity, context, action);
+			}
 		}
 	}
 
@@ -62,23 +78,15 @@ public class VariatorBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 	@Override
 	public Map<String, Holder<EntityStore>> displayEntities(EntityStore store, BlockFace facing) {
 		var res = super.displayEntities(store, facing);
-		var holder = RedComponentDisplayUtils.createMinimalDisplayEntity(store, parent.getParent().getPosition(), facing);
-		var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Variator"), 1f), facing);
+		var holder = this.getModel().createEntity(store, this, false, getSettings().pickedTexture);
 		short st = getInternalState("variator");
 		var rot = FacingUtil.facingToRotationWithTilt(this.parent.getFace(), rotationBase * st);
 		var trans = holder.getComponent(TransformComponent.getComponentType());
 		trans.setRotation(rot);
-		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));
 		holder.ensureComponent(Interactable.getComponentType());
-
-		//server crash when updating model without this
-		holder.ensureComponent(MovementStatesComponent.getComponentType());
-
-		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("variator", (short) 0, this.parent));
 		Interactions interactions = new Interactions();
-		interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");  // e.g., "*UseNPC" or custom RootInteraction asset ID
-		//interactions.setInteractionHint("your.hint.key");  // Optional client hint text
+		interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");
 		holder.addComponent(Interactions.getComponentType(), interactions);
 		res.put("variator", holder);
 		return res;

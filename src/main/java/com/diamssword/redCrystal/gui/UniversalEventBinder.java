@@ -14,16 +14,27 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class UniversalEventBinder {
-	private Map<String, BiConsumer<Object, UICommandBuilder>> map = new HashMap<>();
+	private final Map<String, BiConsumer<Object, UICommandBuilder>> map = new HashMap<>();
 	private int index = 0;
-	private List<Consumer<UIEventBuilder>> delayedCalls = new ArrayList<>();
-	private List<Consumer<UICommandBuilder>> delayedStyle = new ArrayList<>();
+	private final List<Consumer<UIEventBuilder>> delayedCalls = new ArrayList<>();
+	private final List<Consumer<UICommandBuilder>> delayedStyle = new ArrayList<>();
+	private boolean needFullReload = false;
 
 	public void setEventBuilder(UIEventBuilder builder, UICommandBuilder commandBuilder) {
 		delayedCalls.forEach(c -> c.accept(builder));
 		delayedCalls.clear();
 		delayedStyle.forEach(c -> c.accept(commandBuilder));
 		delayedStyle.clear();
+	}
+
+	public void needFullReload() {
+		this.needFullReload = true;
+	}
+
+	public boolean getReloadFlag() {
+		var val = needFullReload;
+		needFullReload = false;
+		return val;
 	}
 
 	public void onBuilt(Consumer<UICommandBuilder> builder) {

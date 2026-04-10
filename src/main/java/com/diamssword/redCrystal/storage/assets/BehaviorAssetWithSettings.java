@@ -22,8 +22,8 @@ public class BehaviorAssetWithSettings {
 	}
 
 	public static BuilderCodec<BehaviorAssetSteps> VariatorCodec(String id) {
-		return BuilderCodec.builder(BehaviorAssetSteps.class, () -> new BehaviorAssetSteps(id)).append(new KeyedCodec<>("Steps", BuilderCodec.SHORT), (a, b) -> a.steps = b, a -> a.steps)
-				.documentation("The numbers of steps this variator has").add().build();
+		return BehaviorAssetWithSwitchModels.addToCodec(BuilderCodec.builder(BehaviorAssetSteps.class, () -> new BehaviorAssetSteps(id)).append(new KeyedCodec<>("Steps", BuilderCodec.SHORT), (a, b) -> a.steps = b, a -> a.steps)
+				.documentation("The numbers of steps this variator has").add()).build();
 	}
 
 	public static BuilderCodec<BehaviorAssetDistance> DistanceCodec(String id) {
@@ -74,7 +74,7 @@ public class BehaviorAssetWithSettings {
 
 	}
 
-	public static class BehaviorAssetSteps extends AbstractBehaviorAsset<BehaviorAssetSteps> {
+	public static class BehaviorAssetSteps extends BehaviorAssetWithSwitchModels {
 
 		public short steps = 9;
 

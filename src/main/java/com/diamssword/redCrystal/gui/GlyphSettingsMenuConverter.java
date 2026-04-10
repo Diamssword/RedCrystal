@@ -1,26 +1,27 @@
 package com.diamssword.redCrystal.gui;
 
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
+import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
+import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSwitchModels;
 import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.builder.BuilderField;
-import com.hypixel.hytale.codec.codecs.simple.BooleanCodec;
-import com.hypixel.hytale.codec.codecs.simple.DoubleCodec;
-import com.hypixel.hytale.codec.codecs.simple.FloatCodec;
-import com.hypixel.hytale.codec.codecs.simple.IntegerCodec;
+import com.hypixel.hytale.codec.codecs.simple.*;
 import com.hypixel.hytale.codec.validation.Validator;
 import com.hypixel.hytale.protocol.ColorLight;
-import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
 import com.hypixel.hytale.server.core.modules.i18n.I18nModule;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import org.bson.BsonDocument;
 import org.bson.BsonString;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -31,6 +32,8 @@ public class GlyphSettingsMenuConverter<T> {
 	private final BuilderCodec<T> codec;
 	private final String glyphId;
 	private final UniversalEventBinder binder;
+	private AbstractBehaviorAsset<?> asset;
+	private Function<String, Boolean> canShowFieldFn = (_) -> true;
 
 	public GlyphSettingsMenuConverter(UniversalEventBinder binder, String glyphId, PlayerRef playerRef, Supplier<T> settingsProvider, Consumer<T> settingsSetter, BuilderCodec<T> codec) {
 		this.setter = settingsSetter;
@@ -41,26 +44,38 @@ public class GlyphSettingsMenuConverter<T> {
 		this.binder = binder;
 	}
 
+	public GlyphSettingsMenuConverter<T> withShowFiledFn(Function<String, Boolean> canShowFieldFn) {
+		this.canShowFieldFn = canShowFieldFn;
+		return this;
+	}
+
+	public GlyphSettingsMenuConverter<T> withAssetContext(AbstractBehaviorAsset<?> asset) {
+		this.asset = asset;
+		return this;
+	}
+
 	private final PlayerRef playerRef;
 
 	public void appendSettings(String key, UICommandBuilder builder) {
 		codec.getEntries().forEach((k, v) -> {
 			for(BuilderField<T, ?> f : v) {
-				var str = codecFieldConverter(f);
-				builder.appendInline("#" + key, str);
+				if(canShowFieldFn.apply(f.getCodec().getKey())) {
+					var str = codecFieldConverter(f);
+					builder.appendInline("#" + key, str);
+				}
 			}
 		});
 	}
 
 
 	private String translate(String translateString) {
-		var tr = I18nModule.get().getMessage(playerRef.getLanguage(), "server.RedCrystal.glyphSetting." + glyphId + "." + translateString);
+		var tr = I18nModule.get().getMessage(playerRef.getLanguage(), "server.RedCrystal.glyphSetting." + translateString);
 		return tr != null ? tr : translateString;
 	}
 
 	private String getLabel(BuilderField<T, ?> field) {
 		var doc = translate(field.getCodec().getKey() + ".desc");
-		return new StringBuilder("Label{Text:\"").append(translate(field.getCodec().getKey() + ".name")).append("\"; Padding:(Right:5);TooltipText:\"").append(doc).append("\"; Style: (HorizontalAlignment:Center);}").toString();
+		return "Label{Text:\"" + translate(field.getCodec().getKey() + ".name") + "\"; Padding:(Right:5);TooltipText:\"" + doc + "\"; Style: (HorizontalAlignment:Center);}";
 	}
 
 	private String codecFieldConverter(BuilderField<T, ?> field) {
@@ -101,7 +116,59 @@ public class GlyphSettingsMenuConverter<T> {
 				content.append(numberFieldsHandler(field, Double.class, (d) -> setValue(field, d)));
 
 			}
-			case BuilderCodec builder -> {
+			case StringCodec _ -> {
+				var bl = true;
+				if(field.getValidators() != null) {
+					for(Validator<?> validator : field.getValidators()) {
+						if(validator instanceof GlyphSettingsValidators.MapKeySelector<?> keySel && asset != null) {
+							content.append(keyMapSelect(field, keySel.keysProvider.apply(asset), s -> setValue(field, s)));
+							bl = false;
+							break;
+						}
+						if(validator instanceof GlyphSettingsValidators.ModelKeySelector keySel && asset != null) {
+							if(keySel.texturePart) {
+								BuilderField<T, ?> field1 = null;
+								for(List<BuilderField<T, ?>> value : codec.getEntries().values()) {
+									for(BuilderField<T, ?> f : value) {
+										if(f.getValidators() != null) {
+											for(Validator<?> fValidator : f.getValidators()) {
+												if(fValidator instanceof GlyphSettingsValidators.ModelKeySelector modSel) {
+													field1 = f;
+													break;
+												}
+											}
+											if(field1 != null)
+												break;
+										}
+									}
+									if(field1 != null)
+										break;
+								}
+								if(field1 != null) {
+									getValue(field1, String.class).ifPresent(mod -> {
+										content.append(keyMapSelect(field, keySel.getTexturesKey((BehaviorAssetWithSwitchModels) asset, mod), s -> setValue(field, s)));
+									});
+
+								}
+							} else
+								content.append(keyMapSelect(field, keySel.getModels((BehaviorAssetWithSwitchModels) asset), s -> {
+									setValue(field, s);
+									binder.needFullReload();
+								}));
+							bl = false;
+							break;
+						}
+					}
+				}
+				if(bl) {
+					var id = binder.bindEvent((v, builder) -> setValue(field, v));
+					content.append("TextField #").append(id).append(" {Anchor:(Width:180);Value:\"").append(getValue(field, String.class).orElse("")).append("\";}");
+					binder.setStyle(id, "DefaultInputFieldStyle");
+					binder.setStyle(id, "PlaceholderStyle", "DefaultInputFieldPlaceholderStyle");
+					binder.setStyle(id, "Background", "InputBoxBackground");
+				}
+			}
+			case BuilderCodec<?> builder -> {
 				if(builder.getInnerClass() == ColorLight.class) {
 					div = new StringBuilder("Group{LayoutMode:Left; Padding:(Top:10,Bottom:10,Left:5,Right:5); Anchor:(Left:0,Height:120); ");
 					div.append(getLabel(field));
@@ -115,7 +182,47 @@ public class GlyphSettingsMenuConverter<T> {
 		return div.toString();
 	}
 
-	private <J extends Number> String lightField(BuilderField<T, ?> field, Consumer<ColorLight> valueSetter) {
+	private String keyMapSelect(BuilderField<T, ?> field, Set<String> keys, Consumer<String> onChange) {
+		var id = binder.bindEvent((s, builder) -> {
+			onChange.accept(s);
+		});
+		binder.setStyle(id, "DefaultDropdownBoxStyle");
+		var content = new StringBuilder("DropdownBox #").append(id).append(" {Anchor:(Width:180);");
+		getValue(field, String.class).ifPresent((v) -> content.append("Value:\"").append(v).append("\";"));
+		for(String value : keys) {
+			content.append("DropdownEntry{ Value:\"").append(value).append("\"; Text:\"").append(value).append("\";} ");
+		}
+		content.append("}");
+		return content.toString();
+	}
+
+	private String modelSelect(BuilderField<T, ?> field, GlyphSettingsValidators.ModelKeySelector selector) {
+		var id = binder.bindEvent((s, builder) -> {
+			setValue(field, s);
+		});
+		var id1 = binder.bindEvent((s, builder) -> {
+			setValue(field, s);
+		});
+		binder.setStyle(id, "DefaultDropdownBoxStyle");
+		binder.setStyle(id1, "DefaultDropdownBoxStyle");
+		var content = new StringBuilder("Group { Anchor:(Width:180); LayoutMode:Top;");
+		content.append("DropdownBox #").append(id).append(" {Anchor:(Width:180);");
+		getValue(field, String.class).ifPresent((v) -> content.append("Value:\"").append(v).append("\";"));
+		for(String value : selector.getModels((BehaviorAssetWithSwitchModels) asset)) {
+			content.append("DropdownEntry{ Value:\"").append(value).append("\"; Text:\"").append(value).append("\";} ");
+		}
+		content.append("}");
+		content.append("DropdownBox #").append(id1).append(" {Anchor:(Width:180);");
+		getValue(field, String.class).ifPresent((v) -> content.append("Value:\"").append(v).append("\";"));
+		for(String value : selector.getModels((BehaviorAssetWithSwitchModels) asset)) {
+			content.append("DropdownEntry{ Value:\"").append(value).append("\"; Text:\"").append(value).append("\";} ");
+		}
+		content.append("}");
+		content.append("}");
+		return content.toString();
+	}
+
+	private String lightField(BuilderField<T, ?> field, Consumer<ColorLight> valueSetter) {
 		var valO = getValue(field, ColorLight.class);
 		var value = valO.orElse(new ColorLight((byte) 0, (byte) 15, (byte) 15, (byte) 15));
 		int r8 = (value.red << 4) | value.red;
@@ -137,17 +244,18 @@ public class GlyphSettingsMenuConverter<T> {
 	}
 
 	private <J extends Number> String numberFieldsHandler(BuilderField<T, ?> field, Class<J> numberClass, Consumer<Double> valueSetter) {
-
 		var valO = getValue(field, numberClass);
 		if(valO.isPresent()) {
 			var value = valO.get();
 			var format = new NumberFieldFormat();
-			for(Validator<?> v : field.getValidators()) {
-				if(v instanceof GlyphSettingsValidators.StepRangeValidator<?> val) {
-					format.withMaxDecimalPlaces(1).withStep(val.step.floatValue()).withMaxValue(val.max.floatValue()).withMinValue(val.min.floatValue());
-					break;
-				} else if(v instanceof GlyphSettingsValidators.SliderRangeValidator<?> val) {
-					return generateSlider(val.min.doubleValue(), val.max.doubleValue(), value.doubleValue(), val.step.doubleValue(), valueSetter);
+			if(field.getValidators() != null) {
+				for(Validator<?> v : field.getValidators()) {
+					if(v instanceof GlyphSettingsValidators.StepRangeValidator<?> val) {
+						format.withMaxDecimalPlaces(1).withStep(val.step.floatValue()).withMaxValue(val.max.floatValue()).withMinValue(val.min.floatValue());
+						break;
+					} else if(v instanceof GlyphSettingsValidators.SliderRangeValidator<?> val) {
+						return generateSlider(val.min.doubleValue(), val.max.doubleValue(), value.doubleValue(), val.step.doubleValue(), valueSetter);
+					}
 				}
 			}
 			return generateNumberField(format, value.doubleValue(), valueSetter);

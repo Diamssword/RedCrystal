@@ -1,6 +1,7 @@
 package com.diamssword.redCrystal.gui;
 
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
+import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -66,8 +68,10 @@ public class GlyphSettingsMenu extends InteractiveCustomUIPage<UniversalDataBind
 		appendSettings("Main", commandBuilder, eventBuilder);
 	}
 
-	public <T> GlyphSettingsMenu withSpecific(String id, Supplier<BsonDocument> getter, Consumer<BsonDocument> setter, BuilderCodec<T> codec) {
-		this.sepcific = new GlyphSettingsMenuConverter<T>(binder, id, playerRef, () -> codec.decode(getter.get(), new ExtraInfo()), (res) -> setter.accept(codec.encode(res, new ExtraInfo())), codec);
+	public <T> GlyphSettingsMenu withSpecific(String id, Supplier<BsonDocument> getter, Consumer<BsonDocument> setter, BuilderCodec<T> codec, AbstractBehaviorAsset<?> asset, Function<String, Boolean> fieldVisibilityFn) {
+		this.sepcific = new GlyphSettingsMenuConverter<>(binder, id, playerRef, () -> codec.decode(getter.get(), new ExtraInfo()), (res) -> setter.accept(codec.encode(res, new ExtraInfo())), codec);
+		this.sepcific.withAssetContext(asset);
+		this.sepcific.withShowFiledFn(fieldVisibilityFn);
 		return this;
 	}
 
@@ -101,6 +105,11 @@ public class GlyphSettingsMenu extends InteractiveCustomUIPage<UniversalDataBind
 		if(data.elementId != null) {
 			binder.onReceived(commandBuilder, data);
 		}
-		sendUpdate(commandBuilder, false);
+		if(binder.getReloadFlag()) {
+			var binder = new UIEventBuilder();
+			build(ref, commandBuilder, binder, store);
+			sendUpdate(commandBuilder, binder, true);
+		} else
+			sendUpdate(commandBuilder, false);
 	}
 }

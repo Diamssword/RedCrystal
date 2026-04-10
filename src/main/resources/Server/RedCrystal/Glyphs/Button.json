@@ -1,6 +1,12 @@
 {
   "BehaviorId": {
-    "Type": "Button"
+    "Type": "Button",
+    "Models": {
+      "Default": {
+        "ModelOn": "RedCrystal_Button",
+        "ModelOff": "RedCrystal_Button"
+      }
+    }
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/Button.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Button@2x.png",

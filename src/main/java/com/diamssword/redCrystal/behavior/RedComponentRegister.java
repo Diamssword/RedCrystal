@@ -1,13 +1,11 @@
 package com.diamssword.redCrystal.behavior;
 
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
+import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel;
 import com.diamssword.redCrystal.behavior.inputs.*;
 import com.diamssword.redCrystal.behavior.modifiers.*;
 import com.diamssword.redCrystal.behavior.outputs.*;
-import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
-import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
-import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithModelSwitch;
-import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
+import com.diamssword.redCrystal.storage.assets.*;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.function.function.TriFunction;
@@ -19,23 +17,24 @@ import java.util.function.Function;
 
 public class RedComponentRegister {
 	private static final Map<String, TriFunction<String, RedElement, ? extends AbstractBehaviorAsset<?>, ? extends RedCompBehavior<? extends AbstractBehaviorAsset<?>>>> registry = new ConcurrentHashMap<>();
-	private static Map<String, BuilderCodec<?>> settingsCodecRegistry = new ConcurrentHashMap<>();
+	private static final Map<String, BuilderCodec<?>> settingsCodecRegistry = new ConcurrentHashMap<>();
 
 	public static void init() {
 		registry.clear();
-		register("Button", ButtonBehavior::new);
+		settingsCodecRegistry.clear();
+		register("Button", ButtonBehavior::new, BehaviorAssetWithSwitchModels::getCODEC, ButtonBehavior.CODEC);
 		register("Interact", InteractBehavior::new);
 		register("Toggle", ToggleBehavior::new);
 		register("AND", AndBehavior::new);
 		register("OR", OrBehavior::new, BehaviorAssetWithSettings::AbsoluteCodec);
 		register("NOT", NotBehavior::new, BehaviorAssetWithSettings::BinaryCodec);
 		register("Light", LightBehavior::new, BehaviorAssetWithSettings::LightCodec, LightBehavior.CODEC);
-		register("Lever", LeverBehavior::new, BehaviorAssetWithModelSwitch::getCODEC);
-		register("PressurePlate", PressurePlateBehavior::new, BehaviorAssetWithModelSwitch::getCODEC, PressurePlateBehavior.CODEC);
-		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec);
+		register("Lever", LeverBehavior::new, BehaviorAssetWithSwitchModels::getCODEC, RedCompBehaviorWithModel.CODEC);
+		register("PressurePlate", PressurePlateBehavior::new, BehaviorAssetWithSwitchModels::getCODEC, PressurePlateBehavior.CODEC);
+		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec, RedCompBehaviorWithModel.CODEC);
 		register("Fan", FanBehavior::new, BehaviorAssetWithSettings::DistanceCodec);
 		register("Calculus", CalculusBehavior::new, BehaviorAssetWithSettings::CalculusCodec);
-		register("PreciseInput", PreciseInput::new);
+		register("PreciseInput", PreciseInput::new, BehaviorAssetWithSwitchModels::getCODEC, RedCompBehaviorWithModel.CODEC);
 		register("NumberDisplay", NumberDisplayBehavior::new);
 		register("Piston", PistonBehavior::new, PistonBehavior.CODEC);
 		register("Delayer", DelayBehavior::new, DelayBehavior.CODEC);
