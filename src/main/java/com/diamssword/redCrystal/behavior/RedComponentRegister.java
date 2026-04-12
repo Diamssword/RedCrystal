@@ -35,6 +35,8 @@ public class RedComponentRegister {
 		register("LaserDetector", LaserDetectorBehavior::new, LaserDetectorBehavior.CODEC);
 		register("Fan", FanBehavior::new, BehaviorAssetWithSettings::DistanceCodec);
 		register("Calculus", CalculusBehavior::new, BehaviorAssetWithSettings::CalculusCodec);
+		register("Comparator", ComparatorBehavior::new, ComparatorBehavior.CODEC);
+		register("BitwiseOperator", BitwiseOperatorBehavior::new, BitwiseOperatorBehavior.CODEC);
 		register("PreciseInput", PreciseInput::new, BehaviorAssetWithSwitchModels::getCODEC, RedCompBehaviorWithModel.CODEC);
 		register("NumberDisplay", NumberDisplayBehavior::new);
 		register("Piston", PistonBehavior::new, PistonBehavior.CODEC);

@@ -8,8 +8,8 @@
   "Outputs": 1,
   "Inputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Inverter.name",
-    "Description": "server.RedCrystal.glyph.Inverter.desc"
+    "Name": "RedCrystal.glyph.Inverter.name",
+    "Description": "RedCrystal.glyph.Inverter.desc"
   },
   "Tags": {
     "Type": [

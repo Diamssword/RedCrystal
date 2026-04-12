@@ -1,7 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.RedCrystal.sliver.name",
-    "Description": "server.items.RedCrystal.sliver.desc"
+    "Name": "RedCrystal.items.sliver.name",
+    "Description": "RedCrystal.items.sliver.desc"
   },
   "Categories": [
     "Items.Ingredients"

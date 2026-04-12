@@ -119,7 +119,7 @@ public class RedComponentDisplayUtils {
 				Interactions interactions = new Interactions();
 				//interactions.setInteractionId(InteractionType.Secondary, "*UseRedCrystalEntity");
 				//interactions
-				interactions.setInteractionHint("server.RedCrystal.interactionHints.output");
+				interactions.setInteractionHint("RedCrystal.interactionHints.output");
 				holder.addComponent(Interactions.getComponentType(), interactions);
 				res.setOutput(i, holder);
 			}
@@ -134,7 +134,7 @@ public class RedComponentDisplayUtils {
 				holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
 				holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(disp.getHiddenScale()));
 				Interactions interactions = new Interactions();
-				interactions.setInteractionHint("server.RedCrystal.interactionHints.input");
+				interactions.setInteractionHint("RedCrystal.interactionHints.input");
 				holder.addComponent(Interactions.getComponentType(), interactions);
 				res.setInput(i, holder);
 			}

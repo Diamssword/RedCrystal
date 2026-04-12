@@ -8,8 +8,8 @@
   "Outputs": 1,
   "Inputs": 2,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.CalcDivide.name",
-    "Description": "server.RedCrystal.glyph.CalcDivide.desc"
+    "Name": "RedCrystal.glyph.CalcDivide.name",
+    "Description": "RedCrystal.glyph.CalcDivide.desc"
   },
   "Tags": {
     "Type": [

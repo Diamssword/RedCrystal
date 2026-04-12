@@ -8,8 +8,8 @@
   "Outputs": 1,
   "Inputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.NotG.name",
-    "Description": "server.RedCrystal.glyph.NotG.desc"
+    "Name": "RedCrystal.glyph.NotG.name",
+    "Description": "RedCrystal.glyph.NotG.desc"
   },
   "Tags": {
     "Type": [

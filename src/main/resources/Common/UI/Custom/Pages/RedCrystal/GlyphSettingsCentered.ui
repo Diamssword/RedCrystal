@@ -5,7 +5,7 @@ Group{
       $C.@Container #SettingsPanel {
             Anchor: (Width: 400, Height: 500,Right:10);
             #Title {
-              $C.@Title { @Text = "Glyph's Settings"; }
+              $C.@Title { @Text = %RedCrystal.ui.settings.title; }
             }
             #Content {
                 LayoutMode:Top;

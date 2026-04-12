@@ -8,8 +8,8 @@
   "Outputs": 1,
   "Inputs": 2,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.CalcMultiply.name",
-    "Description": "server.RedCrystal.glyph.CalcMultiply.desc"
+    "Name": "RedCrystal.glyph.CalcMultiply.name",
+    "Description": "RedCrystal.glyph.CalcMultiply.desc"
   },
   "Tags": {
     "Type": [

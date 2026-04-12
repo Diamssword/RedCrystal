@@ -8,8 +8,8 @@
   "Outputs": 5,
   "Inputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Delayer.name",
-    "Description": "server.RedCrystal.glyph.Delayer.desc"
+    "Name": "RedCrystal.glyph.Delayer.name",
+    "Description": "RedCrystal.glyph.Delayer.desc"
   },
   "Tags": {
     "Type": [

@@ -1,0 +1,18 @@
+{
+  "BehaviorId": {
+    "Type": "BitwiseOperator"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/BitwiseOperator.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/BitwiseOperator@2x.png",
+  "Outputs": 1,
+  "Inputs": 2,
+  "TranslationProperties": {
+    "Name": "RedCrystal.glyph.BitwiseOperator.name",
+    "Description": "RedCrystal.glyph.BitwiseOperator.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Hex"
+    ]
+  }
+}

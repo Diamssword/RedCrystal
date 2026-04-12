@@ -16,8 +16,8 @@
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/PressurePlate@2x.png",
   "Outputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.PressurePlate.name",
-    "Description": "server.RedCrystal.glyph.PressurePlate.desc"
+    "Name": "RedCrystal.glyph.PressurePlate.name",
+    "Description": "RedCrystal.glyph.PressurePlate.desc"
   },
   "Tags": {
     "Type": [

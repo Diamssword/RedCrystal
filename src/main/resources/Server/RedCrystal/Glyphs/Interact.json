@@ -7,8 +7,8 @@
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Interact.name",
-    "Description": "server.RedCrystal.glyph.Interact.desc"
+    "Name": "RedCrystal.glyph.Interact.name",
+    "Description": "RedCrystal.glyph.Interact.desc"
   },
   "Tags": {
     "Type": [

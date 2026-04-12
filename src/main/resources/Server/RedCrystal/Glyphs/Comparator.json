@@ -1,0 +1,18 @@
+{
+  "BehaviorId": {
+    "Type": "Comparator"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Comparator.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Comparator@2x.png",
+  "Outputs": 1,
+  "Inputs": 2,
+  "TranslationProperties": {
+    "Name": "RedCrystal.glyph.Comparator.name",
+    "Description": "RedCrystal.glyph.Comparator.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Hex"
+    ]
+  }
+}

@@ -69,7 +69,7 @@ public class GlyphSettingsMenuConverter<T> {
 
 
 	private String translate(String translateString) {
-		var tr = I18nModule.get().getMessage(playerRef.getLanguage(), "server.RedCrystal.glyphSetting." + translateString);
+		var tr = I18nModule.get().getMessage(playerRef.getLanguage(), "RedCrystal.glyphSetting." + translateString);
 		return tr != null ? tr : translateString;
 	}
 
@@ -101,7 +101,7 @@ public class GlyphSettingsMenuConverter<T> {
 				content.append("DropdownBox #").append(id).append(" {Anchor:(Width:180); TooltipText:\"").append(doc).append("\";");
 				getValue(field, ec.clazz).ifPresent((v) -> content.append("Value:\"").append(v).append("\";"));
 				for(Enum<? extends Enum<?>> value : values) {
-					content.append("DropdownEntry{ Value:\"").append(value.toString()).append("\"; Text:\"").append(value).append("\";} ");
+					content.append("DropdownEntry{ Value:\"").append(value.toString()).append("\"; Text:\"").append(translate(field.getCodec().getKey() + ".enum." + value)).append("\";} ");
 				}
 				content.append("}");
 			}

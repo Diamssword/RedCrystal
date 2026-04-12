@@ -8,8 +8,8 @@
   "Outputs": 1,
   "Inputs": 2,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.CalcSubtract.name",
-    "Description": "server.RedCrystal.glyph.CalcSubtract.desc"
+    "Name": "RedCrystal.glyph.CalcSubtract.name",
+    "Description": "RedCrystal.glyph.CalcSubtract.desc"
   },
   "Tags": {
     "Type": [

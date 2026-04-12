@@ -2,12 +2,12 @@
   "BehaviorId": {
     "Type": "LaserDetector"
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Variator.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Variator@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/LaserDetector.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/LaserDetector@2x.png",
   "Outputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.LaserDetector.name",
-    "Description": "server.RedCrystal.glyph.LaserDetector.desc"
+    "Name": "RedCrystal.glyph.LaserDetector.name",
+    "Description": "RedCrystal.glyph.LaserDetector.desc"
   },
   "Tags": {
     "Type": [

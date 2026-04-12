@@ -8,8 +8,8 @@
   "Outputs": 1,
   "Inputs": 2,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.CalcAdd.name",
-    "Description": "server.RedCrystal.glyph.CalcAdd.desc"
+    "Name": "RedCrystal.glyph.CalcAdd.name",
+    "Description": "RedCrystal.glyph.CalcAdd.desc"
   },
   "Tags": {
     "Type": [

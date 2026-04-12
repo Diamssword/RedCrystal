@@ -13,8 +13,8 @@
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Variator@2x.png",
   "Outputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Variator.name",
-    "Description": "server.RedCrystal.glyph.Variator.desc"
+    "Name": "RedCrystal.glyph.Variator.name",
+    "Description": "RedCrystal.glyph.Variator.desc"
   },
   "Tags": {
     "Type": [

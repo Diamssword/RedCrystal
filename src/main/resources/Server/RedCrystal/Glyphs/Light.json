@@ -22,8 +22,8 @@
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Light.name",
-    "Description": "server.RedCrystal.glyph.Light.desc"
+    "Name": "RedCrystal.glyph.Light.name",
+    "Description": "RedCrystal.glyph.Light.desc"
   },
   "Tags": {
     "Type": [

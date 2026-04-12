@@ -34,6 +34,7 @@ public class LaserDetectorBehavior extends RedCompBehaviorWithSettings<BehaviorA
 			.append(new KeyedCodec<>("LaserDetectorBehaviorRange", BuilderCodec.FLOAT), (a, b) -> a.range = b, a -> a.range)
 			.addValidator(new GlyphSettingsValidators.SliderRangeValidator<>(0.5f, 16f, 0.5f)).add()
 			.append(new KeyedCodec<>("LaserDetectorBehaviorItem", BuilderCodec.BOOLEAN), (a, b) -> a.checkForItem = b, a -> a.checkForItem).add()
+			.append(new KeyedCodec<>("LaserDetectorBehaviorBlock", BuilderCodec.BOOLEAN), (a, b) -> a.checkForBlock = b, a -> a.checkForBlock).add()
 			.append(new KeyedCodec<>("LaserDetectorBehaviorShow", BuilderCodec.BOOLEAN), (a, b) -> a.showLaser = b, a -> a.showLaser).add().build();
 
 
@@ -83,16 +84,21 @@ public class LaserDetectorBehavior extends RedCompBehaviorWithSettings<BehaviorA
 						distance = dist;
 				}
 			}
-
+			var flg = false;
 			var bd = CollideUtil.blockDistance(getWorld(), trans, parent.getFace(), getSettings().range);
-			if(bd > -1 && (bd < distance || distance == -1))
+			if(bd > -1 && (bd < distance || distance == -1)) {
 				distance = (float) bd;
-			if(distance > -1) {
+				if(!getSettings().checkForBlock)
+					flg = true;
+			}
+			if(distance > -1 && !flg) {
 				var scale = 1f - (distance / getSettings().range);
 				active = true;
 				setAllOutput((short) Math.min(1 + (scale * MAX), MAX));
 				lastLength = distance;
 			} else {
+				if(distance > -1)
+					lastLength = distance;
 				setAllOutput(MIN);
 				active = false;
 			}
@@ -119,6 +125,7 @@ public class LaserDetectorBehavior extends RedCompBehaviorWithSettings<BehaviorA
 		public float range = 16;
 		public boolean showLaser = true;
 		public boolean checkForItem = true;
+		public boolean checkForBlock = true;
 
 		public LaserDetectorSettings() {
 

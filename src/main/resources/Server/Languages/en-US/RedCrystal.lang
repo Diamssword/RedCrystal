@@ -1,0 +1,132 @@
+# === Items ===
+items.staff.name=Glyph Carver
+items.staff.desc=A powerful tool used to carve red glyphs on walls \nUse [Ability 1] to select the glyph\nUse [Primary Action] to place glyph or edit settings\nUse [Secondary Action] to remove glyphs or links
+items.sliver.name=Red Crystal Sliver
+items.sliver.desc=Slowly Replenish Any Glyph Carver with missing durability in your hotbar and get consumed in the process
+
+# === UI ===
+ui.wand.selected.title=Selected
+ui.wand.selected.settings=Settings
+ui.wand.global.title=Global Settings
+ui.wand.title=Glyph selector
+ui.wand.desc.title=Description
+ui.settings.title=Glyph's Settings
+# === InteractionHints ===
+interactionHints.input=Input\nLeft Click to create link\nRight Click to break link
+interactionHints.output=Output\nLeft Click to create link\nRight Click to break link
+glyph.Interact.name=Interactor
+glyph.Interact.desc=An element that can interact with blocks the same way a player can, you can open doors, toggle lights, etc.
+
+# === Glyphs ===
+
+# Inputs
+glyph.Button.name=Button
+glyph.Button.desc=A button that send a pulse signal when pressed
+glyph.PressurePlate.name=Pressure Plate
+glyph.PressurePlate.desc=Trigger when an entity collide with it
+glyph.Lever.name=Lever
+glyph.Lever.desc=Allow to manually toggle between ON and OFF signal
+glyph.Variator.name=Variator
+glyph.Variator.desc=Allow to manually select different strength of signal
+glyph.LaserDetector.name=Laser Detector
+glyph.LaserDetector.desc=Detect the closest entity or block with a laser
+
+# Transform
+glyph.OrG.name=Gate: OR
+glyph.OrG.desc=A binary OR gate
+glyph.XOrG.name=Gate: XOR
+glyph.XOrG.desc=A binary absolute OR gate
+glyph.AndG.name=Gate: AND
+glyph.AndG.desc=A binary AND gate, inputs not properly connected are not taken into account
+glyph.NotG.name=Gate: NOT
+glyph.NotG.desc=A binary NOT gate, inverting received signal
+glyph.Inverter.name=Inverter
+glyph.Inverter.desc=An analog gate that invert the incoming signal
+glyph.Relay.name=Relay
+glyph.Relay.desc=Transfer signal without altering it
+glyph.Toggle.name=Toggle
+glyph.Toggle.desc=Switch state from ON to OFF every pulse
+glyph.PreciseInput.name=Precise Input
+glyph.PreciseInput.desc=Allow to precisely set the strength of the signal
+glyph.CalcSubtract.name=Math: Subtract
+glyph.CalcSubtract.desc=Make a subtract operation\nA-B=C\n(A is the left input,B is the right input)
+glyph.CalcAdd.name=Math: Add
+glyph.CalcAdd.desc=Add the 2 inputs together\nA+B=C\n(A is the left input,B is the right input)
+glyph.CalcMod.name=Math: Modulo
+glyph.CalcMod.desc=Make a modulo operation\nA%B=C\n(A is the left input,B is the right input)
+glyph.CalcDivide.name=Math: Divide
+glyph.CalcDivide.desc=Make a divide operation\nA/B=C\n(A is the left input,B is the right input)
+glyph.CalcMultiply.name=Math: Multiply
+glyph.CalcMultiply.desc=Make a multiply operation\nA*B=C\n(A is the left input,B is the right input)
+glyph.Delayer.name=Delayer
+glyph.Delayer.desc=Replicate the input signal but with a configurable delay
+glyph.Comparator.name=Comparator
+glyph.Comparator.desc=Compare A to B depending of selected operation.\nSend a max strength signal if the comparison is true
+glyph.BitwiseOperator.name=Bitwise
+glyph.BitwiseOperator.desc=Allow to perform bit operations on A and B
+
+
+# Outputs
+glyph.NumberDisplay.name=Number Display
+glyph.NumberDisplay.desc=Display the input strength as floating number
+glyph.Fan.name=Fan
+glyph.Fan.desc=Push entity in front of it with a force and distance debending on the signal's strength
+glyph.Piston.name=Block Pusher
+glyph.Piston.desc=Push a selected number of blocks in a row in a configurable direction.\nThe blocs pushed will be at the opposite direction of the glyph\n The distance of push is also based on signal strength.\n Unpowering the Sigil will bring the pushed blocks back
+glyph.Light.name=Light
+glyph.Light.desc=Emit light which strength depend on signal intensity
+glyph.ColoredLight.name=Colored Light
+glyph.ColoredLight.desc=Use it's 3 inputs to define the Red,Green and Blue channels of the emitted light
+
+# === Glyphs Settings===
+glyphSetting.Visibility.name=Visibility
+glyphSetting.Visibility.desc=Set Glyph's visibility:\n -Hidden: Shown only when powered\n -Visible: Always shown\n -Pulse: Only Show signal changing\n -Invisible: Never shown
+glyphSetting.Visibility.enum.Hidden=Hidden
+glyphSetting.Visibility.enum.Visible=Visible
+glyphSetting.Visibility.enum.Pulse=Pulse
+glyphSetting.Visibility.enum.Invisible=Invisible
+glyphSetting.DelayBehaviorTime.name=Delay in seconds
+glyphSetting.DelayBehaviorTime.desc=The delay in seconds between input an output, can have decimal
+glyphSetting.PressurePlateBehaviorItemCheck.name=Detect Items
+glyphSetting.PressurePlateBehaviorItemCheck.desc=Uncheck to prevent thrown item to trigger the plate
+glyphSetting.PressurePlateBehaviorHidePlate.name=Hide Plate
+glyphSetting.PressurePlateBehaviorHidePlate.desc=Make the Pressure Plate Model invisible
+glyphSetting.BehaviorWithTexturePickedTexture.name=Texture
+glyphSetting.BehaviorWithTexturePickedTexture.desc= The texture used by this model
+glyphSetting.PistonBehaviorExtend.name=Extend Distance
+glyphSetting.PistonBehaviorExtend.desc=The distance the blocks can be pushed
+glyphSetting.PistonBehaviorGrab.name=Block Amount
+glyphSetting.PistonBehaviorGrab.desc=The number of blocks in that can be grabbed
+glyphSetting.LightBehaviorLight.name=Light Color
+glyphSetting.LightBehaviorLight.desc= The emitted light's color
+glyphSetting.BehaviorWithModelPickedModel.name= Model
+glyphSetting.BehaviorWithModelPickedModel.desc= The model to use for this element
+glyphSetting.BehaviorWithModelPickedTexture.name=Texture
+glyphSetting.BehaviorWithModelPickedTexture.desc=An alternate texture for the model
+glyphSetting.ButtonBehaviorTime.name=Hold For
+glyphSetting.ButtonBehaviorTime.desc=The amount of time in seconds the signal will be hold
+glyphSetting.LaserDetectorBehaviorRange.name=Laser Range
+glyphSetting.LaserDetectorBehaviorRange.desc=The range in block of detection
+glyphSetting.LaserDetectorBehaviorItem.name=Detect Items
+glyphSetting.LaserDetectorBehaviorItem.desc=If the laser detect dropped items
+glyphSetting.LaserDetectorBehaviorBlock.name=Detect Blocks
+glyphSetting.LaserDetectorBehaviorBlock.desc=If the laser detect placed blocks
+glyphSetting.LaserDetectorBehaviorShow.name=Show laser
+glyphSetting.LaserDetectorBehaviorShow.desc=Show laser
+glyphSetting.ComparatorBehaviorOperation.name=Operation
+glyphSetting.ComparatorBehaviorOperation.desc=The Comparison to make between A and B
+glyphSetting.ComparatorBehaviorOperation.enum.Equal=A = B
+glyphSetting.ComparatorBehaviorOperation.enum.Greater=A > B
+glyphSetting.ComparatorBehaviorOperation.enum.Lower=A < B
+glyphSetting.ComparatorBehaviorOperation.enum.GreaterOrEqual=A >= B
+glyphSetting.ComparatorBehaviorOperation.enum.LowerOrEqual=A <= B
+glyphSetting.BitwiseOperatorBehaviorOperation.name=Operation
+glyphSetting.BitwiseOperatorBehaviorOperation.desc=The Operation to do between A and B
+glyphSetting.BitwiseOperatorBehaviorOperation.enum.AND=A & B
+glyphSetting.BitwiseOperatorBehaviorOperation.enum.OR=A | B
+glyphSetting.BitwiseOperatorBehaviorOperation.enum.XOR=A ^ B
+glyphSetting.BitwiseOperatorBehaviorOperation.enum.NOT=~A
+glyphSetting.BitwiseOperatorBehaviorOperation.enum.LeftShift=A << B
+glyphSetting.BitwiseOperatorBehaviorOperation.enum.SignedRightShift=A >> B
+glyphSetting.BitwiseOperatorBehaviorOperation.enum.UnsignedRightShift=A >>> B
+

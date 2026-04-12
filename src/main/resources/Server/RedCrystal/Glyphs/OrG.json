@@ -7,8 +7,8 @@
   "Outputs": 1,
   "Inputs": 5,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.OrG.name",
-    "Description": "server.RedCrystal.glyph.OrG.desc"
+    "Name": "RedCrystal.glyph.OrG.name",
+    "Description": "RedCrystal.glyph.OrG.desc"
   },
   "Tags": {
     "Type": [

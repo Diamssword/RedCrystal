@@ -6,8 +6,8 @@
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Toggle@2x.png",
   "Outputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Toggle.name",
-    "Description": "server.RedCrystal.glyph.Toggle.desc"
+    "Name": "RedCrystal.glyph.Toggle.name",
+    "Description": "RedCrystal.glyph.Toggle.desc"
   },
   "Inputs": 1,
   "Tags": {

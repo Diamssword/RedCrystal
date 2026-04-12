@@ -7,8 +7,8 @@
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.NumberDisplay.name",
-    "Description": "server.RedCrystal.glyph.NumberDisplay.desc"
+    "Name": "RedCrystal.glyph.NumberDisplay.name",
+    "Description": "RedCrystal.glyph.NumberDisplay.desc"
   },
   "Tags": {
     "Type": [

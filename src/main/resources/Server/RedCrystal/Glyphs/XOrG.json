@@ -8,8 +8,8 @@
   "Outputs": 1,
   "Inputs": 5,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.XOrG.name",
-    "Description": "server.RedCrystal.glyph.XOrG.desc"
+    "Name": "RedCrystal.glyph.XOrG.name",
+    "Description": "RedCrystal.glyph.XOrG.desc"
   },
   "Tags": {
     "Type": [

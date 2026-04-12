@@ -1,7 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.RedCrystal.staff.name",
-    "Description": "server.items.RedCrystal.staff.desc"
+    "Name": "RedCrystal.items.staff.name",
+    "Description": "RedCrystal.items.staff.desc"
   },
   "Quality": "Rare",
   "ItemLevel": 40,

@@ -19,8 +19,8 @@
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Lever@2x.png",
   "Outputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Lever.name",
-    "Description": "server.RedCrystal.glyph.Lever.desc"
+    "Name": "RedCrystal.glyph.Lever.name",
+    "Description": "RedCrystal.glyph.Lever.desc"
   },
   "Tags": {
     "Type": [

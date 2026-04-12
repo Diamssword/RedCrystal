@@ -13,7 +13,7 @@ Group {
             Padding: (Right: 15);
             Anchor: (Width: 300, Height: 250);
             #Title {
-              $C.@Title { @Text = "Selected"; }
+              $C.@Title { @Text = %RedCrystal.ui.wand.selected.title; }
             }
             #Content {
                 Group #SelectedRune {
@@ -30,7 +30,7 @@ Group {
                           Padding:(Bottom:10);
                         }
                         $C.@SmallSecondaryTextButton #GlyphSettingsBt {
-                          @Text = "Settings";
+                          @Text = %RedCrystal.ui.wand.selected.settings;
                         }
                     }
                 }
@@ -41,7 +41,7 @@ Group {
                Padding: (Right: 15);
                Anchor: (Width: 300, Height: 250);
                 #Title {
-                    $C.@Title { @Text = "Global Settings"; }
+                    $C.@Title { @Text = %RedCrystal.ui.wand.global.title; }
                 }
                 #Content {
                     Group #MainSettings {
@@ -56,7 +56,7 @@ Group {
         Anchor:(Width: 580, Height: 500);
          #Title {
             Group {
-                $C.@Title { @Text = "Glyph selector"; }
+                $C.@Title { @Text = %RedCrystal.ui.wand.title; }
                 $C.@HeaderSearch #Search {}
             }
          }
@@ -72,7 +72,7 @@ Group {
                  Padding: (Left: 15);
                  Anchor: (Width: 400, Height: 500);
                  #Title {
-                   $C.@Title { @Text = "Description"; }
+                   $C.@Title { @Text = %RedCrystal.ui.wand.desc.title; }
                  }
                  #Content {
                     LayoutMode: Top;
@@ -102,7 +102,7 @@ Group {
                                 Style: (HorizontalAlignment:Center);
                             }
                             Label #HoveredDesc {
-                                Text:"A long ass description of what the rune might do in the close future";
+                                Text:"A long description of what the rune might do in the close future";
                                 Background:(TexturePath:"../../Common/TooltipDefaultBackground.png", Border: 24);
                                 Padding: 24;
                                 Style: (Wrap:true);

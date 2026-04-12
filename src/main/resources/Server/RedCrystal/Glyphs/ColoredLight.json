@@ -23,8 +23,8 @@
   "Outputs": 0,
   "Inputs": 3,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.ColoredLight.name",
-    "Description": "server.RedCrystal.glyph.ColoredLight.desc"
+    "Name": "RedCrystal.glyph.ColoredLight.name",
+    "Description": "RedCrystal.glyph.ColoredLight.desc"
   },
   "Tags": {
     "Type": [

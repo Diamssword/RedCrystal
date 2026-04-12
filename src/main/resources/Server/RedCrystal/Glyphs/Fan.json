@@ -8,8 +8,8 @@
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {
-    "Name": "server.RedCrystal.glyph.Fan.name",
-    "Description": "server.RedCrystal.glyph.Fan.desc"
+    "Name": "RedCrystal.glyph.Fan.name",
+    "Description": "RedCrystal.glyph.Fan.desc"
   },
   "Tags": {
     "Type": [
