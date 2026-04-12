@@ -11,9 +11,9 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 public class LinkingState {
 
 	public static int MAX_LENGTH = 32;
-	private static final int BASE_BEAM_COLOR = 0x71A44C;
-	private static final int ERROR_BEAM_COLOR = 0x90571D;
-	private static final int TOO_LONG_BEAM_COLOR = 0x782D22;
+	public static final int BASE_BEAM_COLOR = 0x71A44C;
+	public static final int ERROR_BEAM_COLOR = 0x90571D;
+	public static final int TOO_LONG_BEAM_COLOR = 0x782D22;
 	private int blinkTime;
 	private int color = BASE_BEAM_COLOR;
 	public ConnectionInfo startedLink;

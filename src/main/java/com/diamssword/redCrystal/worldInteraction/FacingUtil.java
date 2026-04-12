@@ -71,4 +71,18 @@ public class FacingUtil {
 		};
 	}
 
+	public static boolean isNegative(BlockFace face) {
+		return switch(face) {
+			case None, Up, East, South -> false;
+			default -> true;
+		};
+	}
+
+	public static double extractAxis(BlockFace face, Vector3d vector) {
+		return switch(face) {
+			case Up, Down -> vector.y;
+			case East, West -> vector.x;
+			default -> vector.z;
+		};
+	}
 }

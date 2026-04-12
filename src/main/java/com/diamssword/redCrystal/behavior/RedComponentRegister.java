@@ -32,6 +32,7 @@ public class RedComponentRegister {
 		register("Lever", LeverBehavior::new, BehaviorAssetWithSwitchModels::getCODEC, RedCompBehaviorWithModel.CODEC);
 		register("PressurePlate", PressurePlateBehavior::new, BehaviorAssetWithSwitchModels::getCODEC, PressurePlateBehavior.CODEC);
 		register("Variator", VariatorBehavior::new, BehaviorAssetWithSettings::VariatorCodec, RedCompBehaviorWithModel.CODEC);
+		register("LaserDetector", LaserDetectorBehavior::new, LaserDetectorBehavior.CODEC);
 		register("Fan", FanBehavior::new, BehaviorAssetWithSettings::DistanceCodec);
 		register("Calculus", CalculusBehavior::new, BehaviorAssetWithSettings::CalculusCodec);
 		register("PreciseInput", PreciseInput::new, BehaviorAssetWithSwitchModels::getCODEC, RedCompBehaviorWithModel.CODEC);

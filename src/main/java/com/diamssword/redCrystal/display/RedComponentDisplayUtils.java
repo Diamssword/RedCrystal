@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class RedComponentDisplayUtils {
-	
+
 
 	public static Model getFlatModel(BlockFace facing) {
 		return modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Glyph_Flat"), 1f), facing);
@@ -220,6 +220,10 @@ public class RedComponentDisplayUtils {
 
 	public static void drawLaserFor(Vector3d from, Vector3d to, float time, int color, Ref<EntityStore> player) {
 		player.getStore().getComponent(player, PlayerRef.getComponentType()).getPacketHandler().write(getBeamPacket(from, to, time, color, 0.03f, true));
+	}
+
+	public static void drawLaserFor(Store<EntityStore> store, Vector3d from, Vector3d to, float time, int color, float size) {
+		PlayerUtil.broadcastPacketToPlayers(store, getBeamPacket(from, to, time, color, size, false));
 	}
 
 	public static void drawBeam(Store<EntityStore> store, Vector3d from, Vector3d to, Ref<EntityStore> player) {

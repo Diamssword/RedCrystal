@@ -11,6 +11,18 @@ RedCrystal.glyph.Interact.name=Interactor
 RedCrystal.glyph.Interact.desc=An element that can interact with blocks the same way a player can, you can open doors, toggle lights, etc.
 
 # === Glyphs ===
+
+# Inputs
+RedCrystal.glyph.PressurePlate.name=Pressure Plate
+RedCrystal.glyph.PressurePlate.desc=Trigger when an entity collide with it
+RedCrystal.glyph.Lever.name=Lever
+RedCrystal.glyph.Lever.desc=Allow to manually toggle between ON and OFF signal
+RedCrystal.glyph.Variator.name=Variator
+RedCrystal.glyph.Variator.desc=Allow to manually select different strength of signal
+RedCrystal.glyph.LaserDetector.name=Laser Detector
+RedCrystal.glyph.LaserDetector.desc=Detect the closest entity or block with a laser
+
+# Transform
 RedCrystal.glyph.OrG.name=OR Gate
 RedCrystal.glyph.OrG.desc=A binary OR gate
 RedCrystal.glyph.XOrG.name=XOR Gate
@@ -25,16 +37,8 @@ RedCrystal.glyph.Relay.name=Relay
 RedCrystal.glyph.Relay.desc=Transfer signal without altering it
 RedCrystal.glyph.Toggle.name=Toggle
 RedCrystal.glyph.Toggle.desc=Switch state from ON to OFF every pulse
-RedCrystal.glyph.Lever.name=Lever
-RedCrystal.glyph.Lever.desc=Allow to manually toggle between ON and OFF signal
-RedCrystal.glyph.Variator.name=Variator
-RedCrystal.glyph.Variator.desc=Allow to manually select different strength of signal
-RedCrystal.glyph.Light.name=Light
-RedCrystal.glyph.Light.desc=Emit light which strength depend on signal intensity
-RedCrystal.glyph.ColoredLight.name=Colored Light
-RedCrystal.glyph.ColoredLight.desc=Use it's 3 inputs to define the Red,Green and Blue channels of the emitted light
-RedCrystal.glyph.Fan.name=Fan
-RedCrystal.glyph.Fan.desc=Push entity in front of it with a force and distance debending on the signal's strength
+RedCrystal.glyph.PreciseInput.name=Precise Input
+RedCrystal.glyph.PreciseInput.desc=Allow to precisely set the strength of the signal
 RedCrystal.glyph.CalcSubtract.name=Math: Subtract
 RedCrystal.glyph.CalcSubtract.desc=Make a subtract operation\nA-B=C\n(A is the left input,B is the right input)
 RedCrystal.glyph.CalcAdd.name=Math: Add
@@ -45,12 +49,22 @@ RedCrystal.glyph.CalcDivide.name=Math: Divide
 RedCrystal.glyph.CalcDivide.desc=Make a divide operation\nA/B=C\n(A is the left input,B is the right input)
 RedCrystal.glyph.CalcMultiply.name=Math: Multiply
 RedCrystal.glyph.CalcMultiply.desc=Make a multiply operation\nA*B=C\n(A is the left input,B is the right input)
-RedCrystal.glyph.NumberDisplay.name=Number Display
-RedCrystal.glyph.NumberDisplay.desc=Display the input strength as floating number
-RedCrystal.glyph.PreciseInput.name=Precise Input
-RedCrystal.glyph.PreciseInput.desc=Allow to precisely set the strength of the signal
 RedCrystal.glyph.Delayer.name=Delayer
 RedCrystal.glyph.Delayer.desc=Replicate the input signal but with a configurable delay
+
+# Outputs
+RedCrystal.glyph.NumberDisplay.name=Number Display
+RedCrystal.glyph.NumberDisplay.desc=Display the input strength as floating number
+RedCrystal.glyph.Fan.name=Fan
+RedCrystal.glyph.Fan.desc=Push entity in front of it with a force and distance debending on the signal's strength
+RedCrystal.glyph.Piston.name=Block Pusher
+RedCrystal.glyph.Piston.desc=Push a selected number of blocks in a row in a configurable direction.\nThe blocs pushed will be at the opposite direction of the glyph\n The distance of push is also based on signal strength.\n Unpowering the Sigil will bring the pushed blocks back
+RedCrystal.glyph.Light.name=Light
+RedCrystal.glyph.Light.desc=Emit light which strength depend on signal intensity
+RedCrystal.glyph.ColoredLight.name=Colored Light
+RedCrystal.glyph.ColoredLight.desc=Use it's 3 inputs to define the Red,Green and Blue channels of the emitted light
+
+# === Glyphs Settings===
 RedCrystal.glyphSetting.Visibility.name=Visibility
 RedCrystal.glyphSetting.Visibility.desc=Set Glyph's visibility:\n -Hidden: Shown only when powered\n -Visible: Always shown\n -Pulse: Only Show signal changing\n -Invisible: Never shown
 RedCrystal.glyphSetting.DelayBehaviorTime.name=Delay in seconds
@@ -61,19 +75,21 @@ RedCrystal.glyphSetting.PressurePlateBehaviorHidePlate.name=Hide Plate
 RedCrystal.glyphSetting.PressurePlateBehaviorHidePlate.desc=Make the Pressure Plate Model invisible
 RedCrystal.glyphSetting.BehaviorWithTexturePickedTexture.name=Texture
 RedCrystal.glyphSetting.BehaviorWithTexturePickedTexture.desc= The texture used by this model
-RedCrystal.glyph.PressurePlate.name=Pressure Plate
-RedCrystal.glyph.PressurePlate.desc=Trigger when an entity collide with it
 RedCrystal.glyphSetting.PistonBehaviorExtend.name=Extend Distance
 RedCrystal.glyphSetting.PistonBehaviorExtend.desc=The distance the blocks can be pushed
 RedCrystal.glyphSetting.PistonBehaviorGrab.name=Block Amount
 RedCrystal.glyphSetting.PistonBehaviorGrab.desc=The number of blocks in that can be grabbed
 RedCrystal.glyphSetting.LightBehaviorLight.name=Light Color
 RedCrystal.glyphSetting.LightBehaviorLight.desc= The emitted light's color
-RedCrystal.glyph.Piston.name=Block Pusher
-RedCrystal.glyph.Piston.desc=Push a selected number of blocks in a row in a configurable direction.\nThe blocs pushed will be at the opposite direction of the glyph\n The distance of push is also based on signal strength.\n Unpowering the Sigil will bring the pushed blocks back
 RedCrystal.glyphSetting.BehaviorWithModelPickedModel.name= Model
 RedCrystal.glyphSetting.BehaviorWithModelPickedModel.desc= The model to use for this element
 RedCrystal.glyphSetting.BehaviorWithModelPickedTexture.name=Texture
 RedCrystal.glyphSetting.BehaviorWithModelPickedTexture.desc=An alternate texture for the model
 RedCrystal.glyphSetting.ButtonBehaviorTime.name=Hold For
 RedCrystal.glyphSetting.ButtonBehaviorTime.desc=The amount of time in seconds the signal will be hold
+RedCrystal.glyphSetting.LaserDetectorBehaviorRange.name=Laser Range
+RedCrystal.glyphSetting.LaserDetectorBehaviorRange.desc=The range in block of detection
+RedCrystal.glyphSetting.LaserDetectorBehaviorItem.name=Detect Items
+RedCrystal.glyphSetting.LaserDetectorBehaviorItem.desc=If the laser detect dropped items
+RedCrystal.glyphSetting.LaserDetectorBehaviorShow.name=Show laser
+RedCrystal.glyphSetting.LaserDetectorBehaviorShow.desc=Show laser

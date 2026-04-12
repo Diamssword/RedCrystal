@@ -196,32 +196,6 @@ public class GlyphSettingsMenuConverter<T> {
 		return content.toString();
 	}
 
-	private String modelSelect(BuilderField<T, ?> field, GlyphSettingsValidators.ModelKeySelector selector) {
-		var id = binder.bindEvent((s, builder) -> {
-			setValue(field, s);
-		});
-		var id1 = binder.bindEvent((s, builder) -> {
-			setValue(field, s);
-		});
-		binder.setStyle(id, "DefaultDropdownBoxStyle");
-		binder.setStyle(id1, "DefaultDropdownBoxStyle");
-		var content = new StringBuilder("Group { Anchor:(Width:180); LayoutMode:Top;");
-		content.append("DropdownBox #").append(id).append(" {Anchor:(Width:180);");
-		getValue(field, String.class).ifPresent((v) -> content.append("Value:\"").append(v).append("\";"));
-		for(String value : selector.getModels((BehaviorAssetWithSwitchModels) asset)) {
-			content.append("DropdownEntry{ Value:\"").append(value).append("\"; Text:\"").append(value).append("\";} ");
-		}
-		content.append("}");
-		content.append("DropdownBox #").append(id1).append(" {Anchor:(Width:180);");
-		getValue(field, String.class).ifPresent((v) -> content.append("Value:\"").append(v).append("\";"));
-		for(String value : selector.getModels((BehaviorAssetWithSwitchModels) asset)) {
-			content.append("DropdownEntry{ Value:\"").append(value).append("\"; Text:\"").append(value).append("\";} ");
-		}
-		content.append("}");
-		content.append("}");
-		return content.toString();
-	}
-
 	private String lightField(BuilderField<T, ?> field, Consumer<ColorLight> valueSetter) {
 		var valO = getValue(field, ColorLight.class);
 		var value = valO.orElse(new ColorLight((byte) 0, (byte) 15, (byte) 15, (byte) 15));
@@ -297,13 +271,17 @@ public class GlyphSettingsMenuConverter<T> {
 	private String generateSlider(double min, double max, double value, double step, Consumer<Double> onChange) {
 		var factor = 1 / step;
 		var div1 = new StringBuilder("Group{ LayoutMode:Left; ");
+
+		var id1 = binder.getCompId();
 		var id = binder.bindEventDouble((v, builder) -> {
 			double val = v / factor;
 			onChange.accept(val);
+			builder.set("#" + id1 + ".Text", val + "");
 		});
-		binder.setStyle(id, "SliderStyle", "DefaultSliderStyle");
-		binder.setStyle(id, "NumberFieldStyle", "DefaultInputFieldStyle");
-		div1.append("SliderNumberField #").append(id).append(" { Anchor:(Left:10,Width:150,Height:10); Value:").append((int) (value * factor)).append("; Min:").append((int) (min * factor)).append("; Max:").append((int) (max * factor)).append("; Step:").append((int) (step * factor)).append(";}");
+		binder.setStyle(id, "DefaultSliderStyle");
+		//binder.setStyle(id, "NumberFieldStyle", "DefaultInputFieldStyle");
+		div1.append("Slider #").append(id).append(" { Anchor:(Left:10,Width:150,Height:10); Value:").append((int) (value * factor)).append("; Min:").append((int) (min * factor)).append("; Max:").append((int) (max * factor)).append("; Step:").append((int) (step * factor))
+				.append(";} Label #").append(id1).append("{ Padding:(Left:10); Text:\"").append(value).append("\";}");
 
 		return div1.append("}").toString();
 	}
