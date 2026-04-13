@@ -11,16 +11,17 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
 public class WandHud extends CustomUIHud {
+	public static final String ID = "RedCrystal:WandHud";
 	private final PlayerDatas playerDatas;
 	private final Player player;
-	public static HudManager manager = new HudManager();
 
 	public WandHud(PlayerRef player, PlayerDatas datas) {
-		super(player);
+		super(player, ID);
 		this.playerDatas = datas;
 		this.player = player.getReference().getStore().getComponent(player.getReference(), Player.getComponentType());
 	}
@@ -69,16 +70,16 @@ public class WandHud extends CustomUIHud {
 	}
 
 	public void showHud() {
-		manager.attachHud(this, player);
+		attachHud(this, player);
 
 	}
 
 	public void hide() {
-		manager.removeHud(player, getPlayerRef());
+		removeHud(player, getPlayerRef());
 	}
 
 	public void refreshTool() {
-		if(manager.isStillMyHud(player)) {
+		if(isStillMyHud(player)) {
 			var builder = new UICommandBuilder();
 			this.onRefreshTool(builder);
 			this.update(false, builder);
@@ -86,7 +87,7 @@ public class WandHud extends CustomUIHud {
 	}
 
 	public void refreshHovered() {
-		if(manager.isStillMyHud(player)) {
+		if(isStillMyHud(player)) {
 			var builder = new UICommandBuilder();
 			this.updateHovered(builder);
 			this.update(false, builder);
@@ -116,5 +117,23 @@ public class WandHud extends CustomUIHud {
 				builder.set("#Selected.Text", "Selected Glyph: " + getTranslatedName(tool.getSelectedGlyph()));
 
 		}
+	}
+
+	public static void removeHud(Player player, PlayerRef playerRef) {
+		playerRef.getReference().getStore().getExternalData().getWorld().execute(() -> {
+			player.getHudManager().removeCustomHud(playerRef, WandHud.ID);
+		});
+	}
+
+	public static void attachHud(@Nullable CustomUIHud hud, Player player) {
+		if(!isStillMyHud(player)) {
+			hud.getPlayerRef().getReference().getStore().getExternalData().getWorld().execute(() -> {
+				player.getHudManager().addCustomHud(hud.getPlayerRef(), hud);
+			});
+		}
+	}
+
+	public static boolean isStillMyHud(Player player) {
+		return player.getHudManager().getCustomHud(WandHud.ID) instanceof WandHud;
 	}
 }

@@ -8,7 +8,7 @@ import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.hypixel.hytale.component.Holder;
-import com.hypixel.hytale.math.vector.Vector2d;
+import org.joml.Vector2d;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.protocol.ColorLight;

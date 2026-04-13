@@ -13,9 +13,10 @@ import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.spatial.SpatialResource;
-import com.hypixel.hytale.math.vector.Vector2d;
-import com.hypixel.hytale.math.vector.Vector3f;
-import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.math.vector.Rotation3f;
+import org.joml.Vector2d;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.BlockParticleEvent;
 import com.hypixel.hytale.server.core.asset.type.blockparticle.config.BlockParticleSet;
@@ -38,11 +39,7 @@ import java.util.Optional;
 
 public class RedWandTool {
 	public static final BuilderCodec<RedWandTool> CODEC = BuilderCodec.builder(RedWandTool.class, RedWandTool::new)
-			.append(
-					new KeyedCodec<>("Glyph", Codec.STRING),
-					(meta, s) -> meta.selectedGlyph = s,
-					meta -> meta.selectedGlyph
-			)
+			.append(new KeyedCodec<>("Glyph", Codec.STRING), (meta, s) -> meta.selectedGlyph = s, meta -> meta.selectedGlyph)
 			.add()
 			.append(new KeyedCodec<>("GlobalSettings", GlobalGlyphSettings.CODEC), (a, b) -> a.mainSettings = b, a -> a.mainSettings)
 			.add()
@@ -131,7 +128,7 @@ public class RedWandTool {
 	public static Holder<EntityStore> dropDust(ComponentAccessor<EntityStore> accessor, int count, Vector3i blockPos, BlockFace face) {
 
 		var vec = RedComponentDisplayUtils.getCenteredPosition(blockPos, face, new Vector2d(0, 0));
-		return ItemComponent.generateItemDrop(accessor, new ItemStack("RedCrystal_Red_Sliver", count), vec, new Vector3f(), 0, 0, 0);
+		return ItemComponent.generateItemDrop(accessor, new ItemStack("RedCrystal_Red_Sliver", count), vec, new Rotation3f(), 0, 0, 0);
 	}
 
 	public static void playParticle(Vector3i at, BlockFace face, ComponentAccessor<EntityStore> accessor) {

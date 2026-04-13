@@ -7,8 +7,9 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class FakeCommandSender implements CommandSender {
+
 	@Override
-	public String getDisplayName() {
+	public String getUsername() {
 		return "RedCrystal";
 	}
 

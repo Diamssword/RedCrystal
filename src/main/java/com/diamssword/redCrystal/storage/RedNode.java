@@ -4,7 +4,8 @@ import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.math.vector.Vector3iUtil;
+import org.joml.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
 
 import javax.annotation.Nonnull;
@@ -14,7 +15,7 @@ public class RedNode {
 
 	@Nonnull
 	public static BuilderCodec<RedNode> CODEC = BuilderCodec.builder(RedNode.class, RedNode::new)
-			.append(new KeyedCodec<>("RedCrystalNodePosition", Vector3i.CODEC), (a, b) -> a.position = b, (a) -> a.position)
+			.append(new KeyedCodec<>("RedCrystalNodePosition", Vector3iUtil.CODEC), (a, b) -> a.position = b, (a) -> a.position)
 			.add()
 			.append(new KeyedCodec<>("RedCrystalNodeTarget", Codec.SHORT), (a, b) -> a.inputIndex = b, (a) -> a.inputIndex)
 			.add()
@@ -72,7 +73,7 @@ public class RedNode {
 	}
 
 	public Vector3i getWorldPosition(RedElementState parent) {
-		return parent.getPosition().clone().add(this.position);
+		return new Vector3i(parent.getPosition()).add(this.position);
 	}
 
 	@Nullable

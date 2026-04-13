@@ -1,21 +1,22 @@
 package com.diamssword.redCrystal.worldInteraction;
 
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
+import com.hypixel.hytale.math.vector.Rotation3f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 import com.hypixel.hytale.protocol.BlockFace;
 
 public class FacingUtil {
 	/**
 	 * Create a Rotation Vector matching the BlockFace
 	 */
-	public static Vector3f facingToRotation(BlockFace face) {
+	public static Rotation3f facingToRotation(BlockFace face) {
 		return degreeVectortoRadians(switch(face) {
-			case None, North -> new Vector3f(0, 0, 0);
-			case Up -> new Vector3f(90, 0, 0);
-			case Down -> new Vector3f(-90, 0, 0);
-			case West -> new Vector3f(0, 90, 0);
-			case East -> new Vector3f(0, -90, 0);
-			case South -> new Vector3f(0, 180, 0);
+			case None, North -> new Rotation3f(0, 0, 0);
+			case Up -> new Rotation3f(90, 0, 0);
+			case Down -> new Rotation3f(-90, 0, 0);
+			case West -> new Rotation3f(0, 90, 0);
+			case East -> new Rotation3f(0, -90, 0);
+			case South -> new Rotation3f(0, 180, 0);
 		});
 	}
 
@@ -33,22 +34,22 @@ public class FacingUtil {
 	/**
 	 * Create a Rotation Vector matching the BlockFace and add a tilt on the horizontal plane
 	 */
-	public static Vector3f facingToRotationWithTilt(BlockFace face, float tiltInDegree) {
+	public static Rotation3f facingToRotationWithTilt(BlockFace face, float tiltInDegree) {
 		return degreeVectortoRadians(switch(face) {
-			case None, North -> new Vector3f(0, 0, tiltInDegree);
-			case Up -> new Vector3f(90, -tiltInDegree, 0);
-			case Down -> new Vector3f(-90, -tiltInDegree, 0);
-			case West -> new Vector3f(0, 90, tiltInDegree);
-			case East -> new Vector3f(0, -90, tiltInDegree);
-			case South -> new Vector3f(0, 180, tiltInDegree);
+			case None, North -> new Rotation3f(0, 0, tiltInDegree);
+			case Up -> new Rotation3f(90, -tiltInDegree, 0);
+			case Down -> new Rotation3f(-90, -tiltInDegree, 0);
+			case West -> new Rotation3f(0, 90, tiltInDegree);
+			case East -> new Rotation3f(0, -90, tiltInDegree);
+			case South -> new Rotation3f(0, 180, tiltInDegree);
 		});
 	}
 
 	/**
 	 * Turn a degreeVector to a Radians Vector
 	 */
-	public static Vector3f degreeVectortoRadians(Vector3f degreeVec) {
-		return new Vector3f((float) Math.toRadians(degreeVec.x), (float) Math.toRadians(degreeVec.y), (float) Math.toRadians(degreeVec.z));
+	public static Rotation3f degreeVectortoRadians(Rotation3f degreeVec) {
+		return new Rotation3f((float) Math.toRadians(degreeVec.x), (float) Math.toRadians(degreeVec.y), (float) Math.toRadians(degreeVec.z));
 	}
 
 	/**

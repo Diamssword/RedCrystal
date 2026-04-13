@@ -3,10 +3,12 @@ package com.diamssword.redCrystal.wand;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.RedNode;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import org.joml.Vector3d;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.joml.Vector3i;
 
 public class LinkingState {
 
@@ -19,15 +21,15 @@ public class LinkingState {
 	public ConnectionInfo startedLink;
 
 	public boolean tryToLink(Ref<EntityStore> player, RedElement element, short index, boolean output) {
-		var pl = player.getStore().getComponent(player, Player.getComponentType());
+		var plr = player.getStore().getComponent(player, PlayerRef.getComponentType());
 		if(startedLink != null && startedLink.source.isValid()) {
 			if(startedLink.source == element) {
 				//	startedLink = null;
 				return false;
 			} else if(startedLink.output == output) {
 
-				if(pl != null) {
-					pl.sendMessage(Message.raw("Cant link 2 " + (output ? "Outputs" : "Inputs") + " together!"));
+				if(plr != null) {
+					plr.sendMessage(Message.raw("Cant link 2 " + (output ? "Outputs" : "Inputs") + " together!"));
 					color = ERROR_BEAM_COLOR;
 					blinkTime = 20;
 				}
@@ -37,12 +39,12 @@ public class LinkingState {
 				var out = output ? element : startedLink.source;
 				var in = output ? startedLink : newLink;
 				var indexOut = output ? index : startedLink.index;
-				var distance = out.getParent().getPosition().distanceTo(in.source.getParent().getPosition());
+				var distance = out.getParent().getPosition().distance(in.source.getParent().getPosition());
 				if(distance <= MAX_LENGTH) {
-					var pos = in.source.getParent().getPosition().clone().subtract(out.getParent().getPosition());
+					var pos = new Vector3i(in.source.getParent().getPosition()).sub(out.getParent().getPosition());
 					out.setOutputNode(indexOut, new RedNode(in.source.getFace(), pos, in.index));
-				} else if(pl != null) {
-					pl.sendMessage(Message.raw("Link too long! Max length is 32 blocks"));
+				} else if(plr != null) {
+					plr.sendMessage(Message.raw("Link too long! Max length is 32 blocks"));
 				}
 
 				startedLink = null;
@@ -66,7 +68,7 @@ public class LinkingState {
 			}
 		}
 		if(startedLink != null && startedLink.source.isValid()) {
-			var distance = startedLink.source.getParent().getPosition().toVector3d().distanceTo(playerPos);
+			var distance = new Vector3d().set(startedLink.source.getParent().getPosition()).distance(playerPos);
 			if(distance > MAX_LENGTH) {
 				color = TOO_LONG_BEAM_COLOR;
 				blinkTime = 10;
@@ -90,7 +92,7 @@ public class LinkingState {
 		return s;
 	}
 
-	public class ConnectionInfo {
+	public static class ConnectionInfo {
 		public RedElement source;
 		public boolean output;
 		public short index;

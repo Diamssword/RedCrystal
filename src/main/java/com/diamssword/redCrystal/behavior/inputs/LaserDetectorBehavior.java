@@ -14,7 +14,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.math.raycast.RaycastAABB;
 import com.hypixel.hytale.math.shape.Box;
-import com.hypixel.hytale.math.vector.Vector2d;
+import org.joml.Vector2d;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.modules.collision.CollisionMath;
 import com.hypixel.hytale.server.core.modules.entity.EntityModule;
@@ -22,6 +22,7 @@ import com.hypixel.hytale.server.core.modules.entity.component.TransformComponen
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import com.hypixel.hytale.server.npc.util.RayBlockHitTest;
+import org.joml.Vector3d;
 
 import java.util.List;
 
@@ -60,9 +61,8 @@ public class LaserDetectorBehavior extends RedCompBehaviorWithSettings<BehaviorA
 			var main = this.parent.getEntities().getMain();
 			if(main != null && main.isValid()) {
 				var rot = FacingUtil.facingToDir(this.parent.getFace(), lastLength, 0, 0);
-
 				var base = RedComponentDisplayUtils.getCenteredPosition(parent.getParent().getPosition(), parent.getFace(), new Vector2d(0, 0));
-				RedComponentDisplayUtils.drawLaserFor(main.getStore(), base, rot.clone().add(base), 0.6f, active ? LinkingState.ERROR_BEAM_COLOR : LinkingState.BASE_BEAM_COLOR, 0.1f);
+				RedComponentDisplayUtils.drawLaserFor(main.getStore(), base, rot.add(base), 0.6f, active ? LinkingState.ERROR_BEAM_COLOR : LinkingState.BASE_BEAM_COLOR, 0.1f);
 			}
 		}
 	}
@@ -79,7 +79,7 @@ public class LaserDetectorBehavior extends RedCompBehaviorWithSettings<BehaviorA
 
 				var trans1 = entity.getStore().getComponent(entity, TransformComponent.getComponentType());
 				if(trans1 != null) {
-					float dist = (float) Math.abs(trans.distanceTo(trans1.getPosition()));
+					float dist = (float) Math.abs(trans.distance(trans1.getPosition()));
 					if(dist < distance || distance == -1)
 						distance = dist;
 				}
@@ -109,8 +109,8 @@ public class LaserDetectorBehavior extends RedCompBehaviorWithSettings<BehaviorA
 	public List<Ref<EntityStore>> getEntities() {
 		var rot = FacingUtil.facingToDir(this.parent.getFace(), getSettings().range, 0, 0);
 		var base = RedComponentDisplayUtils.getCenteredPosition(parent.getParent().getPosition(), parent.getFace(), new Vector2d(-0.01, -0.01));
-		var p1 = base.clone();
-		var p2 = base.clone().add(rot.clone());
+		var p1 = new Vector3d(base);
+		var p2 = new Vector3d(base).add(rot);
 		var center = CollideUtil.getBoxCenter(new Box(p1, p2));
 		var targ = TargetUtil.getAllEntitiesInSphere(center, getSettings().range * 2, getWorld().getEntityStore().getStore());
 		if(getSettings().checkForItem) {

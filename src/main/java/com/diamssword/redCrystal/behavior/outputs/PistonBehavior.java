@@ -1,22 +1,14 @@
 package com.diamssword.redCrystal.behavior.outputs;
 
-import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithSettings;
-import com.diamssword.redCrystal.behavior.modifiers.DelayBehavior;
-import com.diamssword.redCrystal.display.ModelUtils;
-import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
-import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.gui.GlyphSettingsValidators;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
-import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.diamssword.redCrystal.worldInteraction.FakeCommandSender;
-import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.hypixel.hytale.assetstore.map.BlockTypeAssetMap;
 import com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap;
 import com.hypixel.hytale.builtin.buildertools.BuilderToolsPlugin;
-import com.hypixel.hytale.builtin.buildertools.commands.CopyCommand;
 import com.hypixel.hytale.builtin.buildertools.snapshot.BlockSelectionSnapshot;
 import com.hypixel.hytale.builtin.buildertools.snapshot.ClipboardBoundsSnapshot;
 import com.hypixel.hytale.builtin.buildertools.snapshot.EntityTransformSnapshot;
@@ -24,24 +16,18 @@ import com.hypixel.hytale.builtin.buildertools.snapshot.SelectionSnapshot;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.ComponentAccessor;
-import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.protocol.*;
-import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.math.vector.Vector3iUtil;
+import com.hypixel.hytale.protocol.BlockSoundEvent;
+import com.hypixel.hytale.protocol.SoundCategory;
+import org.joml.Vector3d;
+import org.joml.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes;
 import com.hypixel.hytale.server.core.asset.type.blocksound.config.BlockSoundSet;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
-import com.hypixel.hytale.server.core.asset.type.model.config.ModelParticle;
 import com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent;
-import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
-import com.hypixel.hytale.server.core.modules.block.BlockEntity;
-import com.hypixel.hytale.server.core.modules.entity.component.EntityScaleComponent;
-import com.hypixel.hytale.server.core.modules.entity.component.Intangible;
-import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
-import com.hypixel.hytale.server.core.modules.entity.hitboxcollision.HitboxCollision;
 import com.hypixel.hytale.server.core.prefab.selection.standard.BlockSelection;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -51,13 +37,9 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.FillerBlockUtil;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, PistonBehavior.PistonSettings> {
 
@@ -75,7 +57,7 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 
 	@Override
 	public void onSignalChange(short input, short oldValue, short value) {
-	
+
 	}
 
 	@Override
@@ -99,9 +81,9 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 		if(size > 0 && (retracting || size <= this.getSettings().selectionLength)) {
 			if(retracting)
 				size = Math.min(size, this.getSettings().selectionLength);
-			var a = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1 + getInternalState("extended"), 0, 0).add(pos);
-			var b = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), getInternalState("extended") + size, 0, 0).add(pos);
-			selec.setSelectionArea(a.toVector3i(), b.toVector3i());
+			var a = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1 + getInternalState("extended"), 0, 0).add(new Vector3d(pos));
+			var b = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), getInternalState("extended") + size, 0, 0).add(new Vector3d(pos));
+			selec.setSelectionArea(new Vector3i().set(a), new Vector3i().set(b));
 			return selec;
 		}
 		return null;
@@ -110,10 +92,10 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 	public int getMaxSize() {
 		var pos = this.parent.getParent().getPosition();
 		var vec = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1, 0, 0);
-		var vec1 = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1 + getInternalState("extended"), 0, 0).add(pos);
+		var vec1 = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1 + getInternalState("extended"), 0, 0).add(new Vector3d(pos));
 		var size = this.getSettings().selectionLength + 1;
 		for(int i = 0; i < this.getSettings().selectionLength + 1; i++) {
-			var p1 = vec1.clone().add(vec.clone().scale(i)).toVector3i();
+			var p1 = new Vector3i().set(new Vector3d(vec1).add(new Vector3d(vec).mul(i)));
 			if(!canMove(p1)) {
 				size = -1;
 				break;
@@ -130,15 +112,15 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 
 		var pos = this.parent.getParent().getPosition();
 		if(retract) {
-			if(getWorld().getBlock(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), getInternalState("extended"), 0, 0).add(pos).toVector3i()) == 0) {
-				move(true, FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0).toVector3i(), false, false, getWorld().getEntityStore().getStore());
+			if(getWorld().getBlock(new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), getInternalState("extended"), 0, 0).add(new Vector3d(pos)))) == 0) {
+				move(true, new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0)), false, false, getWorld().getEntityStore().getStore());
 				playSound();
 			}
 			setInternalState("extended", (short) (getInternalState("extended") + (retract ? -1 : 1)));
 
 		} else {
 			if(getMaxSize() <= this.getSettings().selectionLength) {
-				move(false, FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0).toVector3i(), false, false, getWorld().getEntityStore().getStore());
+				move(false, new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0)), false, false, getWorld().getEntityStore().getStore());
 				setInternalState("extended", (short) (getInternalState("extended") + (retract ? -1 : 1)));
 				playSound();
 			}
@@ -174,7 +156,7 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 		String seatSoundId = set == null ? null : set.getSoundEventIds().getOrDefault(BlockSoundEvent.Build, null);
 		if(seatSoundId != null) {
 			int soundEventIndex = SoundEvent.getAssetMap().getIndex(seatSoundId);
-			SoundUtil.playSoundEvent3d(soundEventIndex, SoundCategory.SFX, parent.getParent().getPosition().toVector3d().add(0.5, 0.5, 0.5), getWorld().getEntityStore().getStore());
+			SoundUtil.playSoundEvent3d(soundEventIndex, SoundCategory.SFX, new Vector3d(parent.getParent().getPosition()).add(0.5, 0.5, 0.5), getWorld().getEntityStore().getStore());
 		}
 
 	}
@@ -193,14 +175,14 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 		var selection = getSelection(retracting);
 		if(selection == null)
 			return;
-		Vector3i min = Vector3i.min(selection.getSelectionMin(), selection.getSelectionMax());
-		Vector3i max = Vector3i.max(selection.getSelectionMin(), selection.getSelectionMax());
-		int xMin = min.getX();
-		int xMax = max.getX();
-		int yMin = min.getY();
-		int yMax = max.getY();
-		int zMin = min.getZ();
-		int zMax = max.getZ();
+		Vector3i min = Vector3iUtil.min(selection.getSelectionMin(), selection.getSelectionMax());
+		Vector3i max = Vector3iUtil.max(selection.getSelectionMin(), selection.getSelectionMax());
+		int xMin = min.x();
+		int xMax = max.x();
+		int yMin = min.y();
+		int yMax = max.y();
+		int zMin = min.z();
+		int zMax = max.z();
 		BlockSelection selected = new BlockSelection();
 		int width = xMax - xMin;
 		int depth = zMax - zMin;
@@ -278,24 +260,24 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 		}
 		var sender = new FakeCommandSender();
 		BlockSelection beforeCleared = cleared.place(sender, world);
-		selected.setPosition(xPos + direction.getX(), yMin + direction.getY(), zPos + direction.getZ());
+		selected.setPosition(xPos + direction.x(), yMin + direction.y(), zPos + direction.z());
 		BlockSelection beforePlace = selected.place(sender, world);
 		List<SelectionSnapshot<?>> snapshots = new ObjectArrayList<>();
 		if(entities) {
-			for(Ref<EntityStore> targetEntityRef : TargetUtil.getAllEntitiesInBox(min.toVector3d(), max.toVector3d(), componentAccessor)) {
+			for(Ref<EntityStore> targetEntityRef : TargetUtil.getAllEntitiesInBox(new Vector3d(min), new Vector3d(max), componentAccessor)) {
 				snapshots.add(new EntityTransformSnapshot(targetEntityRef, componentAccessor));
 				TransformComponent transformComponent = componentAccessor.getComponent(targetEntityRef, TransformComponent.getComponentType());
 				if(transformComponent != null) {
-					transformComponent.getPosition().add(direction);
+					transformComponent.getPosition().add(new Vector3d(direction));
 				}
 			}
 		}
 
 		beforePlace.add(beforeCleared);
 		ClipboardBoundsSnapshot clipboardSnapshot = new ClipboardBoundsSnapshot(min, max);
-		Vector3i destMin = min.clone().add(direction);
-		Vector3i destMax = max.clone().add(direction);
-		beforePlace.setSelectionArea(Vector3i.min(min, destMin), Vector3i.max(max, destMax));
+		Vector3i destMin = new Vector3i(min).add(direction);
+		Vector3i destMax = new Vector3i(max).add(direction);
+		beforePlace.setSelectionArea(Vector3iUtil.min(min, destMin), Vector3iUtil.max(max, destMax));
 		snapshots.add(new BlockSelectionSnapshot(beforePlace));
 		snapshots.add(clipboardSnapshot);
 		//this.pushHistory(BuilderToolsPlugin.Action.MOVE, snapshots);

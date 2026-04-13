@@ -8,15 +8,11 @@ file("gradle.properties").inputStream().use { props.load(it) }
 // 2. Access your property
 val modVersion = props.getProperty("modVersion")
 repositories {
-    maven {
-        name = "hM"
-        url = uri("https://maven.hytale-mods.dev/releases")
-    }
+
 
 }
 
 dependencies {
-    implementation("com.buuz135:MultipleHUD:1.0.7")
 }
 tasks.jar {
     archiveBaseName.set("RedCrystal")

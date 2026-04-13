@@ -3,15 +3,14 @@ package com.diamssword.redCrystal.behavior.outputs;
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.storage.DisplayState;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
-import com.diamssword.redCrystal.worldInteraction.FakeLivingEntity;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.storage.RedElement;
-import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.server.core.entity.InteractionChain;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.InteractionManager;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
@@ -39,9 +38,9 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 		//var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Button"), 0.5f), facing);
 		holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));
 		holder.ensureComponent(Intangible.getComponentType());
-		var ent = new FakeLivingEntity();
-		holder.addComponent(FakeLivingEntity.getElementType(), ent);
-		holder.putComponent(InteractionModule.get().getInteractionManagerComponent(), new InteractionManager(ent, null, new InteractionSimulationHandler()));
+//		var ent = new FakeLivingEntity();
+		//	holder.addComponent(FakeLivingEntity.getElementType(), ent);
+		holder.putComponent(InteractionModule.get().getInteractionManagerComponent(), new InteractionManager(null, new InteractionSimulationHandler()));
 		res.put("interactor", holder);
 		return res;
 	}
@@ -69,8 +68,9 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 					ctx.getMetaStore().putMetaObject(Interaction.TARGET_BLOCK, new BlockPosition(pos.x, pos.y, pos.z));
 					getWorld().execute(() -> {
 						try {
-							var cb = new CommandBuffer(ent.getStore()) {};
-							manager.tryStartChain(ent, cb, InteractionType.Use, ctx, rootInteraction);
+							InteractionChain chain = manager.initChain(InteractionType.Use, ctx, rootInteraction, false);
+
+							manager.queueExecuteChain(chain);
 						} catch(Exception e) {
 							e.printStackTrace();
 						}
