@@ -1,5 +1,6 @@
-package com.diamssword.redCrystal.storage;
+package com.diamssword.redCrystal.systems;
 
+import com.diamssword.redCrystal.storage.RedElementState;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;

@@ -100,7 +100,7 @@ public class RedWandTool {
 		var tool = getForStack(toolStack);
 		if(tool.getSelectedGlyph() != null) {
 			var element = state.getElement(face);
-			if(element == null) {
+			if(element == null || !element.isValid()) {
 				boolean re = state.createElement(face, tool.getSelectedGlyph(), tool.mainSettings);
 				if(re) {
 					var el = state.getElement(face);

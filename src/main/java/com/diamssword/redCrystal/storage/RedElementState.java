@@ -54,9 +54,10 @@ public class RedElementState implements Component<ChunkStore> {
 		this.position = position;
 		this.chunkRef = chunkRef;
 		for(var entry : this.getAllElements().entrySet()) {
-			if(entry.getValue().getAsset() == null)
+			if(entry.getValue().getAsset() == null) {
+				entry.getValue().onBreak(entry.getKey(), chunkRef.getStore().getExternalData().getWorld(), position);
 				this.elements.remove(entry.getKey().toString());
-			else
+			} else
 				entry.getValue().init(this, entry.getKey());
 		}
 
@@ -118,7 +119,7 @@ public class RedElementState implements Component<ChunkStore> {
 		getAllElements().forEach((s, e) -> {
 			var lost = removeElement(s);
 			if(lost != null) {
-				lost.onBreak(s, buffer);
+				lost.onBreak(s, buffer.getExternalData().getWorld(), this.getPosition());
 			}
 		});
 	}

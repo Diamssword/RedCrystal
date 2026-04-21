@@ -1,5 +1,6 @@
 package com.diamssword.redCrystal.storage.assets;
 
+import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.storage.RedElement;
@@ -18,6 +19,6 @@ public abstract class AbstractBehaviorAsset<T extends AbstractBehaviorAsset<T>> 
 	}
 
 	public RedCompBehavior<T> createBehavior(RedElement parent) {
-		return RedComponentRegister.get(id, parent, (T) this);
+		return RedCrystalPlugin.getBehaviorRegister().get(id, parent, (T) this);
 	}
 }

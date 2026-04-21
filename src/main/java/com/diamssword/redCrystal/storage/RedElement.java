@@ -12,7 +12,10 @@ import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.component.AddReason;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.protocol.BlockPosition;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import org.joml.Vector3i;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -218,24 +221,26 @@ public class RedElement {
 	public RedElement init(RedElementState parent, BlockFace face) {
 		this.parent = parent;
 		this.face = face;
+
 		if(asset != null) {
 			setupBehavior();
-			this.getBehavior().getWorld().execute(() -> {
-				for(var i = 0; i < outputs.length; i++) {
-					var node = outputs[i];
-					if(node != null) {
-						RedElement el = node.getElement(this.parent);
-						if(el != null && el.isValid()) {
-							if(!el.setInput(node.inputIndex, this, i, false)) {
-								breakOutputNodeInternal(i);
-							} else
-								this.behavior.setOutput((short) i, behavior.getOutputState(i));
+			if(this.getBehavior() != null) {
+				this.getBehavior().getWorld().execute(() -> {
+					for(var i = 0; i < outputs.length; i++) {
+						var node = outputs[i];
+						if(node != null) {
+							RedElement el = node.getElement(this.parent);
+							if(el != null && el.isValid()) {
+								if(!el.setInput(node.inputIndex, this, i, false)) {
+									breakOutputNodeInternal(i);
+								} else
+									this.behavior.setOutput((short) i, behavior.getOutputState(i));
+							}
 						}
 					}
-				}
-				this.behavior.timers.add(() -> this.behavior.timers.markLightStateForUpdate(), 2);
-			});
-
+					this.behavior.timers.add(() -> this.behavior.timers.markLightStateForUpdate(), 2);
+				});
+			}
 		}
 		return this;
 	}
@@ -262,11 +267,11 @@ public class RedElement {
 		return face;
 	}
 
-	public void onBreak(BlockFace s, CommandBuffer<ChunkStore> buffer) {
-		var world = parent.getChunkRef().getStore().getExternalData().getWorld();
-		this.invalidate();
-		if(world != null)
-			world.execute(() -> world.getEntityStore().getStore().addEntity(RedWandTool.dropDust(world.getEntityStore().getStore(), 1, parent.getPosition(), s), AddReason.SPAWN));
+	public void onBreak(BlockFace s, World w, Vector3i pos) {
+		if(this.isValid())
+			this.invalidate();
+		if(w != null)
+			w.execute(() -> w.getEntityStore().getStore().addEntity(RedWandTool.dropDust(w.getEntityStore().getStore(), 1, pos, s), AddReason.SPAWN));
 
 	}
 }

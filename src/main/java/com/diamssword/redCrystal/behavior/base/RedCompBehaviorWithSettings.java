@@ -1,5 +1,6 @@
 package com.diamssword.redCrystal.behavior.base;
 
+import com.diamssword.redCrystal.RedCrystalPlugin;
 import com.diamssword.redCrystal.behavior.RedComponentRegister;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
@@ -22,7 +23,7 @@ public abstract class RedCompBehaviorWithSettings<T extends AbstractBehaviorAsse
 	}
 
 	public BuilderCodec<J> getSettingsCodec() {
-		return (BuilderCodec<J>) RedComponentRegister.getSettingsCodec(getId());
+		return (BuilderCodec<J>) RedCrystalPlugin.getBehaviorRegister().getSettingsCodec(getId());
 	}
 
 	public J getSettings() {

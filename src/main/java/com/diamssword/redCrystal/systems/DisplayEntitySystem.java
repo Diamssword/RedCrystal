@@ -1,5 +1,8 @@
-package com.diamssword.redCrystal.display;
+package com.diamssword.redCrystal.systems;
 
+import com.diamssword.redCrystal.display.ModelUtils;
+import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
+import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.network.NetworkUtil;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;

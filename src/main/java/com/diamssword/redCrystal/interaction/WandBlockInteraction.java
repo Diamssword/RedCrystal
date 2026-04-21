@@ -73,7 +73,7 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 						RedWandTool.playSound("Place", targetBlock, player.getReference(), commandBuffer);
 					} else {
 						var element = state.getElement(client.blockFace);
-						if(element != null) {
+						if(element != null && element.isValid()) {
 							if(player != null) {
 								element.getBehavior().onMainRuneInteract(context.getEntity(), null, context, RedCompBehavior.InteractType.Use);
 								context.getState().state = InteractionState.Finished;

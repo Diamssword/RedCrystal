@@ -63,7 +63,7 @@ public class GlyphMenu extends InteractiveCustomUIPage<GlyphMenu.MenuEventData> 
 			createGlyphs(commandBuilder);
 			boolean flag = false;
 			if(selected.get() != null)
-				flag = RedComponentRegister.getSettingsCodec(selected.get()) != null;
+				flag = RedCrystalPlugin.getBehaviorRegister().getSettingsCodec(selected.get()) != null;
 			commandBuilder.set("#GlyphSettingsBt.Visible", flag);
 
 			eventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#GlyphSettingsBt", EventData.of(MenuEventData.KEY_BUTTON, "Settings"));
@@ -178,7 +178,7 @@ public class GlyphMenu extends InteractiveCustomUIPage<GlyphMenu.MenuEventData> 
 		if(!id.equals(selected.get())) {
 			toolSettings.setSelectedGlyph(id);
 			setSelected(id);
-			var codec = RedComponentRegister.getSettingsCodec(id);
+			var codec = RedCrystalPlugin.getBehaviorRegister().getSettingsCodec(id);
 			builder.set("#GlyphSettingsBt.Visible", codec != null);
 			setupSelectedPanel(builder, event);
 			RedWandTool.updateToolStack(playerRef.getReference().getStore().getComponent(playerRef.getReference(), Player.getComponentType()), slot, toolSettings);
@@ -204,7 +204,7 @@ public class GlyphMenu extends InteractiveCustomUIPage<GlyphMenu.MenuEventData> 
 
 	private void settingsClicked() {
 		var select = selected.get();
-		var codec = RedComponentRegister.getSettingsCodec(select);
+		var codec = RedCrystalPlugin.getBehaviorRegister().getSettingsCodec(select);
 		var behavior = RedCrystalPlugin.GlyphAssets.getAssetMap().getAsset(select).getBehavior();
 		if(codec != null)
 			new GlyphSettingsMenu(playerRef).withSpecific(select, () -> toolSettings.getGlyphSettings(select).orElse(new BsonDocument()), doc -> {
