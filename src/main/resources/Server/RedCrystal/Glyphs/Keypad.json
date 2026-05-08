@@ -1,0 +1,37 @@
+{
+  "BehaviorId": {
+    "Type": "Keypad",
+    "Models": {
+      "Default": {
+        "ModelOn": "RedCrystal_PreciseInput",
+        "ModelOff": "RedCrystal_PreciseInput",
+        "AltTextures": {
+          "r": "Items/RedCrystal/Keypad/right.png",
+          "w": "Items/RedCrystal/Keypad/wrong.png",
+          "0": "Items/RedCrystal/Keypad/0.png",
+          "1": "Items/RedCrystal/Keypad/1.png",
+          "2": "Items/RedCrystal/Keypad/2.png",
+          "3": "Items/RedCrystal/Keypad/3.png",
+          "4": "Items/RedCrystal/Keypad/4.png",
+          "5": "Items/RedCrystal/Keypad/5.png",
+          "6": "Items/RedCrystal/Keypad/6.png",
+          "7": "Items/RedCrystal/Keypad/7.png",
+          "8": "Items/RedCrystal/Keypad/8.png",
+          "9": "Items/RedCrystal/Keypad/9.png"
+        }
+      }
+    }
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Keypad.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Keypad@2x.png",
+  "Outputs": 1,
+  "TranslationProperties": {
+    "Name": "RedCrystal.glyph.Keypad.name",
+    "Description": "RedCrystal.glyph.Keypad.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Rune"
+    ]
+  }
+}

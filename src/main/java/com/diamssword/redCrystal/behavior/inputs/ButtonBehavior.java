@@ -40,9 +40,9 @@ public class ButtonBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSw
 
 	private void onSettingsChange() {
 		if(parent.getEntities() != null) {
-			var plate = parent.getEntities().getOther("lever");
+			var plate = parent.getEntities().getOther("button");
 			if(plate != null) {
-				getModel().switchModel(this, plate, getInternalState("lever") == 1, getSettings().pickedTexture);
+				getModel().switchModel(this, plate, false, getSettings().pickedTexture);
 			}
 
 		}

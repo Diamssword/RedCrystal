@@ -14,18 +14,10 @@
   },
   "Texture": "Items/RedCrystal/PreciseInput.png",
   "AnimationSets": {
-    "On": {
+    "Press": {
       "Animations": [
         {
-          "Animation": "Items/RedCrystal/LeverOn.blockyanim",
-          "Looping": false
-        }
-      ]
-    },
-    "Off": {
-      "Animations": [
-        {
-          "Animation": "Items/RedCrystal/LeverOff.blockyanim",
+          "Animation": "Items/RedCrystal/button_press.blockyanim",
           "Looping": false
         }
       ]

@@ -49,5 +49,9 @@ public abstract class RedCompBehaviorWithModel<T extends BehaviorAssetWithSwitch
 			return builder.append(new KeyedCodec<>("BehaviorWithModelPickedModel", BuilderCodec.STRING), (a, b) -> a.pickedModel = b, a -> a.pickedModel).addValidator(new GlyphSettingsValidators.ModelKeySelector(false)).add()
 					.append(new KeyedCodec<>("BehaviorWithModelPickedTexture", BuilderCodec.STRING), (a, b) -> a.pickedTexture = b, a -> a.pickedTexture).addValidator(new GlyphSettingsValidators.ModelKeySelector(true)).add();
 		}
+
+		public static <T extends PickedModelSettings, J extends BehaviorAssetWithSwitchModels> BuilderCodec.Builder<T> addToCodecHideTexture(BuilderCodec.Builder<T> builder) {
+			return builder.append(new KeyedCodec<>("BehaviorWithModelPickedModel", BuilderCodec.STRING), (a, b) -> a.pickedModel = b, a -> a.pickedModel).addValidator(new GlyphSettingsValidators.ModelKeySelector(false)).add();
+		}
 	}
 }

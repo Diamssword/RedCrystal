@@ -84,6 +84,7 @@ public class RedCrystalPlugin extends JavaPlugin {
 
 	private static void initBehaviors(RedComponentRegister register) {
 		register.register("Button", ButtonBehavior::new, BehaviorAssetWithSwitchModels::getCODEC, ButtonBehavior.CODEC);
+		register.register("Keypad", KeypadBehavior::new, BehaviorAssetWithSwitchModels::getCODEC, KeypadBehavior.CODEC);
 		register.register("Interact", InteractBehavior::new);
 		register.register("Toggle", ToggleBehavior::new);
 		register.register("AND", AndBehavior::new);

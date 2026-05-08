@@ -16,6 +16,46 @@ import java.util.function.Supplier;
 
 
 public class GlyphSettingsValidators {
+	public static class HiddenSettingValidator<T> implements Validator<T> {
+
+		@Override
+		public void accept(T t, ValidationResults validationResults) {
+
+		}
+
+		@Override
+		public void updateSchema(SchemaContext schemaContext, Schema schema) {
+
+		}
+	}
+
+	public static class PassCodeValidator implements Validator<String> {
+		public final int maxChars;
+
+		public PassCodeValidator(int maxChars) {
+			this.maxChars = maxChars;
+		}
+
+		@Override
+		public void accept(String s, ValidationResults validationResults) {
+			if(s.length() > maxChars)
+				validationResults.fail("Passcode too long");
+			else {
+				for(char c : s.toCharArray()) {
+					if(c < 48 || c > 57) {
+						validationResults.fail("Passcode is not all number");
+						break;
+					}
+				}
+			}
+
+		}
+
+		@Override
+		public void updateSchema(SchemaContext schemaContext, Schema schema) {
+
+		}
+	}
 
 	public static class StepRangeValidator<T extends Number & Comparable<T>> extends RangeValidator<T> {
 		public final T min;

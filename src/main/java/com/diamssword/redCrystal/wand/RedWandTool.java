@@ -1,6 +1,7 @@
 package com.diamssword.redCrystal.wand;
 
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
+import com.diamssword.redCrystal.network.NetworkUtil;
 import com.diamssword.redCrystal.storage.BsonDocumentCodec;
 import com.diamssword.redCrystal.storage.GlobalGlyphSettings;
 import com.diamssword.redCrystal.storage.PlayerDatas;
@@ -14,6 +15,7 @@ import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.math.vector.Rotation3f;
+import com.hypixel.hytale.server.core.HytaleServer;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -36,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class RedWandTool {
 	public static final BuilderCodec<RedWandTool> CODEC = BuilderCodec.builder(RedWandTool.class, RedWandTool::new)
@@ -108,7 +111,22 @@ public class RedWandTool {
 					setts.ifPresent(bsonDocument -> el.getStoredState().setStoredSettings(bsonDocument));
 					var world = el.getParent().getChunkRef().getStore().getExternalData().getWorld();
 					world.execute(() -> {
-						RedComponentDisplayUtils.createTempRune(world.getEntityStore(), el.getParent().getPosition(), face, el);
+						//		RedComponentDisplayUtils.createTempRune(world.getEntityStore(), el.getParent().getPosition(), face, el);
+						HytaleServer.SCHEDULED_EXECUTOR.schedule(() -> {
+							if(el.isValid()) {
+								world.execute(() -> {
+									if(player != null && player.isValid()) {
+										var comp = player.getStore().getComponent(player, PlayerDatas.getComponentType());
+										if(comp.isToolEquiped()) {
+											el.getEntities().getAll().forEach(v -> {
+												NetworkUtil.setRuneVisibility(v, player, true);
+											});
+
+										}
+									}
+								});
+							}
+						}, 100, TimeUnit.MILLISECONDS);
 						if(player != null && player.isValid()) {
 							var comp = player.getStore().getComponent(player, PlayerDatas.getComponentType());
 							if(comp != null) {

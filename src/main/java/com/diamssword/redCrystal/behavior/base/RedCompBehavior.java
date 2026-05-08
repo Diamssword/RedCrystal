@@ -3,6 +3,7 @@ package com.diamssword.redCrystal.behavior.base;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.diamssword.redCrystal.gui.GlyphSettingsMenu;
+import com.diamssword.redCrystal.gui.IOwnedRune;
 import com.diamssword.redCrystal.storage.*;
 import com.diamssword.redCrystal.interaction.WandBlockInteraction;
 import com.diamssword.redCrystal.storage.assets.AbstractBehaviorAsset;
@@ -11,6 +12,7 @@ import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionState;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -18,6 +20,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -236,7 +239,13 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 		if(pl != null) {
 			var menu = new GlyphSettingsMenu(pl, this.parent.getSettings()::clone, this.parent::updateSettings);
 			if(this instanceof RedCompBehaviorWithSettings<?, ?> casted && !casted.hideSettings()) {
+				if(casted.getSettings() instanceof IOwnedRune or)
+					if(!or.canUse(pl.getUuid())) {
+						pl.sendMessage(Message.translation("RedCrystal.ownedRune.forbidden").color(Color.RED));
+						return;
+					}
 				menu.withSpecific(casted.getId(), () -> casted.getStateManager().getStoredSettings(), casted::setStoredSettings, casted.getSettingsCodec(), asset, casted::canShowSetting);
+
 			}
 			Player playerComponent = (Player) player.getStore().getComponent(player, Player.getComponentType());
 			if(playerComponent != null)

@@ -16,7 +16,7 @@ interactionHints.input=Input\nLeft Click to create link\nRight Click to break li
 interactionHints.output=Output\nLeft Click to create link\nRight Click to break link
 glyph.Interact.name=Interactor
 glyph.Interact.desc=An element that can interact with blocks the same way a player can, you can open doors, toggle lights, etc.
-
+ownedRune.forbidden="You are not the owner of this glyph.
 # === Glyphs ===
 
 # Inputs
@@ -30,7 +30,8 @@ glyph.Variator.name=Variator
 glyph.Variator.desc=Allow to manually select different strength of signal
 glyph.LaserDetector.name=Laser Detector
 glyph.LaserDetector.desc=Detect the closest entity or block with a laser
-
+glyph.Keypad.name=Keypad
+glyph.Keypad.desc=Send a pulse signal when the right code is entered
 # Transform
 glyph.OrG.name=Gate: OR
 glyph.OrG.desc=A binary OR gate
@@ -129,4 +130,8 @@ glyphSetting.BitwiseOperatorBehaviorOperation.enum.NOT=~A
 glyphSetting.BitwiseOperatorBehaviorOperation.enum.LeftShift=A << B
 glyphSetting.BitwiseOperatorBehaviorOperation.enum.SignedRightShift=A >> B
 glyphSetting.BitwiseOperatorBehaviorOperation.enum.UnsignedRightShift=A >>> B
+glyphSetting.KeypadBehaviorTime.name=Hold for
+glyphSetting.KeypadBehaviorTime.desc=The amount of time in seconds the signal will be hold
+glyphSetting.KeypadBehaviorCode.name=Code
+glyphSetting.KeypadBehaviorCode.desc=The code to type to send a signal, numbers only
 

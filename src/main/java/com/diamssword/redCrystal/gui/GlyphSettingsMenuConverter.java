@@ -60,8 +60,20 @@ public class GlyphSettingsMenuConverter<T> {
 		codec.getEntries().forEach((k, v) -> {
 			for(BuilderField<T, ?> f : v) {
 				if(canShowFieldFn.apply(f.getCodec().getKey())) {
-					var str = codecFieldConverter(f);
-					builder.appendInline("#" + key, str);
+					boolean can = true;
+					var vals = f.getValidators();
+					if(vals != null) {
+						for(Validator<?> val : vals) {
+							if(val instanceof GlyphSettingsValidators.HiddenSettingValidator<?>) {
+								can = false;
+								break;
+							}
+						}
+					}
+					if(can) {
+						var str = codecFieldConverter(f);
+						builder.appendInline("#" + key, str);
+					}
 				}
 			}
 		});
@@ -120,6 +132,12 @@ public class GlyphSettingsMenuConverter<T> {
 				var bl = true;
 				if(field.getValidators() != null) {
 					for(Validator<?> validator : field.getValidators()) {
+
+						if(validator instanceof GlyphSettingsValidators.PassCodeValidator keySel && asset != null) {
+							content.append(stringCodeField(field, keySel.maxChars, s -> setValue(field, s)));
+							bl = false;
+							break;
+						}
 						if(validator instanceof GlyphSettingsValidators.MapKeySelector<?> keySel && asset != null) {
 							content.append(keyMapSelect(field, keySel.keysProvider.apply(asset), s -> setValue(field, s)));
 							bl = false;
@@ -180,6 +198,23 @@ public class GlyphSettingsMenuConverter<T> {
 		}
 		div.append(content).append("}");
 		return div.toString();
+	}
+
+	private String stringCodeField(BuilderField<T, ?> field, int maxSize, Consumer<String> onChange) {
+		var id = binder.getCompId();
+		binder.bindEvent(id, "#" + id + ".Value", (s, builder) -> {
+
+			String numbersOnly = s.replaceAll("[^0-9]", "");
+			numbersOnly = numbersOnly.substring(0, Math.min(maxSize, numbersOnly.length()));
+			builder.set("#" + id + ".Value", numbersOnly);
+			onChange.accept(numbersOnly);
+		}, String.class);
+		var content = new StringBuilder("TextField #").append(id).append(" {Anchor:(Width:180);Value:\"").append(getValue(field, String.class).orElse("")).append("\";}");
+
+		binder.setStyle(id, "DefaultInputFieldStyle");
+		binder.setStyle(id, "PlaceholderStyle", "DefaultInputFieldPlaceholderStyle");
+		binder.setStyle(id, "Background", "InputBoxBackground");
+		return content.toString();
 	}
 
 	private String keyMapSelect(BuilderField<T, ?> field, Set<String> keys, Consumer<String> onChange) {
