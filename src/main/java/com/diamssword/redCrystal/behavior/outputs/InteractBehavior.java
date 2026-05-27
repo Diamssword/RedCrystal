@@ -22,6 +22,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Int
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.joml.Vector3i;
 
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 		holder.ensureComponent(Intangible.getComponentType());
 		var ent = new FakeLivingEntity();
 		holder.addComponent(FakeLivingEntity.getElementType(), ent);
-		holder.putComponent(InteractionModule.get().getInteractionManagerComponent(), new InteractionManager(ent, null, new InteractionSimulationHandler()));
+		holder.putComponent(InteractionModule.get().getInteractionManagerComponent(), new InteractionManager(null, new InteractionSimulationHandler()));
 		res.put("interactor", holder);
 		return res;
 	}
@@ -55,7 +56,8 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 	public void onSignalChange(short input, short oldValue, short value) {
 		if(oldValue == value)
 			return;
-		var block = getWorld().getBlockType(this.parent.getParent().getPosition());
+		var pos = this.parent.getParent().getPosition();
+		var block = getWorld().getBlockType(new Vector3i(pos.x, pos.y, pos.z));
 		var map = block.getInteractions();
 		if(map != null && map.containsKey(InteractionType.Use)) {
 
@@ -65,7 +67,6 @@ public class InteractBehavior extends RedCompBehavior<BehaviorAsset> {
 				if(ent != null && ent.isValid()) {
 					var manager = ent.getStore().getComponent(ent, InteractionModule.get().getInteractionManagerComponent());
 					InteractionContext ctx = InteractionContext.forInteraction(manager, ent, InteractionType.Use, ent.getStore());
-					var pos = this.parent.getParent().getPosition();
 					ctx.getMetaStore().putMetaObject(Interaction.TARGET_BLOCK, new BlockPosition(pos.x, pos.y, pos.z));
 					getWorld().execute(() -> {
 						try {

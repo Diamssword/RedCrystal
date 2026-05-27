@@ -10,7 +10,6 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
@@ -24,6 +23,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.BlockComponentChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.joml.Vector3i;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
@@ -53,8 +53,9 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 			var comp = getBlockState(world, targetBlock.x, targetBlock.y, targetBlock.z);
 			tryRemoveRune(world, comp, client.blockFace, context);
 			if(context.getState().state == InteractionState.Finished) {
-				RedWandTool.playSound("Break", targetBlock, context.getEntity(), commandBuffer);
-				RedWandTool.playParticle(targetBlock, client.blockFace, commandBuffer);
+				var targetBlockProtocol = new com.hypixel.hytale.protocol.Vector3i(targetBlock.x, targetBlock.y, targetBlock.z);
+				RedWandTool.playSound("Break", targetBlockProtocol, context.getEntity(), commandBuffer);
+				RedWandTool.playParticle(targetBlockProtocol, client.blockFace, commandBuffer);
 
 			}
 		} else if(stack != null) {
@@ -69,8 +70,9 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 						}
 
 						context.getState().state = InteractionState.Finished;
-						RedWandTool.playParticle(targetBlock, client.blockFace, commandBuffer);
-						RedWandTool.playSound("Place", targetBlock, player.getReference(), commandBuffer);
+						var targetBlockProtocol = new com.hypixel.hytale.protocol.Vector3i(targetBlock.x, targetBlock.y, targetBlock.z);
+						RedWandTool.playParticle(targetBlockProtocol, client.blockFace, commandBuffer);
+						RedWandTool.playSound("Place", targetBlockProtocol, player.getReference(), commandBuffer);
 					} else {
 						var element = state.getElement(client.blockFace);
 						if(element != null) {
@@ -173,13 +175,13 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 				redState = new RedElementState();
 				blockEntity.addComponent(RedElementState.getComponent(), redState);
 				world.getChunkStore().getStore().addEntity(blockEntity, AddReason.SPAWN);
-				redState.setPosition(new Vector3i(x, y, z), chunkRef);
+				redState.setPosition(new com.hypixel.hytale.protocol.Vector3i(x, y, z), chunkRef);
 				return redState;
 			} else {
 				var red = world.getChunkStore().getStore().getComponent(blockRef, RedElementState.getComponent());
 				if(red == null) {
 					red = world.getChunkStore().getStore().ensureAndGetComponent(blockRef, RedElementState.getComponent());
-					red.setPosition(new Vector3i(x, y, z), chunkRef);
+					red.setPosition(new com.hypixel.hytale.protocol.Vector3i(x, y, z), chunkRef);
 				}
 				return red;
 			}

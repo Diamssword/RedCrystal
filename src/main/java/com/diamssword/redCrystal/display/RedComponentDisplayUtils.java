@@ -4,12 +4,7 @@ import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.math.matrix.Matrix4d;
 import com.hypixel.hytale.math.shape.Box;
-import com.hypixel.hytale.math.vector.*;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.protocol.packets.player.DisplayDebug;
 import com.hypixel.hytale.server.core.HytaleServer;
@@ -24,10 +19,15 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.PlayerUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.math.vector.Rotation3f;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.joml.Matrix4d;
+import org.joml.Vector2d;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 public class RedComponentDisplayUtils {
 
@@ -62,11 +62,12 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static TransformComponent getCenteredTransform(Vector3i position, BlockFace face, Vector2d offset) {
-		return new TransformComponent(getCenteredPosition(position, face, offset), FacingUtil.facingToRotation(face));
+		var rot = FacingUtil.facingToRotation(face);
+		return new TransformComponent(getCenteredPosition(position, face, offset), new Rotation3f(rot.x, rot.y, rot.z));
 	}
 
 	public static Vector3d getCenteredPosition(Vector3i position, BlockFace face, Vector2d offset) {
-		return position.toVector3d().clone().add(0.5, 0.5, 0.5).clone().add(FacingUtil.facingToDir(face, 0.51, offset.x, offset.y));
+		return new Vector3d(position.x + 0.5, position.y + 0.5, position.z + 0.5).add(FacingUtil.facingToDir(face, 0.51, offset.x, offset.y));
 	}
 
 	public static Vector3d getIOPosition(short index, RedCompBehavior behavior, boolean isOutput) {
@@ -193,18 +194,19 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static DisplayDebug getBeamPacket(@Nonnull Vector3d position, @Nonnull Vector3d direction, @Nonnull Vector3f color, float time, float scale, boolean fade) {
-		Vector3d directionClone = direction.clone();
-		Matrix4d tmp = new Matrix4d();
+		Vector3d directionClone = new Vector3d(direction);
 		Matrix4d matrix = new Matrix4d();
 		matrix.identity();
 		matrix.translate(position);
 		double angleY = Math.atan2(directionClone.z, directionClone.x);
-		matrix.rotateAxis(angleY + (Math.PI / 2), 0.0, 1.0, 0.0, tmp);
+		matrix.rotateY(angleY + (Math.PI / 2));
 		double angleX = Math.atan2(Math.sqrt(directionClone.x * directionClone.x + directionClone.z * directionClone.z), directionClone.y);
-		matrix.rotateAxis(angleX, 1.0, 0.0, 0.0, tmp);
+		matrix.rotateX(-angleX);
 		matrix.translate(0.0, directionClone.length() * 0.5, 0.0);
 		matrix.scale(scale, directionClone.length(), scale);
-		return new DisplayDebug(DebugShape.Cylinder, matrix.asFloatData(), new com.hypixel.hytale.protocol.Vector3f(color.x, color.y, color.z), time, buildFlags(fade), null, 0.8f);
+		float[] matrixData = new float[16];
+		matrix.get(matrixData);
+		return new DisplayDebug(DebugShape.Cylinder, matrixData, color, time, buildFlags(fade), null, 0.8f);
 
 	}
 
@@ -228,14 +230,15 @@ public class RedComponentDisplayUtils {
 
 	public static void drawBeam(Store<EntityStore> store, Vector3d from, Vector3d to, Ref<EntityStore> player) {
 
-		Vector3d relative = new Vector3d().assign(to).subtract(from);  // to - from
+		Vector3d relative = new Vector3d(to).sub(from);  // to - from
 		//Vector3f rotation = Vector3f.lookAt(relative);  // Or pass result Vector3f
 		//SpatialResource<Ref<EntityStore>, EntityStore> playerSpatialResource = store.getResource(EntityModule.get().getPlayerSpatialResourceType());
 		//ObjectList<Ref<EntityStore>> playerRefs = SpatialResource.getThreadLocalReferenceList();
 		//playerSpatialResource.getSpatialStructure().collect(from, 75.0, playerRefs);
-		Vector3d relativeTargetOffset = new Vector3d(from.x - to.x, from.y - to.y, from.z - to.z);
-		var rotation = Vector3f.lookAt(relativeTargetOffset.negate());
+		Vector3d relativeTargetOffset = new Vector3d(from.x - to.x, from.y - to.y, from.z - to.z).negate();
+		float yaw = (float) Math.atan2(relativeTargetOffset.z, relativeTargetOffset.x);
+		float pitch = -(float) Math.atan2(Math.sqrt(relativeTargetOffset.x * relativeTargetOffset.x + relativeTargetOffset.z * relativeTargetOffset.z), relativeTargetOffset.y);
 
-		ParticleUtil.spawnParticleEffect("Test", from.x, from.y, from.z, (float) (Math.toRadians(90) + rotation.y), rotation.z, rotation.x, 0.1f, null, null, List.of(player), store);
+		ParticleUtil.spawnParticleEffect("Test", from.x, from.y, from.z, (float) (Math.toRadians(90) + yaw), pitch, 0f, 0.1f, null, null, List.of(player), store);
 	}
 }

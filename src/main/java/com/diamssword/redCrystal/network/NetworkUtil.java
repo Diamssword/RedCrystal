@@ -5,7 +5,6 @@ import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedEntityHiddenComponent;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.protocol.packets.entities.EntityUpdates;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;

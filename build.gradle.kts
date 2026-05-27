@@ -15,9 +15,7 @@ repositories {
 
 }
 
-dependencies {
-    implementation("com.buuz135:MultipleHUD:1.0.7")
-}
+dependencies {}
 tasks.jar {
     archiveBaseName.set("RedCrystal")
     archiveVersion.set(modVersion)

@@ -1,26 +1,20 @@
 package com.diamssword.redCrystal.behavior.inputs;
 
-import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel;
-import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
-import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSwitchModels;
 import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionType;
-import com.hypixel.hytale.server.core.asset.type.model.config.Model;
-import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
-import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.Interactable;
-import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.interaction.Interactions;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.math.vector.Rotation3f;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;
@@ -65,7 +59,7 @@ public class VariatorBehavior extends RedCompBehaviorWithModel<BehaviorAssetWith
 				setInternalState("variator", st);
 				var trans = entity.getStore().getComponent(entity, TransformComponent.getComponentType());
 				var rot = FacingUtil.facingToRotationWithTilt(this.parent.getFace(), rotationBase * st);
-				trans.setRotation(rot);
+				trans.setRotation(new Rotation3f(rot.x, rot.y, rot.z));
 				execute(() -> {entity.getStore().replaceComponent(entity, TransformComponent.getComponentType(), trans);});
 			} else if(action == InteractType.Use) {
 				onMainRuneInteract(player, entity, context, action);
@@ -82,7 +76,7 @@ public class VariatorBehavior extends RedCompBehaviorWithModel<BehaviorAssetWith
 		short st = getInternalState("variator");
 		var rot = FacingUtil.facingToRotationWithTilt(this.parent.getFace(), rotationBase * st);
 		var trans = holder.getComponent(TransformComponent.getComponentType());
-		trans.setRotation(rot);
+		trans.setRotation(new Rotation3f(rot.x, rot.y, rot.z));
 		holder.ensureComponent(Interactable.getComponentType());
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("variator", (short) 0, this.parent));
 		Interactions interactions = new Interactions();

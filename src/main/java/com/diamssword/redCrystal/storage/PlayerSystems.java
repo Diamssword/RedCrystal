@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.joml.Vector3d;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +34,8 @@ public class PlayerSystems {
 				if(tool.isToolEquiped() && tool.linkingState.startedLink != null) {
 					var model = archetypeChunk.getComponent(index, ModelComponent.getComponentType());
 					var vec1 = RedComponentDisplayUtils.getIOPosition(tool.linkingState.startedLink.index, tool.linkingState.startedLink.source.getBehavior(), tool.linkingState.startedLink.output);
-					var vec2 = trans.getPosition().clone();
+					var basePos = trans.getPosition();
+					var vec2 = new Vector3d(basePos.x, basePos.y, basePos.z);
 					if(model != null) {
 						vec2.add(0, model.getModel().getBoundingBox().height() / 2, 0);
 					}

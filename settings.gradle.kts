@@ -16,10 +16,8 @@ plugins {
 // Create a folder named "common", then configure details with `common { }`
 
 hytale {
-
     usePatchline("release")
-    useVersion("latest")
-
+    useVersion("0.5.1")
     repositories {
         // Any external repositories besides: MavenLocal, MavenCentral, HytaleMaven, and CurseMaven
     }

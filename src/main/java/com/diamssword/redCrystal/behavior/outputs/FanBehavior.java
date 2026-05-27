@@ -14,9 +14,6 @@ import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.math.shape.Box;
-import com.hypixel.hytale.math.vector.Vector2d;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
@@ -33,6 +30,9 @@ import com.hypixel.hytale.server.core.modules.entity.item.ItemPhysicsComponent;
 import com.hypixel.hytale.server.core.modules.interaction.InteractionModule;
 import com.hypixel.hytale.server.core.modules.interaction.InteractionSimulationHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
+import org.joml.Vector2d;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.modules.physics.util.PhysicsBodyState;
@@ -83,7 +83,7 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 						if(trans != null) {
 							//item physic completely stop item when it's on top of a block, we prevent that by moving in up a bit if it is resting on a block
 							if(it.collisionResult != null)
-								trans.teleportPosition(trans.getPosition().clone().add(0, 0.1, 0));
+								trans.teleportPosition(new Vector3d(trans.getPosition()).add(0, 0.1, 0));
 						}
 					}
 					dir.add(0, 0.2, 0);
@@ -98,8 +98,8 @@ public class FanBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behav
 	public List<Ref<EntityStore>> getEntities(short value) {
 		var rot = FacingUtil.facingToDir(this.parent.getFace(), (maxDistance / (float) MAX) * value, 1, 1);
 		var base = RedComponentDisplayUtils.getCenteredPosition(parent.getParent().getPosition(), parent.getFace(), new Vector2d(-0.5, -0.5));
-		var p1 = base.clone();
-		var p2 = base.clone().add(rot.clone());
+		var p1 = new Vector3d(base);
+		var p2 = new Vector3d(base).add(rot);
 		var center = CollideUtil.getBoxCenter(new Box(p1, p2));
 		var targ = TargetUtil.getAllEntitiesInSphere(center, maxDistance * 2, getWorld().getEntityStore().getStore());
 		SpatialResource<Ref<EntityStore>, EntityStore> entitySpatialResource = getWorld().getEntityStore().getStore().getResource(EntityModule.get().getItemSpatialResourceType());
