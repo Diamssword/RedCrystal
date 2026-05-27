@@ -8,8 +8,8 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.protocol.Vector3i;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 

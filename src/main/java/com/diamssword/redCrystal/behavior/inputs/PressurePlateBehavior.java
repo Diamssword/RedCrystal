@@ -1,7 +1,7 @@
 package com.diamssword.redCrystal.behavior.inputs;
 
 import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel;
-import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithSettings;
+import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel.PickedModelSettings;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSwitchModels;
@@ -10,9 +10,7 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.RemoveReason;
 import com.hypixel.hytale.component.spatial.SpatialResource;
-import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.modules.entity.EntityModule;
@@ -21,6 +19,7 @@ import com.hypixel.hytale.server.core.modules.entity.component.TransformComponen
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.joml.Vector3d;
 
 import java.util.List;
 import java.util.Map;

@@ -13,11 +13,10 @@ import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.spatial.SpatialResource;
-import com.hypixel.hytale.math.vector.Vector2d;
-import com.hypixel.hytale.math.vector.Vector3f;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.BlockParticleEvent;
+import com.hypixel.hytale.protocol.Vector3i;
+import com.hypixel.hytale.math.vector.Rotation3f;
 import com.hypixel.hytale.server.core.asset.type.blockparticle.config.BlockParticleSet;
 import com.hypixel.hytale.server.core.asset.type.soundset.config.SoundSet;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -29,6 +28,8 @@ import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.bson.BsonDocument;
+import org.joml.Vector2d;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class RedWandTool {
 			.add()
 			.append(new KeyedCodec<>("GlobalSettings", GlobalGlyphSettings.CODEC), (a, b) -> a.mainSettings = b, a -> a.mainSettings)
 			.add()
-			.append(new KeyedCodec("GlyphsSpecificSettings", new MapCodec(new BsonDocumentCodec(), BsonDocument::new, false)), (a, b) -> a.glyphSpecificSettings = b, a -> a.glyphSpecificSettings)
+			.append(new KeyedCodec<>("GlyphsSpecificSettings", new MapCodec(new BsonDocumentCodec(), BsonDocument::new, false)), (a, b) -> a.glyphSpecificSettings = b, a -> a.glyphSpecificSettings)
 			.add()
 			.build();
 	private String selectedGlyph;
@@ -131,7 +132,7 @@ public class RedWandTool {
 	public static Holder<EntityStore> dropDust(ComponentAccessor<EntityStore> accessor, int count, Vector3i blockPos, BlockFace face) {
 
 		var vec = RedComponentDisplayUtils.getCenteredPosition(blockPos, face, new Vector2d(0, 0));
-		return ItemComponent.generateItemDrop(accessor, new ItemStack("RedCrystal_Red_Sliver", count), vec, new Vector3f(), 0, 0, 0);
+		return ItemComponent.generateItemDrop(accessor, new ItemStack("RedCrystal_Red_Sliver", count), vec, new Rotation3f(), 0, 0, 0);
 	}
 
 	public static void playParticle(Vector3i at, BlockFace face, ComponentAccessor<EntityStore> accessor) {
@@ -140,7 +141,7 @@ public class RedWandTool {
 		List<Ref<EntityStore>> playerRefs = SpatialResource.getThreadLocalReferenceList();
 		var position = RedComponentDisplayUtils.getCenteredPosition(at, face, new Vector2d(0, 0));
 		playerSpatialResource.getSpatialStructure().collect(position, 75.0F, playerRefs);
-		var particles = BlockParticleSet.getAssetMap().getAsset(accessor.getExternalData().getWorld().getBlockType(at).getBlockParticleSetId());
+		var particles = BlockParticleSet.getAssetMap().getAsset(accessor.getExternalData().getWorld().getBlockType(new org.joml.Vector3i(at.x, at.y, at.z)).getBlockParticleSetId());
 		if(particles != null) {
 			var id = particles.getParticleSystemIds().get(BlockParticleEvent.Break);
 			if(id != null)

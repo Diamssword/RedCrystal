@@ -12,15 +12,15 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Optional;
 
 public class WandHud extends CustomUIHud {
 	private final PlayerDatas playerDatas;
 	private final Player player;
 	public static HudManager manager = new HudManager();
+	public static final String HUD_KEY = "RedCrystalWandHud";
 
 	public WandHud(PlayerRef player, PlayerDatas datas) {
-		super(player);
+		super(player, HUD_KEY);
 		this.playerDatas = datas;
 		this.player = player.getReference().getStore().getComponent(player.getReference(), Player.getComponentType());
 	}

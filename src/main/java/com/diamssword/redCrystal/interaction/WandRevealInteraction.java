@@ -5,7 +5,6 @@ import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.vector.Transform;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
@@ -13,6 +12,7 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Sim
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.TargetUtil;
+import org.joml.Vector3i;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import java.util.*;

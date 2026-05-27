@@ -1,7 +1,8 @@
 package com.diamssword.redCrystal.worldInteraction;
 
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+
 import com.hypixel.hytale.protocol.BlockFace;
 
 public class FacingUtil {

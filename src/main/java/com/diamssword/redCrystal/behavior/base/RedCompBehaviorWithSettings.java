@@ -7,10 +7,6 @@ import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import org.bson.BsonDocument;
 
-import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class RedCompBehaviorWithSettings<T extends AbstractBehaviorAsset<?>, J> extends RedCompBehavior<T> {

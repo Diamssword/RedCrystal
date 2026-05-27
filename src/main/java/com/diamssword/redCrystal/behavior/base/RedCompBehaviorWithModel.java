@@ -7,9 +7,6 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 
 import javax.annotation.Nullable;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public abstract class RedCompBehaviorWithModel<T extends BehaviorAssetWithSwitchModels, J extends RedCompBehaviorWithModel.PickedModelSettings> extends RedCompBehaviorWithSettings<T, J> {
 	public RedCompBehaviorWithModel(String id, RedElement parent, T asset) {

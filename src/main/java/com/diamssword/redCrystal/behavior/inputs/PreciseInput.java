@@ -11,7 +11,6 @@ import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSwitchModels;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.math.vector.Vector2d;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
@@ -26,6 +25,7 @@ import com.hypixel.hytale.server.core.modules.entity.component.TransformComponen
 import com.hypixel.hytale.server.core.modules.interaction.Interactions;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import org.joml.Vector2d;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.Map;

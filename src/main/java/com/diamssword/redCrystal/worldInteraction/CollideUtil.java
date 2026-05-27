@@ -3,19 +3,19 @@ package com.diamssword.redCrystal.worldInteraction;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.shape.Box;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.math.vector.Vector3dUtil;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.modules.collision.CollisionMath;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
-import com.hypixel.hytale.server.core.modules.entity.hitboxcollision.HitboxCollision;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import java.util.List;
+
+import org.joml.Vector3d;
 
 public class CollideUtil {
 
@@ -23,7 +23,7 @@ public class CollideUtil {
 		//var length1 = FacingUtil.isNegative(dir) ? -length : length;
 		var ray = FacingUtil.facingToDir(dir, length, 0, 0);
 		for(var i = 0; i < length; i++) {
-			var bpos = pos.clone().add(FacingUtil.facingToDir(dir, i, 0, 0)).toVector3i();
+			var bpos = Vector3dUtil.toVector3i(pos.add(FacingUtil.facingToDir(dir, i, 0, 0)));
 			var bid = world.getBlock(bpos);
 			if(bid != 0) {
 				BlockType type = BlockType.getAssetMap().getAsset(bid);
@@ -50,7 +50,7 @@ public class CollideUtil {
 	public static List<Ref<EntityStore>> filterEntitiesInBox(Store<EntityStore> store, List<Ref<EntityStore>> entities, Box box) {
 		var corrected = correctBoxBounds(box);
 		var center = getBoxCenter(corrected);
-		var normalized = new Box(corrected.min.clone().subtract(center.clone()), corrected.max.clone().subtract(center.clone()));
+		var normalized = new Box(corrected.min.sub(center), corrected.max.sub(center));
 		var filtered = entities.stream().filter(e -> {
 			TransformComponent transformComponent = store.getComponent(e, TransformComponent.getComponentType());
 			BoundingBox boundingBoxComponent = store.getComponent(e, BoundingBox.getComponentType());
