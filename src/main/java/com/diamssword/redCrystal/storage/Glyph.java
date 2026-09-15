@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class Glyph implements JsonAssetWithMap<String, DefaultAssetMap<String, Glyph>>, Comparable<Glyph> {
 	public static final CommonAssetValidator ICON_GLYPH_VALIDATOR = new CommonAssetValidator("png", "UI/Custom");
-	public static final Map<String, Integer> CategoryWheight = Map.of("Rune", 100, "Hex", 99, "Sigil", 98);
+	public static final Map<String, Integer> CategoryWheight = Map.of("Rune", 100, "Hex", 99, "Sigil", 98, "Legacy", 97);
 	private static final AssetBuilderCodec.Builder<String, Glyph> CODEC_BUILDER = AssetBuilderCodec.builder(
 					Glyph.class,
 					Glyph::new,

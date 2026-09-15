@@ -138,7 +138,7 @@ public class GlyphMenu extends InteractiveCustomUIPage<GlyphMenu.MenuEventData> 
 			List<Glyph> ls = new ArrayList<>();
 			for(int j = 0; j < contentSize; j++) {
 				var asset = assets.poll();
-				if(asset != null)
+				if(asset != null && !asset.getCategorie().equals("Legacy"))
 					ls.add(asset);
 			}
 			updateGlyphLine(i, ls, builder, event);

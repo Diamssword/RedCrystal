@@ -1,0 +1,29 @@
+{
+  "BehaviorId": {
+    "Type": "Projectile",
+    "Interactions": {
+      "Primary": {
+        "Interactions": [
+          {
+            "Type": "Projectile",
+            "Config": "RedCrystalFireball"
+          }
+        ]
+      }
+    },
+    "Cooldown": 2
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Interact.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Interact@2x.png",
+  "Outputs": 0,
+  "Inputs": 1,
+  "TranslationProperties": {
+    "Name": "RedCrystal.glyph.Fireball.name",
+    "Description": "RedCrystal.glyph.Fireball.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Sigil"
+    ]
+  }
+}

@@ -65,7 +65,7 @@ public class LightBehavior extends RedCompBehaviorWithSettings<BehaviorAssetWith
 						for(int i = 0; i < asset.particles.length; i++) {
 							var base = asset.particles[i];
 							if(base != null) {
-								particles[i] = new ModelParticle(base.getSystemId(), base.getTargetEntityPart(), base.getTargetNodeName(), col, base.getScale() * scale, base.getPositionOffset(), base.getRotationOffset(), base.isDetachedFromModel());
+								particles[i] = new ModelParticle(base.getSystemId(), base.getTargetEntityPart(), base.getTargetNodeName(), col, base.getScale() * scale, base.getPositionOffset(), base.getRotationOffset(), base.isDetachedFromModel(), base.isClearParticlesOnRemove());
 							}
 						}
 					}

@@ -5,7 +5,7 @@
   },
   "GlyphTexture": "Items/RedCrystal/Glyphs/CalcDivide.png",
   "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/CalcDivide@2x.png",
-  "Outputs": 1,
+  "Outputs": 2,
   "Inputs": 2,
   "TranslationProperties": {
     "Name": "RedCrystal.glyph.CalcDivide.name",

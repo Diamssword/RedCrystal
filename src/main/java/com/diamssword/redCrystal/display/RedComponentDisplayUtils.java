@@ -5,6 +5,7 @@ import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.worldInteraction.FacingUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.matrix.Matrix4dUtil;
+import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import org.joml.*;
 import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.vector.*;
@@ -45,6 +46,7 @@ public class RedComponentDisplayUtils {
 				case None, North, South -> curr.clone();
 				case East, West -> new Box(curr.min.z, curr.min.y, curr.min.x, curr.max.z, curr.max.y, curr.max.x);
 			});
+
 			return ModelUtils.withBB(model, modified);
 		}
 		return model;
@@ -57,6 +59,7 @@ public class RedComponentDisplayUtils {
 	public static Holder<EntityStore> createMinimalDisplayEntity(EntityStore entityStore, Vector3i position, BlockFace face, Vector2d offset) {
 		Holder<EntityStore> holder = EntityStore.REGISTRY.newHolder();
 		holder.addComponent(TransformComponent.getComponentType(), getCenteredTransform(position, face, offset));
+		holder.putComponent(Velocity.getComponentType(), new Velocity());
 		holder.ensureComponent(UUIDComponent.getComponentType());
 		holder.addComponent(NetworkId.getComponentType(), new NetworkId(entityStore.takeNextNetworkId()));
 		return holder;
@@ -75,8 +78,8 @@ public class RedComponentDisplayUtils {
 	}
 
 	public static Vector3d getInputPosition(short index, RedCompBehavior<?> behavior) {
-		var spacing = behavior.InputsCount() < 6 ? 0.2f : 0.1f;
-		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.InputsCount() - 1) / 2f) * spacing, -0.35));
+		var spacing = behavior.inputsCount() < 6 ? 0.2f : 0.1f;
+		return getCenteredPosition(behavior.parent.getParent().getPosition(), behavior.parent.getFace(), new Vector2d((index - (behavior.inputsCount() - 1) / 2f) * spacing, -0.35));
 	}
 
 	public static Vector3d getOutputPosition(short index, RedCompBehavior<?> behavior) {
@@ -105,7 +108,7 @@ public class RedComponentDisplayUtils {
 		var visibility = element.getSettings().getVisibility();
 		if(element.getBehavior() != null) {
 			var maxO = element.getBehavior().outputsCount();
-			var maxI = element.getBehavior().InputsCount();
+			var maxI = element.getBehavior().inputsCount();
 			var res = new DisplayEntityGroupHolder(maxI, maxO);
 			for(short i = 0; i < maxO; i++) {
 				var spacing = maxO < 6 ? 0.2f : 0.1f;

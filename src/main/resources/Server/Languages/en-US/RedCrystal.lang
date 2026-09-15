@@ -53,10 +53,10 @@ glyph.CalcSubtract.name=Math: Subtract
 glyph.CalcSubtract.desc=Make a subtract operation\nA-B=C\n(A is the left input,B is the right input)
 glyph.CalcAdd.name=Math: Add
 glyph.CalcAdd.desc=Add the 2 inputs together\nA+B=C\n(A is the left input,B is the right input)
-glyph.CalcMod.name=Math: Modulo
-glyph.CalcMod.desc=Make a modulo operation\nA%B=C\n(A is the left input,B is the right input)
+glyph.CalcMod.name=(Legacy) Math: Modulo
+glyph.CalcMod.desc=THIS HEX AS BEEN REMOVED IN FAVOR OF THE 'DIVIDE' HEX \n Make a modulo operation\nA%B=C\n(A is the left input,B is the right input)
 glyph.CalcDivide.name=Math: Divide
-glyph.CalcDivide.desc=Make a divide operation\nA/B=C\n(A is the left input,B is the right input)
+glyph.CalcDivide.desc=Make a divide operation\nA/B=C\n(A is the left input,B is the right input)\nLeft output is the division result\nRight Output is the modulo result (A%B=C)
 glyph.CalcMultiply.name=Math: Multiply
 glyph.CalcMultiply.desc=Make a multiply operation\nA*B=C\n(A is the left input,B is the right input)
 glyph.Delayer.name=Delayer

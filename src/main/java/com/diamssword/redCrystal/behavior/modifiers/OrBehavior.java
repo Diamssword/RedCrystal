@@ -19,7 +19,7 @@ public class OrBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behavi
 		if(isAbsolute) {
 			int on = 0;
 			short maxV = MIN;
-			for(int i = 0; i < InputsCount(); i++) {
+			for(int i = 0; i < inputsCount(); i++) {
 				var v1 = getInputState(i);
 				if(v1 > MIN) {
 					if(v1 > maxV)
@@ -39,7 +39,7 @@ public class OrBehavior extends RedCompBehavior<BehaviorAssetWithSettings.Behavi
 			if(value > MIN)
 				runNextTick(() -> setAllOutput(value));
 			else {
-				for(int i = 0; i < InputsCount(); i++) {
+				for(int i = 0; i < inputsCount(); i++) {
 					if(getInputState(i) > MIN)
 						return;
 				}

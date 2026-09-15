@@ -65,7 +65,6 @@ public class RedElementSystems {
 				redComponent.getAllElements().forEach((f, e) -> {
 					if(e.isValid())
 						e.getBehavior().displayTick();
-
 				});
 			});
 		}

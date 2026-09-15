@@ -93,7 +93,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 			getStateManager().getOutput()[index] = value;
 	}
 
-	public short InputsCount() {
+	public short inputsCount() {
 		return parent.getAsset().getInputs();
 	}
 
@@ -103,7 +103,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 
 	public void setInput(short input, short value) {
-		if(input < InputsCount()) {
+		if(input < inputsCount()) {
 			if(getInputState(input) != value) {
 				var old = getInputState(input);
 				setInputState(input, value);
@@ -155,9 +155,9 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 	}
 
 	protected void updateLightState() {
-		var state = new DisplayState(InputsCount(), outputsCount());
+		var state = new DisplayState(inputsCount(), outputsCount());
 		var bl = false;
-		for(int i = 0; i < InputsCount(); i++) {
+		for(int i = 0; i < inputsCount(); i++) {
 			state.setInput((short) i, getInputState(i) > MIN);
 
 		}
@@ -173,7 +173,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 		if(parent.getSettings().getVisibility() == RedEntityHiddenComponent.Visibility.Pulse) {
 			timers.add(() -> {
-				var st = new DisplayState(InputsCount(), outputsCount());
+				var st = new DisplayState(inputsCount(), outputsCount());
 				st.setAll(false);
 				st.updateEntities(this.parent.getEntities());
 			}, 10);
@@ -315,7 +315,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	public List<Short> getInputValues() {
 		List<Short> res = new ArrayList<>();
-		for(short i = 0; i < this.InputsCount(); i++) {
+		for(short i = 0; i < this.inputsCount(); i++) {
 			if(i < getStateManager().getInput().length)
 				res.add(this.getStateManager().getInput()[i]);
 			else
@@ -326,7 +326,7 @@ public abstract class RedCompBehavior<T extends AbstractBehaviorAsset<?>> {
 
 	public List<Short> getConnectedInputs() {
 		List<Short> res = new ArrayList<>();
-		for(short i = 0; i < this.InputsCount(); i++) {
+		for(short i = 0; i < this.inputsCount(); i++) {
 			var in = this.parent.getInput(i);
 			if(in != null && in.isValid())
 				res.add(i);

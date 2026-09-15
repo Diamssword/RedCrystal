@@ -1,0 +1,18 @@
+{
+  "BehaviorId": {
+    "Type": "RangeEncoder"
+  },
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Comparator.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Comparator@2x.png",
+  "Outputs": 2,
+  "Inputs": 10,
+  "TranslationProperties": {
+    "Name": "RedCrystal.glyph.RangeEncoder.name",
+    "Description": "RedCrystal.glyph.RangeEncoder.desc"
+  },
+  "Tags": {
+    "Type": [
+      "Hex"
+    ]
+  }
+}

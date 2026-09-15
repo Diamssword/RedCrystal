@@ -10,11 +10,8 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.component.AddReason;
-import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.protocol.BlockFace;
-import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.joml.Vector3i;
 
 import javax.annotation.Nonnull;
@@ -148,7 +145,7 @@ public class RedElement {
 	}
 
 	public boolean setInput(int index, RedElement element, int outIndex, boolean update) {
-		if(behavior != null && index < behavior.InputsCount()) {
+		if(behavior != null && index < behavior.inputsCount()) {
 			if(index >= inputs.length) {
 				inputs = Arrays.copyOf(inputs, index + 1);
 			}

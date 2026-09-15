@@ -35,7 +35,14 @@ public class CalculusBehavior extends RedCompBehavior<BehaviorAssetWithSettings.
 			res = MAX;
 		else if(res < MIN)
 			res = MIN;
-		setAllOutput(res);
+		if(asset.operation == BehaviorAssetWithSettings.BehaviorAssetCalculus.OperationType.DIVIDE && outputsCount() == 2) {
+			setOutput((short) 0, res);
+			if(B > 0)
+				setOutput((short) 1, (short) Math.clamp(A % B, MIN, MAX));
+			else
+				setOutput((short) 1, (short) 0);
+		} else
+			setAllOutput(res);
 	}
 
 }
