@@ -52,7 +52,7 @@ public class KeypadBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSw
 				var bt = parent.getEntities().getOther(name);
 				if(bt != null && bt.isValid()) {
 
-					getModel().switchModel(this, bt, false, 0.6f, (i - 1) + "");
+					getModel().switchModel(bt, false, 0.6f, (i - 1) + "");
 				}
 			}
 		}
@@ -87,10 +87,10 @@ public class KeypadBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSw
 						execute(() -> {
 							var bt = parent.getEntities().getOther("buttonC");
 							if(bt != null && bt.isValid()) {
-								getModel().switchModel(this, bt, false, 0.6f, succ ? "r" : "w");
+								getModel().switchModel(bt, false, 0.6f, succ ? "r" : "w");
 								this.timers.add(() -> {
 									if(bt.isValid())
-										getModel().switchModel(this, bt, false, 0.6f, "");
+										getModel().switchModel(bt, false, 0.6f, "");
 								}, 10);
 							}
 						});

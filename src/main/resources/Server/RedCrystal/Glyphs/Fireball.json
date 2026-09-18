@@ -3,18 +3,24 @@
     "Type": "Projectile",
     "Interactions": {
       "Primary": {
-        "Interactions": [
+        "_ErrorInteractions": [
           {
             "Type": "Projectile",
             "Config": "RedCrystalFireball"
+          }
+        ],
+        "Interactions": [
+          {
+            "Type": "Projectile",
+            "Config": "RedCrystalGlyphFireball"
           }
         ]
       }
     },
     "Cooldown": 2
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Interact.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Interact@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/Fireball.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Fireball@2x.png",
   "Outputs": 0,
   "Inputs": 1,
   "TranslationProperties": {

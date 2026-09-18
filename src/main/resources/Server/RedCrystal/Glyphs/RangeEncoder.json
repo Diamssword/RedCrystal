@@ -2,8 +2,8 @@
   "BehaviorId": {
     "Type": "RangeEncoder"
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Comparator.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Comparator@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/RangeEncoder.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/RangeEncoder@2x.png",
   "Outputs": 2,
   "Inputs": 10,
   "TranslationProperties": {

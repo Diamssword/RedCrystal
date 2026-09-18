@@ -34,22 +34,8 @@ import java.util.concurrent.TimeUnit;
 public class RedComponentDisplayUtils {
 
 
-	public static Model getFlatModel(BlockFace facing) {
-		return modifyBoundingBox(Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Glyph_Flat"), 1f), facing);
-	}
-
-	public static Model modifyBoundingBox(Model model, BlockFace facing) {
-		var curr = model.getBoundingBox();
-		if(curr != null) {
-			var modified = (switch(facing) {
-				case Up, Down -> new Box(curr.min.x, curr.min.z, curr.min.y, curr.max.x, curr.max.z, curr.max.y);
-				case None, North, South -> curr.clone();
-				case East, West -> new Box(curr.min.z, curr.min.y, curr.min.x, curr.max.z, curr.max.y, curr.max.x);
-			});
-
-			return ModelUtils.withBB(model, modified);
-		}
-		return model;
+	public static Model getFlatModel(float scale) {
+		return Model.createScaledModel(ModelAsset.getAssetMap().getAsset("RedCrystal_Glyph_Flat"), scale);
 	}
 
 	public static Holder<EntityStore> createMinimalDisplayEntity(EntityStore entityStore, Vector3i position, BlockFace face) {
@@ -90,7 +76,7 @@ public class RedComponentDisplayUtils {
 
 	public static void createTempRune(EntityStore entityStore, Vector3i position, BlockFace face, RedElement element) {
 		var holder = createMinimalDisplayEntity(entityStore, position, face);
-		var model = ModelUtils.withTexture(getFlatModel(face), element.getAsset().getTexture());
+		var model = ModelUtils.withTexture(getFlatModel(0.5f), element.getAsset().getTexture());
 		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
 		holder.ensureComponent(Intangible.getComponentType());
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("main", (short) 0, element));
@@ -115,7 +101,7 @@ public class RedComponentDisplayUtils {
 				var holder = createMinimalDisplayEntity(entityStore, position, face, new Vector2d((i - (maxO - 1) / 2f) * spacing, 0.35));
 				var disp = new RedEntityHiddenComponent(element, 0.1f, visibility);
 				holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
-				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(getFlatModel(face), "Items/RedCrystal/Glyphs/Output.png")));
+				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(getFlatModel(disp.getVisibleScale()), "Items/RedCrystal/Glyphs/Output.png")));
 				holder.ensureComponent(Interactable.getComponentType());
 				holder.ensureComponent(Intangible.getComponentType());
 				holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(disp.getHiddenScale()));
@@ -130,11 +116,11 @@ public class RedComponentDisplayUtils {
 			for(short i = 0; i < maxI; i++) {
 				var spacing = maxI < 6 ? 0.2f : 0.1f;
 				var holder = createMinimalDisplayEntity(entityStore, position, face, new Vector2d((i - (maxI - 1) / 2f) * spacing, -0.35));
-				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(getFlatModel(face), "Items/RedCrystal/Glyphs/Input.png")));
+				var disp = new RedEntityHiddenComponent(element, 0.1f, visibility);
+				holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(getFlatModel(disp.getVisibleScale()), "Items/RedCrystal/Glyphs/Input.png")));
 				holder.ensureComponent(Interactable.getComponentType());
 				holder.ensureComponent(Intangible.getComponentType());
 				holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("input", i, element));
-				var disp = new RedEntityHiddenComponent(element, 0.1f, visibility);
 				holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
 				holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(disp.getHiddenScale()));
 				Interactions interactions = new Interactions();
@@ -143,10 +129,9 @@ public class RedComponentDisplayUtils {
 				res.setInput(i, holder);
 			}
 			var holder = createMinimalDisplayEntity(entityStore, position, face);
-			var model = ModelUtils.withTexture(getFlatModel(face), element.getAsset().getTexture());
-
-			holder.ensureComponent(Intangible.getComponentType());
 			var disp = new RedEntityHiddenComponent(element, 0.5f, visibility);
+			var model = ModelUtils.withTexture(getFlatModel(disp.getVisibleScale()), element.getAsset().getTexture());
+			holder.ensureComponent(Intangible.getComponentType());
 			holder.addComponent(RedEntityHiddenComponent.getComponentType(), disp);
 			holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("main", (short) 0, element));
 			holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(disp.getHiddenScale()));

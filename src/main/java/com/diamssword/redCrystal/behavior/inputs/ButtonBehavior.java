@@ -4,6 +4,7 @@ import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithModel;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.gui.GlyphSettingsValidators;
+import com.diamssword.redCrystal.interaction.UseRedEntityInteraction;
 import com.diamssword.redCrystal.storage.assets.BehaviorAsset;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
@@ -42,7 +43,7 @@ public class ButtonBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSw
 		if(parent.getEntities() != null) {
 			var plate = parent.getEntities().getOther("button");
 			if(plate != null) {
-				getModel().switchModel(this, plate, false, getSettings().pickedTexture);
+				getModel().switchModel(plate, false, getSettings().pickedTexture);
 			}
 
 		}
@@ -78,7 +79,9 @@ public class ButtonBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSw
 		holder.ensureComponent(Interactable.getComponentType());
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("button", (short) 0, this.parent));
 		Interactions interactions = new Interactions();
-		interactions.setInteractionId(InteractionType.Use, "*UseRedCrystalEntity");
+		//TODO need to mimic the entire interaction system of NPC for hint (located in StateSupport::setInteractable)
+		//interactions.setInteractionHint("server.interactionHints.pickup");
+		interactions.setInteractionId(InteractionType.Use, UseRedEntityInteraction.DEFAULT_ID);
 		holder.addComponent(Interactions.getComponentType(), interactions);
 		res.put("button", holder);
 		return res;

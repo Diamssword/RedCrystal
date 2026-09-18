@@ -5,14 +5,14 @@ import com.diamssword.redCrystal.behavior.base.RedCompBehaviorWithSettings;
 import com.diamssword.redCrystal.display.ModelUtils;
 import com.diamssword.redCrystal.display.RedComponentDisplayUtils;
 import com.diamssword.redCrystal.display.RedEntityLinkComponent;
+import com.diamssword.redCrystal.network.NetworkUtil;
 import com.diamssword.redCrystal.storage.RedElement;
 import com.diamssword.redCrystal.storage.assets.BehaviorAssetWithSettings;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Holder;
-import com.hypixel.hytale.protocol.BlockFace;
-import com.hypixel.hytale.protocol.Color;
-import com.hypixel.hytale.protocol.ColorLight;
+import com.hypixel.hytale.protocol.*;
+import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelParticle;
 import com.hypixel.hytale.server.core.codec.ProtocolCodecs;
 import com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent;
@@ -21,6 +21,7 @@ import com.hypixel.hytale.server.core.modules.entity.component.Intangible;
 import com.hypixel.hytale.server.core.modules.entity.component.ModelComponent;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.joml.Vector3f;
 
 import java.util.Map;
 
@@ -56,7 +57,9 @@ public class LightBehavior extends RedCompBehaviorWithSettings<BehaviorAssetWith
 			var model = ent.getStore().getComponent(ent, ModelComponent.getComponentType());
 			if(model != null)
 				execute(() -> {
-					ent.getStore().ensureComponent(ent, MovementStatesComponent.getComponentType());
+					if(!ent.isValid())
+						return;
+					//	ent.getStore().ensureComponent(ent, MovementStatesComponent.getComponentType());
 					ModelParticle[] particles = new ModelParticle[0];
 					if(light.red > 0 || light.blue > 0 || light.green > 0) {
 						var col = asset.isRGB ? computeRGBColor() : computeColor(getSettings().light, value);
@@ -69,7 +72,14 @@ public class LightBehavior extends RedCompBehaviorWithSettings<BehaviorAssetWith
 							}
 						}
 					}
-					ent.getStore().putComponent(ent, ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withLight(model.getModel(), light, particles)));
+					ModelUpdate update = new ModelUpdate();
+					var modelf = ModelUtils.withLight(model.getModel(), light, particles);
+					update.model = modelf.toPacket();
+					//TODO particles on model is broken for now, might want to role back to model update if hytale fix it someday...
+					NetworkUtil.getPlayersInView(ent).forEach(p -> {
+						NetworkUtil.sendEntityComponentUpdateToPlayer(p.getReference(), ent, null, new ComponentUpdate[]{update});
+					});
+					//ent.getStore().replaceComponent(ent, ModelComponent.getComponentType(), new ModelComponent(modelf));
 				});
 
 		}
@@ -132,9 +142,11 @@ public class LightBehavior extends RedCompBehaviorWithSettings<BehaviorAssetWith
 		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));
 		holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(0.00001f));
 		holder.ensureComponent(Intangible.getComponentType());
-		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(RedComponentDisplayUtils.getFlatModel(facing)));
+		var v = this.getInputValues().get(0);
+		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(RedComponentDisplayUtils.getFlatModel(0.5f), "Items/RedCrystal/Glyphs/Empty.png")));
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("light", (short) 0, this.parent));
 		res.put("light", holder);
+		runNextTick(() -> onSignalChange((short) 0, v, v));
 		return res;
 	}
 

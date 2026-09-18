@@ -54,7 +54,7 @@ public class PressurePlateBehavior extends RedCompBehaviorWithModel<BehaviorAsse
 		if(parent.getEntities() != null) {
 			var plate = parent.getEntities().getOther("plate");
 			if(plate != null) {
-				getModel().switchModel(this, plate, this.pressed, 0.8f, getSettings().hidePlate);
+				getModel().switchModel(plate, this.pressed, 0.8f, getSettings().hidePlate);
 			}
 
 		}
@@ -82,7 +82,7 @@ public class PressurePlateBehavior extends RedCompBehaviorWithModel<BehaviorAsse
 						timers.add(() -> pressed = false, 5);
 					setAllOutput(pressed ? MAX : MIN);
 					if(!getSettings().hidePlate)
-						getModel().switchModel(this, plate, pressed, 0.8f);
+						getModel().switchModel(plate, pressed, 0.8f);
 				}
 			}
 		}

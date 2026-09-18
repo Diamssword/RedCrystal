@@ -1,24 +1,28 @@
 {
-    "Group": "Diamssword",
-    "Name": "RedCrystal",
-    "Version": "0.0.10",
+    "Group": "com.diamssword",
+    "Name": "red_crystal",
+    "Version": "0.1.0",
     "Description": "A powerful way to automatically interact with the world",
     "Authors": [
         {
             "Name": "Diamssword"
         }
     ],
-    "Website": "https://your-plugin-website.com",
+    "Website": "https://www.curseforge.com/hytale/mods/red-crystal",
     "DisabledByDefault": false,
     "IncludesAssetPack": true,
     "Dependencies": {
+        "Hytale:AssetModule": "*",
         "Hytale:InteractionModule": "*",
         "Hytale:EntityModule": "*",
         "Hytale:BlockModule": "*"
     },
     "OptionalDependencies": {
-        "Buuz135:MultipleHUD": "*"
+        
     },
-    "ServerVersion": "2026.03.26-89796e57b",
-    "Main": "com.diamssword.redCrystal.RedCrystalPlugin"
+    "ServerVersion": ">=0.6.6 <0.7.0",
+    "Main": "com.diamssword.redCrystal.RedCrystalPlugin",
+    "UpdateChecker": {
+        "CurseForge": ""
+    }
 }

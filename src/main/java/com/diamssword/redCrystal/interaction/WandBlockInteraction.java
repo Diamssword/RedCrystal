@@ -5,11 +5,14 @@ import com.diamssword.redCrystal.behavior.base.RedCompBehavior;
 import com.diamssword.redCrystal.storage.PlayerDatas;
 import com.diamssword.redCrystal.storage.RedElementState;
 import com.diamssword.redCrystal.wand.RedWandTool;
+import com.hypixel.hytale.builtin.adventure.farming.states.FarmingBlock;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.util.ChunkUtil;
+import com.hypixel.hytale.server.core.modules.block.BlockEntity;
+import com.hypixel.hytale.server.core.universe.world.chunk.environment.EnvironmentChunk;
 import org.joml.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.protocol.InteractionState;
@@ -21,7 +24,6 @@ import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHa
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.chunk.BlockComponentChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -115,74 +117,46 @@ public class WandBlockInteraction extends SimpleBlockInteraction {
 	}
 
 	private static void removeBlockState(World world, int x, int y, int z) {
-		Ref<ChunkStore> chunkRef = world.getChunkStore().getChunkReference(ChunkUtil.indexChunkFromBlock(x, z));
-		if(chunkRef != null) {
-
-			BlockComponentChunk blockComponentChunk = world.getChunkStore().getStore().getComponent(chunkRef, BlockComponentChunk.getComponentType());
-			if(blockComponentChunk != null) {
-				int blockIndexColumn = ChunkUtil.indexBlockInColumn(x, y, z);
-				Ref<ChunkStore> blockRef = blockComponentChunk.getEntityReference(blockIndexColumn);
-				if(blockRef != null) {
-					world.execute(() -> {
-						if(blockRef.getStore().getArchetype(blockRef).asExactQuery().test(Archetype.of(RedElementState.getComponent(), BlockModule.BlockStateInfo.getComponentType()))) {
-							blockRef.getStore().removeEntity(blockRef, RemoveReason.REMOVE);
-						} else {
-							blockRef.getStore().removeComponentIfExists(blockRef, RedElementState.getComponent());
-
-						}
-					});
+		Ref<ChunkStore> blockRef = BlockModule.getBlockEntity(world, x, y, z);
+		if(blockRef != null) {
+			world.execute(() -> {
+				if(blockRef.getStore().getArchetype(blockRef).asExactQuery().test(Archetype.of(RedElementState.getComponent(), BlockModule.BlockStateInfo.getComponentType()))) {
+					blockRef.getStore().removeEntity(blockRef, RemoveReason.REMOVE);
+				} else {
+					blockRef.getStore().removeComponentIfExists(blockRef, RedElementState.getComponent());
 
 				}
-			}
+			});
+
 		}
 	}
 
 	public static RedElementState getBlockState(World world, int x, int y, int z) {
-		Ref<ChunkStore> chunkRef = world.getChunkStore().getChunkReference(ChunkUtil.indexChunkFromBlock(x, z));
-		if(chunkRef == null)
-			return null;
-		BlockComponentChunk blockComponentChunk = world.getChunkStore().getStore().getComponent(chunkRef, BlockComponentChunk.getComponentType());
-		if(blockComponentChunk == null) {
-			return null;
-		} else {
-			int blockIndexColumn = ChunkUtil.indexBlockInColumn(x, y, z);
-			Ref<ChunkStore> blockRef = blockComponentChunk.getEntityReference(blockIndexColumn);
-			if(blockRef == null) {
-				return null;
-			} else {
-				return world.getChunkStore().getStore().getComponent(blockRef, RedElementState.getComponent());
-			}
-		}
+		return BlockModule.getComponent(RedElementState.getComponent(), world, x, y, z);
+
 	}
 
-
 	private RedElementState getOrCreateBlockState(World world, int x, int y, int z) {
-		Ref<ChunkStore> chunkRef = world.getChunkStore().getChunkReference(ChunkUtil.indexChunkFromBlock(x, z));
-		if(chunkRef == null)
-			return null;
-		BlockComponentChunk blockComponentChunk = world.getChunkStore().getStore().getComponent(chunkRef, BlockComponentChunk.getComponentType());
-		if(blockComponentChunk == null) {
-			return null;
+
+		Ref<ChunkStore> blockRef = BlockModule.getBlockEntity(world, x, y, z);
+		RedElementState redState;
+		Ref<ChunkStore> sectionRef = world.getChunkStore().getChunkSectionReferenceAtBlock(x, y, z);
+		if(blockRef == null) {
+			int blockIndex = ChunkUtil.indexBlock(x, y, z);
+			Holder<ChunkStore> blockEntity = ChunkStore.REGISTRY.newHolder();
+			blockEntity.putComponent(BlockModule.BlockStateInfo.getComponentType(), new BlockModule.BlockStateInfo(blockIndex, sectionRef));
+			redState = new RedElementState();
+			blockEntity.addComponent(RedElementState.getComponent(), redState);
+			world.getChunkStore().getStore().addEntity(blockEntity, AddReason.SPAWN);
+			redState.setPosition(new Vector3i(x, y, z), sectionRef);
+			return redState;
 		} else {
-			int blockIndexColumn = ChunkUtil.indexBlockInColumn(x, y, z);
-			Ref<ChunkStore> blockRef = blockComponentChunk.getEntityReference(blockIndexColumn);
-			RedElementState redState;
-			if(blockRef == null) {
-				Holder<ChunkStore> blockEntity = ChunkStore.REGISTRY.newHolder();
-				blockEntity.putComponent(BlockModule.BlockStateInfo.getComponentType(), new BlockModule.BlockStateInfo(blockIndexColumn, chunkRef));
-				redState = new RedElementState();
-				blockEntity.addComponent(RedElementState.getComponent(), redState);
-				world.getChunkStore().getStore().addEntity(blockEntity, AddReason.SPAWN);
-				redState.setPosition(new Vector3i(x, y, z), chunkRef);
-				return redState;
-			} else {
-				var red = world.getChunkStore().getStore().getComponent(blockRef, RedElementState.getComponent());
-				if(red == null) {
-					red = world.getChunkStore().getStore().ensureAndGetComponent(blockRef, RedElementState.getComponent());
-					red.setPosition(new Vector3i(x, y, z), chunkRef);
-				}
-				return red;
+			var red = world.getChunkStore().getStore().getComponent(blockRef, RedElementState.getComponent());
+			if(red == null) {
+				red = world.getChunkStore().getStore().ensureAndGetComponent(blockRef, RedElementState.getComponent());
+				red.setPosition(new Vector3i(x, y, z), sectionRef);
 			}
+			return red;
 		}
 	}
 

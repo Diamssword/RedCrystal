@@ -3,6 +3,12 @@ package com.diamssword.redCrystal.worldInteraction;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.shape.Box;
+import com.hypixel.hytale.math.util.ChunkUtil;
+import com.hypixel.hytale.server.core.modules.block.BlockModule;
+import com.hypixel.hytale.server.core.universe.world.chunk.BlockChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.ChunkSection;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.joml.Vector3d;
 import org.joml.Vector3i;
 import com.hypixel.hytale.protocol.BlockFace;
@@ -11,7 +17,6 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.modules.collision.CollisionMath;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
-import com.hypixel.hytale.server.core.modules.entity.hitboxcollision.HitboxCollision;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
@@ -22,16 +27,23 @@ public class CollideUtil {
 	public static double blockDistance(World world, Vector3d pos, BlockFace dir, float length) {
 		//var length1 = FacingUtil.isNegative(dir) ? -length : length;
 		var ray = FacingUtil.facingToDir(dir, length, 0, 0);
+
 		for(var i = 0; i < length; i++) {
-			var bpos = new Vector3i().set(new Vector3d(pos).add(FacingUtil.facingToDir(dir, i, 0, 0)));
+			var bpos = new Vector3i().set(new Vector3d(pos).add(FacingUtil.facingToDir(dir, i, 0, 0)), 2);
 			var bid = world.getBlock(bpos);
 			if(bid != 0) {
 				BlockType type = BlockType.getAssetMap().getAsset(bid);
+				Ref<ChunkStore> chunkRef = world.getChunkStore().getChunkReference(ChunkUtil.indexChunkFromBlock(bpos.x, bpos.z));
+				BlockChunk blockChunkComponent = world.getChunkStore().getStore().getComponent(chunkRef, BlockChunk.getComponentType());
+				BlockSection section = blockChunkComponent.getSectionAtBlockY(bpos.y);
 				var box = BlockBoundingBoxes.getAssetMap().getAsset(type.getHitboxType());
-				var rotated = box.get(world.getBlockRotationIndex(bpos.x, bpos.y, bpos.z)).getBoundingBox();
+
+				var rotated = box.get(section.getRotationIndex(bpos.x, bpos.y, bpos.z)).getBoundingBox();
 				var inter = CollisionMath.intersectRayAABB(pos, ray, bpos.x, bpos.y, bpos.z, rotated);
 				if(inter != -Double.MAX_VALUE) {
 					var neg = FacingUtil.isNegative(dir);
+
+
 					if(neg)
 						return i + (1 - FacingUtil.extractAxis(dir, rotated.max));
 					else

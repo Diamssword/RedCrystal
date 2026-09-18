@@ -31,7 +31,7 @@ public class LeverBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSwi
 		if(parent.getEntities() != null) {
 			var plate = parent.getEntities().getOther("lever");
 			if(plate != null) {
-				getModel().switchModel(this, plate, getInternalState("lever") == 1, getSettings().pickedTexture);
+				getModel().switchModel(plate, getInternalState("lever") == 1, getSettings().pickedTexture);
 			}
 
 		}
@@ -51,7 +51,7 @@ public class LeverBehavior extends RedCompBehaviorWithModel<BehaviorAssetWithSwi
 				if(model != null) {
 					//hold last frame doesn't work consistently
 					//AnimationUtils.playAnimation(entity, AnimationSlot.Movement, st == 0 ? "On" : "Off", false, entity.getStore());
-					execute(() -> getModel().switchModel(this, entity, st == 0, getSettings().pickedTexture));
+					execute(() -> getModel().switchModel(entity, st == 0, getSettings().pickedTexture));
 				}
 			} else if(action == InteractType.Use) {
 				onMainRuneInteract(player, entity, context, action);

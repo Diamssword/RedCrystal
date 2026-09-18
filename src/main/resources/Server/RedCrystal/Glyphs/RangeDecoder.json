@@ -2,8 +2,8 @@
   "BehaviorId": {
     "Type": "RangeDecoder"
   },
-  "GlyphTexture": "Items/RedCrystal/Glyphs/Comparator.png",
-  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/Comparator@2x.png",
+  "GlyphTexture": "Items/RedCrystal/Glyphs/RangeDecoder.png",
+  "Icon": "UI/Custom/Pages/RedCrystal/Glyphs/RangeDecoder@2x.png",
   "Outputs": 10,
   "Inputs": 1,
   "TranslationProperties": {

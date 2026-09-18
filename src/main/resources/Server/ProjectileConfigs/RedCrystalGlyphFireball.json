@@ -1,0 +1,8 @@
+{
+  "Parent": "Projectile_Config_Fireball",
+  "SpawnOffset": {
+    "X": 0,
+    "Y": 0,
+    "Z": 0
+  }
+}

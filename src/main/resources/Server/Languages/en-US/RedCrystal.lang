@@ -65,7 +65,10 @@ glyph.Comparator.name=Comparator
 glyph.Comparator.desc=Compare A to B depending of selected operation.\nSend a max strength signal if the comparison is true
 glyph.BitwiseOperator.name=Bitwise
 glyph.BitwiseOperator.desc=Allow to perform bit operations on A and B
-
+glyph.RangeDecoder.name=Range Decoder
+glyph.RangeDecoder.desc=Take an analog input and send a max signal on 1 of the 10 outputs based on the strength of the signal
+glyph.RangeEncoder.name=Input Encoder
+glyph.RangeEncoder.desc=Output an analog signal of a strength from 1 to 10 depending on the strongest input\nThe second output pass the analog strength of the chosen input signal
 
 # Outputs
 glyph.NumberDisplay.name=Number Display
@@ -78,7 +81,8 @@ glyph.Light.name=Light
 glyph.Light.desc=Emit light which strength depend on signal intensity
 glyph.ColoredLight.name=Colored Light
 glyph.ColoredLight.desc=Use it's 3 inputs to define the Red,Green and Blue channels of the emitted light
-
+glyph.Fireball.name=Fireball
+glyph.Fireball.desc=Launch a fireball on a signal pulse\n Have a few seconds of cooldown
 # === Glyphs Settings===
 glyphSetting.Visibility.name=Visibility
 glyphSetting.Visibility.desc=Set Glyph's visibility:\n -Hidden: Shown only when powered\n -Visible: Always shown\n -Pulse: Only Show signal changing\n -Invisible: Never shown
@@ -134,4 +138,13 @@ glyphSetting.KeypadBehaviorTime.name=Hold for
 glyphSetting.KeypadBehaviorTime.desc=The amount of time in seconds the signal will be hold
 glyphSetting.KeypadBehaviorCode.name=Code
 glyphSetting.KeypadBehaviorCode.desc=The code to type to send a signal, numbers only
+glyphSetting.RangeDecoderBehaviorBoundMin.name=Min
+glyphSetting.RangeDecoderBehaviorBoundMin.desc=The minimum signal value
+glyphSetting.RangeDecoderBehaviorBoundMax.name=Max
+glyphSetting.RangeDecoderBehaviorBoundMax.desc=The maximum signal value
+glyphSetting.RangeEncoderBehaviorCumulative.name=Cumulative
+glyphSetting.RangeEncoderBehaviorCumulative.desc=In cumulative mode, powered inputs indexes are all added to the output result
 
+
+glyph.Fireball.name=[TMP]Fireball
+glyph.Fireball.desc=[TMP]Fireball's description

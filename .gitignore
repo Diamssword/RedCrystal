@@ -1,8 +1,9 @@
 target/
+run
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
+key.properties
 ### IntelliJ IDEA ###
 .idea
 .idea/modules.xml
@@ -44,3 +45,4 @@ build/
 .kotlin
 devserver
 /.idea/
+key.properties

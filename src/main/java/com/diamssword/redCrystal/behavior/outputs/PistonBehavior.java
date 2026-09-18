@@ -21,6 +21,7 @@ import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3iUtil;
 import com.hypixel.hytale.protocol.BlockSoundEvent;
 import com.hypixel.hytale.protocol.SoundCategory;
+import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import org.joml.Vector3d;
 import org.joml.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes;
@@ -83,7 +84,7 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 				size = Math.min(size, this.getSettings().selectionLength);
 			var a = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1 + getInternalState("extended"), 0, 0).add(new Vector3d(pos));
 			var b = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), getInternalState("extended") + size, 0, 0).add(new Vector3d(pos));
-			selec.setSelectionArea(new Vector3i().set(a), new Vector3i().set(b));
+			selec.setSelectionArea(new Vector3i().set(a, 2), new Vector3i().set(b, 2));
 			return selec;
 		}
 		return null;
@@ -95,8 +96,9 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 		var vec1 = FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), 1 + getInternalState("extended"), 0, 0).add(new Vector3d(pos));
 		var size = this.getSettings().selectionLength + 1;
 		for(int i = 0; i < this.getSettings().selectionLength + 1; i++) {
-			var p1 = new Vector3i().set(new Vector3d(vec1).add(new Vector3d(vec).mul(i)));
+			var p1 = new Vector3i().set(new Vector3d(vec1).add(new Vector3d(vec).mul(i)), 2);
 			if(!canMove(p1)) {
+
 				size = -1;
 				break;
 			}
@@ -112,15 +114,15 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 
 		var pos = this.parent.getParent().getPosition();
 		if(retract) {
-			if(getWorld().getBlock(new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), getInternalState("extended"), 0, 0).add(new Vector3d(pos)))) == 0) {
-				move(true, new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0)), false, false, getWorld().getEntityStore().getStore());
+			if(getWorld().getBlock(new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), getInternalState("extended"), 0, 0).add(new Vector3d(pos)), 2)) == 0) {
+				move(true, new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0), 2), false, false, getWorld().getEntityStore().getStore());
 				playSound();
 			}
 			setInternalState("extended", (short) (getInternalState("extended") + (retract ? -1 : 1)));
 
 		} else {
 			if(getMaxSize() <= this.getSettings().selectionLength) {
-				move(false, new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0)), false, false, getWorld().getEntityStore().getStore());
+				move(false, new Vector3i().set(FacingUtil.facingToDir(FacingUtil.opposite(this.parent.getFace()), retract ? -1 : 1, 0, 0), 2), false, false, getWorld().getEntityStore().getStore());
 				setInternalState("extended", (short) (getInternalState("extended") + (retract ? -1 : 1)));
 				playSound();
 			}
@@ -132,17 +134,10 @@ public class PistonBehavior extends RedCompBehaviorWithSettings<BehaviorAsset, P
 	}
 
 	public boolean canMove(Vector3i pos) {
-		var chunk = getWorld().getChunk(ChunkUtil.indexChunkFromBlock(pos.x, pos.z));
-		var blockID = chunk.getBlock(pos);
-		//	if(blockID == 0)
-		//		return false;
-		if(chunk.getFiller(pos.x, pos.y, pos.z) != 0)
-			return false;
-
-		var holder = chunk.getBlockComponentHolder(pos.x, pos.y, pos.z);
+		var blockID = getWorld().getBlock(pos);
+		var holder = BlockModule.getBlockEntity(getWorld(), pos.x, pos.y, pos.z);
 		if(holder != null)
 			return false;
-		//return true;
 		var block = BlockType.getAssetMap().getAsset(blockID);
 		var bb = BlockBoundingBoxes.getAssetMap().getAsset(block.getHitboxType());
 		return !bb.protrudesUnitBox();

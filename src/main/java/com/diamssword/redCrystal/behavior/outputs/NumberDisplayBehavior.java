@@ -58,7 +58,7 @@ public class NumberDisplayBehavior extends RedCompBehavior<BehaviorAsset> {
 		//holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(new Box(0, 0, 0, 1, 1, 1)));
 		holder.addComponent(EntityScaleComponent.getComponentType(), new EntityScaleComponent(0.00001f));
 		holder.ensureComponent(Intangible.getComponentType());
-		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(RedComponentDisplayUtils.getFlatModel(facing), "Items/RedCrystal/Glyphs/Empty.png")));
+		holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(ModelUtils.withTexture(RedComponentDisplayUtils.getFlatModel(1f), "Items/RedCrystal/Glyphs/Empty.png")));
 		holder.addComponent(RedEntityLinkComponent.getComponentType(), new RedEntityLinkComponent("display", (short) 0, this.parent));
 		holder.addComponent(Nameplate.getComponentType(), new Nameplate(getInputState(0) + ""));
 		res.put("display", holder);

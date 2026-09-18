@@ -23,20 +23,16 @@ public class RedElementSystems {
 
 		@Override
 		public void onEntityAdded(@NonNullDecl Ref<ChunkStore> ref, @NonNullDecl AddReason reason, @NonNullDecl Store<ChunkStore> store, @NonNullDecl CommandBuffer<ChunkStore> commandBuffer) {
+
 			RedElementState redComponent = commandBuffer.getComponent(ref, RedElementState.getComponent());
 			assert redComponent != null;
 
 			BlockModule.BlockStateInfo blockStateInfoComponent = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-
 			assert blockStateInfoComponent != null;
-			WorldChunk worldChunkComponent = commandBuffer.getComponent(blockStateInfoComponent.getChunkRef(), WorldChunk.getComponentType());
-			Vector3i blockPosition = new Vector3i(
-					ChunkUtil.worldCoordFromLocalCoord(worldChunkComponent.getX(), ChunkUtil.xFromBlockInColumn(blockStateInfoComponent.getIndex())),
-					ChunkUtil.yFromBlockInColumn(blockStateInfoComponent.getIndex()),
-					ChunkUtil.worldCoordFromLocalCoord(worldChunkComponent.getZ(), ChunkUtil.zFromBlockInColumn(blockStateInfoComponent.getIndex()))
-			);
-
-			commandBuffer.run((s) -> redComponent.setPosition(blockPosition, blockStateInfoComponent.getChunkRef()));
+			Vector3i blockPosition = new Vector3i();
+			if(!blockStateInfoComponent.fillWorldPos(commandBuffer, blockPosition))
+				return;
+			commandBuffer.run((s) -> redComponent.setPosition(blockPosition, blockStateInfoComponent.getSectionRef()));
 		}
 
 

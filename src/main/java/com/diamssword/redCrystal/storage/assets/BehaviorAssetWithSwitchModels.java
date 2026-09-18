@@ -121,25 +121,24 @@ public class BehaviorAssetWithSwitchModels extends AbstractBehaviorAsset<Behavio
 			return isOn ? getOnModel() : getOffModel();
 		}
 
-		public void switchModel(RedCompBehavior<?> behavior, Ref<EntityStore> ref, boolean isOn) {
-			switchModel(behavior, ref, isOn, 1f, false);
+		public void switchModel(Ref<EntityStore> ref, boolean isOn) {
+			switchModel(ref, isOn, 1f, false);
 		}
 
-		public void switchModel(RedCompBehavior<?> behavior, Ref<EntityStore> ref, boolean isOn, @Nullable String altTextureKey) {
-			switchModel(behavior, ref, isOn, 1f, false, altTextureKey);
+		public void switchModel(Ref<EntityStore> ref, boolean isOn, @Nullable String altTextureKey) {
+			switchModel(ref, isOn, 1f, false, altTextureKey);
 		}
 
-		public void switchModel(RedCompBehavior<?> behavior, Ref<EntityStore> ref, boolean isOn, float scale, @Nullable String altTextureKey) {
+		public void switchModel(Ref<EntityStore> ref, boolean isOn, float scale, @Nullable String altTextureKey) {
 			var mod = Model.createScaledModel(getModel(isOn), scale);
 			var alt = getTexture(altTextureKey);
 			if(alt != null) {
 				mod = ModelUtils.withTexture(mod, alt);
 			}
-			var model = RedComponentDisplayUtils.modifyBoundingBox(mod, behavior.parent.getFace());
-			ref.getStore().replaceComponent(ref, ModelComponent.getComponentType(), new ModelComponent(model));
+			ref.getStore().replaceComponent(ref, ModelComponent.getComponentType(), new ModelComponent(mod));
 		}
 
-		public void switchModel(RedCompBehavior<?> behavior, Ref<EntityStore> ref, boolean isOn, float scale, boolean isInvisible, @Nullable String altTextureKey) {
+		public void switchModel(Ref<EntityStore> ref, boolean isOn, float scale, boolean isInvisible, @Nullable String altTextureKey) {
 
 			var mod = Model.createScaledModel(getModel(isOn), scale);
 			if(isInvisible)
@@ -150,20 +149,18 @@ public class BehaviorAssetWithSwitchModels extends AbstractBehaviorAsset<Behavio
 					mod = ModelUtils.withTexture(mod, alt);
 				}
 			}
-			var model = RedComponentDisplayUtils.modifyBoundingBox(mod, behavior.parent.getFace());
-			ref.getStore().replaceComponent(ref, ModelComponent.getComponentType(), new ModelComponent(model));
+			ref.getStore().replaceComponent(ref, ModelComponent.getComponentType(), new ModelComponent(mod));
 		}
 
-		public void switchModel(RedCompBehavior<?> behavior, Ref<EntityStore> ref, boolean isOn, float scale, boolean isInvisible) {
+		public void switchModel(Ref<EntityStore> ref, boolean isOn, float scale, boolean isInvisible) {
 			var mod = Model.createScaledModel(getModel(isOn), scale);
 			if(isInvisible)
 				mod = ModelUtils.withTexture(mod, EMPTY_TEXTURE);
-			var model = RedComponentDisplayUtils.modifyBoundingBox(mod, behavior.parent.getFace());
-			ref.getStore().replaceComponent(ref, ModelComponent.getComponentType(), new ModelComponent(model));
+			ref.getStore().replaceComponent(ref, ModelComponent.getComponentType(), new ModelComponent(mod));
 		}
 
-		public void switchModel(RedCompBehavior<?> behavior, Ref<EntityStore> ref, boolean isOn, float scale) {
-			var model = RedComponentDisplayUtils.modifyBoundingBox(Model.createScaledModel(getModel(isOn), scale), behavior.parent.getFace());
+		public void switchModel(Ref<EntityStore> ref, boolean isOn, float scale) {
+			var model = Model.createScaledModel(getModel(isOn), scale);
 			ref.getStore().replaceComponent(ref, ModelComponent.getComponentType(), new ModelComponent(model));
 		}
 
@@ -192,10 +189,9 @@ public class BehaviorAssetWithSwitchModels extends AbstractBehaviorAsset<Behavio
 					mod = ModelUtils.withTexture(mod, alt);
 				}
 			}
-			var model = RedComponentDisplayUtils.modifyBoundingBox(mod, behavior.parent.getFace());
 			//server crash when updating model without this
 			holder.ensureComponent(MovementStatesComponent.getComponentType());
-			holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
+			holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(mod));
 			return holder;
 		}
 	}

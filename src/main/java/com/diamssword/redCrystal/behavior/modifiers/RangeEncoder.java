@@ -27,7 +27,7 @@ public class RangeEncoder extends RedCompBehaviorWithSettings<BehaviorAsset, Ran
 			for(int i = 0; i < inputsCount(); i++) {
 				var st = getInputState(i);
 				if(st > MIN) {
-					res += Math.pow(2, i);
+					res += (int) Math.pow(2, i);
 					res1 += st;
 				}
 			}

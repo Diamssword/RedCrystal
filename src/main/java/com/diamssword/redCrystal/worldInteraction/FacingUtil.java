@@ -62,7 +62,7 @@ public class FacingUtil {
 	 */
 	public static Vector3d facingToDir(BlockFace face, double scale, double addedX, double addedY) {
 		return switch(face) {
-			case None -> new Vector3d(0, 0, 0);
+			case None -> new Vector3d(-addedX, addedY, -scale); //TODO this should be a temporary fix until hytale unbreak the FacingUtil::opposite
 			case Up -> new Vector3d(-addedX, scale, addedY);
 			case Down -> new Vector3d(addedX, -scale, addedY);
 			case East -> new Vector3d(scale, addedY, -addedX);

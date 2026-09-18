@@ -1,21 +1,74 @@
-import java.util.Properties
+//generated using https://template.azuredoom.com
+plugins {
+    idea
+    java
+    alias(libs.plugins.hytaleTools)
+    alias(libs.plugins.hytalePublisher)
+}
 
-/**
- * NOTE: This is entirely optional and basics can be done in `settings.gradle.kts`
- */
-val props = Properties()
-file("gradle.properties").inputStream().use { props.load(it) }
-// 2. Access your property
-val modVersion = props.getProperty("modVersion")
+// Plugin versions are sourced from gradle/libs.versions.toml.
+
+
+tasks.withType<Javadoc>().configureEach {
+    (options as org.gradle.external.javadoc.StandardJavadocDocletOptions).addStringOption("Xdoclint:-missing", "-quiet")
+}
+
+group = project.property("group").toString()
+
+tasks.named<Jar>("jar") {
+    archiveBaseName.set(project.property("mod_name").toString())
+    archiveVersion.set(project.property("version").toString())
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(property("java_version").toString().toInt()))
+}
+
+hytaleTools {
+    hotSwapEnabled = true
+    useHotswapAgent = true
+    javaVersion = property("java_version").toString().toInt()
+    hytaleVersion = property("hytale_version").toString()
+    manifestServerVersion = property("manifestServerVersion").toString()
+    manifestGroup = property("manifest_group").toString()
+    modId = property("mod_id").toString()
+    modDescription = property("mod_description").toString()
+    modUrl = property("mod_url").toString()
+    mainClass = property("main_class").toString()
+    modCredits = property("mod_author").toString()
+    manifestDependencies = property("manifest_dependencies").toString()
+    manifestOptionalDependencies = property("manifest_opt_dependencies").toString()
+    curseforgeId = property("curseforgeID").toString()
+    disabledByDefault = property("disabled_by_default").toString().toBoolean()
+    includesPack = property("includes_pack").toString().toBoolean()
+    injectServerJavadocsIntoSources = property("inject_server_javadocs_into_sources").toString().toBoolean()
+    generateAssetsBinary = property("generateAssetsBinary").toString().toBoolean()
+    patchline = property("patchline").toString()
+}
+
 repositories {
-
-
+    mavenCentral()
 }
 
-dependencies {
+idea {
+    module {
+        isDownloadSources = true
+        isDownloadJavadoc = true
+    }
 }
-tasks.jar {
-    archiveBaseName.set("RedCrystal")
-    archiveVersion.set(modVersion)
-    //archiveClassifier.set("") // optional (removes "-all" or similar suffixes)
+
+
+hytalePublisher {
+    releaseType = "release"
+    changelogFile = "CHANGELOG.md"
+    modtale {
+        enabled = true
+        projectId = property("modtale_project_id").toString()
+        patchline = "release"
+    }
+
+    curseforge {
+        enabled = true
+        projectId = property("curseforge_project_id").toString()
+    }
 }

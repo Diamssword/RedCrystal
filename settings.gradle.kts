@@ -1,38 +1,17 @@
-import java.util.Properties
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven {
+            name = "AzureDoom Maven"
+            url = uri("https://maven.azuredoom.com/mods")
+        }
+    }
+}
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 
 rootProject.name = "RedCrystal"
-
-// 1. Load properties from gradle.properties
-val props = Properties()
-file("gradle.properties").inputStream().use { props.load(it) }
-// 2. Access your property
-val modVersion = props.getProperty("modVersion")
-plugins {
-    // See documentation on https://scaffoldit.dev
-    id("dev.scaffoldit") version "0.2.+"
-}
-
-// Would you like to do a split project?
-// Create a folder named "common", then configure details with `common { }`
-
-hytale {
-
-    usePatchline("pre-release")
-    useVersion("latest")
-
-    repositories {
-        // Any external repositories besides: MavenLocal, MavenCentral, HytaleMaven, and CurseMaven
-    }
-
-    dependencies {
-        // Any external dependency you also want to include
-    }
-    manifest {
-        Group = "Diamssword"
-        Name = "RedCrystal"
-        Main = "com.diamssword.redCrystal.RedCrystalPlugin"
-        Version = modVersion
-        Description = "A powerful way to automatically interact with the world"
-        IncludesAssetPack = true
-    }
-}
+// Gradle automatically imports gradle/libs.versions.toml as the libs catalog.

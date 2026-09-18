@@ -47,7 +47,7 @@ public class VariatorBehavior extends RedCompBehaviorWithModel<BehaviorAssetWith
 		if(parent.getEntities() != null) {
 			var plate = parent.getEntities().getOther("selector");
 			if(plate != null) {
-				getModel().switchModel(this, plate, false, getSettings().pickedTexture);
+				getModel().switchModel(plate, false, getSettings().pickedTexture);
 			}
 		}
 	}
